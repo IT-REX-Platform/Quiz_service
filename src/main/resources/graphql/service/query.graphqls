@@ -1,0 +1,10 @@
+type Query {
+    """
+    Get quiz by assessment ID.
+    """
+    quizByAssessmentId(id: UUID!): Quiz!
+    """
+    Get all quizzes.
+    """
+    quizzes: [Quiz!]!
+}

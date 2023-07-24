@@ -1,0 +1,142 @@
+type Mutation {
+    """
+    Create a quiz.
+    """
+    createQuiz(input: CreateQuizInput!): Quiz!
+
+    """
+    Modify a quiz.
+    """
+    modifyQuiz(id: UUID!): QuizMutation!
+
+    """
+    Delete a quiz.
+    """
+    deleteQuiz(id: UUID!): UUID!
+}
+
+type QuizMutation {
+    """
+    Add a multiple choice question to the quiz questions, at the end of the list.
+    """
+    addMultipleChoiceQuestion(input: CreateMultipleChoiceQuestionInput!): Quiz!
+    """
+    Update a multiple choice question in the quiz questions.
+    """
+    updateMultipleChoiceQuestion(input: UpdateMultipleChoiceQuestionInput!): Quiz!
+
+    # add other types of questions here
+
+    """
+    Remove the e question with the given number from the quiz.
+    """
+    removeQuestion(number: Int! @Positive): Quiz!
+    """
+    Switch the position of two questions with the given numbers.
+    """
+    switchQuestions(firstNumber: Int! @Positive, secondNumber: Int! @Positive): Quiz!
+
+
+    """
+    Set the threshold of the quiz, i.e., how many questions the user has to answer correctly to pass the quiz.
+    """
+    setRequiredCorrectAnswers(requiredCorrectAnswers: Int! @PositiveOrZero): Quiz!
+    """
+    Set the question pooling mode of the quiz.
+    """
+    setQuestionPoolingMode(questionPoolingMode: QuestionPoolingMode!): Quiz!
+    """
+    Set the number of questions that are randomly selected from the list of questions.
+    Should only be considered if questionPoolingMode is RANDOM.
+    """
+    setNumberOfRandomlySelectedQuestions(numberOfRandomlySelectedQuestions: Int! @Positive): Quiz!
+}
+
+
+input CreateQuizInput {
+    """
+    Identifier of the quiz, same as the identifier of the assessment.
+    """
+    assessmentId: UUID!
+
+    """
+    Threshold of the quiz, i.e., how many questions the user has to answer correctly to pass the quiz.
+    """
+    requiredCorrectAnswers: Int! @PositiveOrZero
+
+    """
+    Question pooling mode of the quiz.
+    """
+    questionPoolingMode: QuestionPoolingMode!
+
+    """
+    Number of questions that are randomly selected from the list of questions.
+    Should only be considered if questionPoolingMode is RANDOM.
+    """
+    numberOfRandomlySelectedQuestions: Int! @Positive
+
+    """
+    List of multiple choice questions.
+    """
+    multipleChoiceQuestions: [CreateMultipleChoiceQuestionInput!]
+
+    # other types of questions
+}
+
+input CreateMultipleChoiceQuestionInput {
+    """
+    Number of the question, used for ordering.
+    """
+    number: Int! @Positive
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    List of answers.
+    """
+    answers: [MultipleChoiceAnswerInput!]!
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input UpdateMultipleChoiceQuestionInput {
+    """
+    UUID of the question to update.
+    """
+    id: UUID!
+    """
+    Number of the question, used for ordering.
+    """
+    number: Int! @Positive
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    List of answers.
+    """
+    answers: [MultipleChoiceAnswerInput!]!
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+
+}
+
+input MultipleChoiceAnswerInput {
+    """
+    Text of the answer, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    Whether the answer is correct or not.
+    """
+    correct: Boolean!
+    """
+    Feedback for when the user selects this answer, can be markdown.
+    """
+    feedback: String @Size(max: 1000)
+}

@@ -1,0 +1,137 @@
+"""
+A quiz is a set of questions that the user has to answer correctly to pass the quiz.
+Questions can be of different types, e.g., multiple choice, clozes, or open questions.
+"""
+type Quiz {
+    """
+    Identifier of the quiz, same as the identifier of the assessment.
+    """
+    assessmentId: UUID!
+    """
+    List of questions.
+    """
+    questionPool: [Question!]!
+    """
+    Threshold of the quiz, i.e., how many questions the user has to answer correctly to pass the quiz.
+    """
+    requiredCorrectAnswers: Int!
+
+    """
+    Question pooling mode of the quiz.
+    """
+    questionPoolingMode: QuestionPoolingMode!
+
+    """
+    Number of questions that are randomly selected from the list of questions.
+    Should only be considered if questionPoolingMode is RANDOM.
+    """
+    numberOfRandomlySelectedQuestions: Int!
+
+    """
+    The selected questions of the question pool.
+    This is identical to the list of questions if questionPoolingMode is ORDERED.
+    """
+    selectedQuestions: [Question!]!
+}
+
+enum QuestionPoolingMode {
+    """
+    Questions are randomly selected from the list of questions.
+    """
+    RANDOM
+    """
+    Questions are selected in order from the list of questions.
+    """
+    ORDERED
+}
+
+"""
+Generic question interface.
+"""
+interface Question {
+    """
+    Unique identifier of the question.
+    """
+    id: UUID!
+
+    """
+    Number of the question, i.e., the position of the question in the list of questions.
+    Only relevant if questionPoolingMode is ORDERED.
+    """
+    number: Int!
+
+    """
+    Type of the question.
+    """
+    type: QuestionType!
+
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String
+}
+
+"""
+Multiple choice question, i.e., a question with multiple answers of which the user has to select the correct ones.
+"""
+type MultipleChoiceQuestion implements Question {
+    """
+    Text of the question, can be markdown.
+    """
+    text: String!
+    """
+    List of answers.
+    """
+    answers: [MultipleChoiceAnswer!]!
+    """
+    How many answers the user has to select. This is computed from the list of answers.
+    """
+    numberOfCorrectAnswers: Int!
+
+    # inherited from Question
+    """
+    Unique identifier of the question.
+    """
+    id: UUID!
+
+    """
+    Number of the question, i.e., the position of the question in the list of questions.
+    Only relevant if questionPoolingMode is ORDERED.
+    """
+    number: Int!
+
+    """
+    Type of the question.
+    """
+    type: QuestionType!
+
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String
+}
+
+type MultipleChoiceAnswer {
+    """
+    Text of the answer, can be markdown.
+    """
+    text: String!
+    """
+    Whether the answer is correct or not.
+    """
+    correct: Boolean!
+    """
+    Feedback for when the user selects this answer, can be markdown.
+    """
+    feedback: String
+}
+
+"""
+The type of a question.
+"""
+enum QuestionType {
+    MULTIPLE_CHOICE
+    CLOZE
+    SELF_ASSESSMENT
+    # add more types here
+}

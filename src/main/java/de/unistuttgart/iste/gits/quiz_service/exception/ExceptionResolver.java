@@ -1,8 +1,6 @@
-package de.unistuttgart.iste.gits.courseservice.exception;
+package de.unistuttgart.iste.gits.quiz_service.exception;
 
-import graphql.ErrorType;
-import graphql.GraphQLError;
-import graphql.GraphqlErrorBuilder;
+import graphql.*;
 import graphql.schema.DataFetchingEnvironment;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;

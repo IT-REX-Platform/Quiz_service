@@ -1,4 +1,4 @@
-package de.unistuttgart.iste.gits.template.config;
+package de.unistuttgart.iste.gits.quiz_service.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

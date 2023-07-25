@@ -15,7 +15,7 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=quiz_service
-  app-template:
+  app-quiz:
     build:
       context: ./../quiz_service # necessary because otherwise docker-compose overrides the context path when merging multiple docker-compose.yml files
       dockerfile: Dockerfile
@@ -33,7 +33,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database-quiz:9032/quiz_service
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
-  dapr-template:
+  dapr-quiz:
     image: "daprio/daprd"
     command: [
       "./daprd",
@@ -45,7 +45,7 @@ services:
     volumes:
       - "./../quiz_service/components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
-      - app-template
+      - app-quiz
       - redis
     network_mode: "service:app-quiz"
   redis:

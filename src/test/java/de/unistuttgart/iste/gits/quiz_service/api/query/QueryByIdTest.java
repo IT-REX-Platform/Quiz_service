@@ -16,8 +16,7 @@ import java.util.UUID;
 import static de.unistuttgart.iste.gits.quiz_service.TestData.createMultipleChoiceQuestion;
 import static de.unistuttgart.iste.gits.quiz_service.matcher.MultipleChoiceQuestionDtoToEntityMatcher.matchesEntity;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 @GraphQlApiTest
 @TablesToDelete({"multiple_choice_question_answers", "multiple_choice_question", "quiz_question_pool", "question", "quiz"})
@@ -53,7 +52,7 @@ class QueryByIdTest {
 
         String query = """
                 query($id: UUID!) {
-                    quizByAssessmentId(assessmentId: $id) {
+                    findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         assessmentId
                         questionPoolingMode
                         numberOfRandomlySelectedQuestions
@@ -65,13 +64,13 @@ class QueryByIdTest {
         graphQlTester.document(query)
                 .variable("id", quizEntity2.getAssessmentId())
                 .execute()
-                .path("quizByAssessmentId.assessmentId").entity(UUID.class)
+                .path("findQuizzesByAssessmentIds[0].assessmentId").entity(UUID.class)
                 .isEqualTo(quizEntity2.getAssessmentId())
 
-                .path("quizByAssessmentId.questionPoolingMode").entity(QuestionPoolingMode.class)
+                .path("findQuizzesByAssessmentIds[0].questionPoolingMode").entity(QuestionPoolingMode.class)
                 .isEqualTo(quizEntity2.getQuestionPoolingMode())
 
-                .path("quizByAssessmentId.numberOfRandomlySelectedQuestions").entity(Integer.class)
+                .path("findQuizzesByAssessmentIds[0].numberOfRandomlySelectedQuestions").entity(Integer.class)
                 .isEqualTo(quizEntity2.getNumberOfRandomlySelectedQuestions());
     }
 
@@ -95,7 +94,7 @@ class QueryByIdTest {
 
         String query = """
                 query($id: UUID!) {
-                    quizByAssessmentId(assessmentId: $id) {
+                    findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         assessmentId
                         requiredCorrectAnswers
                         questionPoolingMode
@@ -121,19 +120,19 @@ class QueryByIdTest {
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
 
-                .path("quizByAssessmentId.assessmentId").entity(UUID.class)
+                .path("findQuizzesByAssessmentIds[0].assessmentId").entity(UUID.class)
                 .isEqualTo(quizEntity.getAssessmentId())
 
-                .path("quizByAssessmentId.requiredCorrectAnswers").entity(Integer.class)
+                .path("findQuizzesByAssessmentIds[0].requiredCorrectAnswers").entity(Integer.class)
                 .isEqualTo(1)
 
-                .path("quizByAssessmentId.questionPoolingMode").entity(QuestionPoolingMode.class)
+                .path("findQuizzesByAssessmentIds[0].questionPoolingMode").entity(QuestionPoolingMode.class)
                 .isEqualTo(QuestionPoolingMode.RANDOM)
 
-                .path("quizByAssessmentId.numberOfRandomlySelectedQuestions").entity(Integer.class)
+                .path("findQuizzesByAssessmentIds[0].numberOfRandomlySelectedQuestions").entity(Integer.class)
                 .isEqualTo(1)
 
-                .path("quizByAssessmentId.questionPool")
+                .path("findQuizzesByAssessmentIds[0].questionPool")
                 .entityList(MultipleChoiceQuestion.class)
                 .get();
 
@@ -162,7 +161,7 @@ class QueryByIdTest {
 
         String query = """
                 query($id: UUID!) {
-                    quizByAssessmentId(assessmentId: $id) {
+                    findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         selectedQuestions {
                             number
                             hint
@@ -183,7 +182,7 @@ class QueryByIdTest {
         List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
-                .path("quizByAssessmentId.selectedQuestions")
+                .path("findQuizzesByAssessmentIds[0].selectedQuestions")
                 .entityList(MultipleChoiceQuestion.class)
                 .get();
 
@@ -214,7 +213,7 @@ class QueryByIdTest {
 
         String query = """
                 query($id: UUID!) {
-                    quizByAssessmentId(assessmentId: $id) {
+                    findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         selectedQuestions {
                             number
                             hint
@@ -235,7 +234,7 @@ class QueryByIdTest {
         List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
-                .path("quizByAssessmentId.selectedQuestions")
+                .path("findQuizzesByAssessmentIds[0].selectedQuestions")
                 .entityList(MultipleChoiceQuestion.class)
                 .get();
 
@@ -245,5 +244,30 @@ class QueryByIdTest {
                 matchesEntity(quizEntity.getQuestionPool().get(1)),
                 matchesEntity(quizEntity.getQuestionPool().get(2)))
         );
+    }
+
+    /**
+     * Given an uuid of a non-existing quiz
+     * When the "quizByAssessmentId" query is executed
+     * Then null is returned
+     */
+    @Test
+    void testFindByAssessmentIdNotExisting(GraphQlTester graphQlTester) {
+        String query = """
+                query($id: UUID!) {
+                    findQuizzesByAssessmentIds(assessmentIds: [$id]) {
+                        assessmentId
+                    }
+                }
+                """;
+
+        var quizzes = graphQlTester.document(query)
+                .variable("id", UUID.randomUUID())
+                .execute()
+                .path("findQuizzesByAssessmentIds").entityList(QuizEntity.class)
+                .get();
+
+        assertThat(quizzes, hasSize(1));
+        assertThat(quizzes.get(0), is(nullValue()));
     }
 }

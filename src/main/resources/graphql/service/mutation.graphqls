@@ -13,6 +13,7 @@ type Mutation {
     Delete a quiz.
     """
     deleteQuiz(assessmentId: UUID!): UUID!
+        @deprecated(reason: "Only for development, will be removed in production. Use deleteAssessment in contents service instead.")
 }
 
 type QuizMutation {

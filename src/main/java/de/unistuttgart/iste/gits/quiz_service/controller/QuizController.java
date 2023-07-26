@@ -18,8 +18,8 @@ public class QuizController {
     private final QuizService quizService;
 
     @QueryMapping
-    public Quiz quizByAssessmentId(@Argument UUID assessmentId) {
-        return quizService.getQuizByAssessmentId(assessmentId);
+    public List<Quiz> findQuizzesByAssessmentIds(@Argument List<UUID> assessmentIds) {
+        return quizService.findQuizzesByAssessmentIds(assessmentIds);
     }
 
     @QueryMapping

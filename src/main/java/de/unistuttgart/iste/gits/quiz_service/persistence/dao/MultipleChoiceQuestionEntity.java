@@ -1,6 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.dao;
 
-
 import de.unistuttgart.iste.gits.generated.dto.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;

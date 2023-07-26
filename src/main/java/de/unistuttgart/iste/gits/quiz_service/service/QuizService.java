@@ -26,18 +26,18 @@ public class QuizService {
     private final QuizValidator quizValidator;
 
     /**
-     * Returns the quiz with the given assessment id.
+     * Returns all quizzes for the given assessment ids.
+     * If an assessment id does not exist, the corresponding quiz is null.
      *
-     * @param id the assessment id
-     * @return the quiz
-     * @throws EntityNotFoundException if the quiz does not exist
+     * @param assessmentIds the assessment ids
+     * @return the quizzes
      */
-    public Quiz getQuizByAssessmentId(UUID id) {
-        requireQuizExists(id);
-
-        QuizEntity entity = quizRepository.findById(id).orElseThrow();
-
-        return entityToDto(entity);
+    public List<Quiz> findQuizzesByAssessmentIds(List<UUID> assessmentIds) {
+        return assessmentIds.stream()
+                .map(quizRepository::findById)
+                .map(optionalQuiz -> optionalQuiz.map(this::entityToDto))
+                .map(optionalQuiz -> optionalQuiz.orElse(null))
+                .toList();
     }
 
     public List<Quiz> getAllQuizzes() {
@@ -269,5 +269,4 @@ public class QuizService {
                                 "Question with number {0} not found in quiz with id {1}.",
                                 number, quizEntity.getAssessmentId())));
     }
-
 }

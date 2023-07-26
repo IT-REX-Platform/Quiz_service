@@ -1,8 +1,9 @@
 type Query {
     """
     Get quiz by assessment ID.
+    If any of the assessment IDs are not found, the corresponding quiz will be null.
     """
-    quizByAssessmentId(assessmentId: UUID!): Quiz!
+    findQuizzesByAssessmentIds(assessmentIds: [UUID!]!): [Quiz]!
     """
     Get all quizzes.
     """

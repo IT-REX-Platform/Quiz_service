@@ -13,6 +13,8 @@ type Quiz {
     questionPool: [Question!]!
     """
     Threshold of the quiz, i.e., how many questions the user has to answer correctly to pass the quiz.
+    If this number is greater than the number of questions, the behavior is the same
+    as if it was equal to the number of questions.
     """
     requiredCorrectAnswers: Int!
 
@@ -23,13 +25,19 @@ type Quiz {
 
     """
     Number of questions that are randomly selected from the list of questions.
-    Should only be considered if questionPoolingMode is RANDOM.
+    Will only be considered if questionPoolingMode is RANDOM.
+
+    If this is greater than the number of questions, the behavior is the same
+    as if it was equal to the number of questions.
+
+    If this is null or not set, the behavior is the same as if it was equal to the number of questions.
     """
-    numberOfRandomlySelectedQuestions: Int!
+    numberOfRandomlySelectedQuestions: Int
 
     """
     The selected questions of the question pool.
     This is identical to the list of questions if questionPoolingMode is ORDERED.
+    This will be different each time it is queried if questionPoolingMode is RANDOM.
     """
     selectedQuestions: [Question!]!
 }
@@ -131,7 +139,5 @@ The type of a question.
 """
 enum QuestionType {
     MULTIPLE_CHOICE
-    CLOZE
-    SELF_ASSESSMENT
     # add more types here
 }

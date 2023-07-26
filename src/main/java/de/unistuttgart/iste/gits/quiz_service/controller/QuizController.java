@@ -18,8 +18,8 @@ public class QuizController {
     private final QuizService quizService;
 
     @QueryMapping
-    public Quiz quizByAssessmentId(@Argument UUID id) {
-        return quizService.getQuizByAssessmentId(id);
+    public Quiz quizByAssessmentId(@Argument UUID assessmentId) {
+        return quizService.getQuizByAssessmentId(assessmentId);
     }
 
     @QueryMapping
@@ -33,35 +33,49 @@ public class QuizController {
     }
 
     @MutationMapping
-    public QuizMutation modifyQuiz(@Argument UUID id) {
+    public QuizMutation mutateQuiz(@Argument UUID assessmentId) {
         // this is basically an empty object, only serving as a parent for the nested mutations
-        return new QuizMutation(id);
+        return new QuizMutation(assessmentId);
     }
 
     @MutationMapping
-    public UUID deleteQuiz(@Argument UUID id) {
-        return quizService.deleteQuiz(id);
+    public UUID deleteQuiz(@Argument UUID assessmentId) {
+        return quizService.deleteQuiz(assessmentId);
     }
 
     @SchemaMapping(typeName = "QuizMutation")
     public Quiz addMultipleChoiceQuestion(@Argument CreateMultipleChoiceQuestionInput input, QuizMutation quizMutation) {
-        return quizService.addMultipleChoiceQuestion(quizMutation.getId(), input);
+        return quizService.addMultipleChoiceQuestion(quizMutation.getAssessmentId(), input);
     }
 
     @SchemaMapping(typeName = "QuizMutation")
     public Quiz updateMultipleChoiceQuestion(@Argument UpdateMultipleChoiceQuestionInput input, QuizMutation quizMutation) {
-        return quizService.updateMultipleChoiceQuestion(quizMutation.getId(), input);
+        return quizService.updateMultipleChoiceQuestion(quizMutation.getAssessmentId(), input);
     }
 
     @SchemaMapping(typeName = "QuizMutation")
     public Quiz removeQuestion(@Argument int number, QuizMutation quizMutation) {
-        return quizService.removeQuestion(quizMutation.getId(), number);
+        return quizService.removeQuestion(quizMutation.getAssessmentId(), number);
     }
 
     @SchemaMapping(typeName = "QuizMutation")
     public Quiz switchQuestions(@Argument int firstNumber, @Argument int secondNumber, QuizMutation quizMutation) {
-        return quizService.switchQuestions(quizMutation.getId(), firstNumber, secondNumber);
+        return quizService.switchQuestions(quizMutation.getAssessmentId(), firstNumber, secondNumber);
     }
 
-    // TODO: add more of the nested mutations here
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz setRequiredCorrectAnswers(@Argument int requiredCorrectAnswers, QuizMutation quizMutation) {
+        return quizService.setRequiredCorrectAnswers(quizMutation.getAssessmentId(), requiredCorrectAnswers);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz setQuestionPoolingMode(@Argument QuestionPoolingMode questionPoolingMode, QuizMutation quizMutation) {
+        return quizService.setQuestionPoolingMode(quizMutation.getAssessmentId(), questionPoolingMode);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz setNumberOfRandomlySelectedQuestions(@Argument int numberOfRandomlySelectedQuestions, QuizMutation quizMutation) {
+        return quizService.setNumberOfRandomlySelectedQuestions(quizMutation.getAssessmentId(), numberOfRandomlySelectedQuestions);
+    }
+
 }

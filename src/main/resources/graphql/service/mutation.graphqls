@@ -7,15 +7,19 @@ type Mutation {
     """
     Modify a quiz.
     """
-    modifyQuiz(id: UUID!): QuizMutation!
+    mutateQuiz(assessmentId: UUID!): QuizMutation!
 
     """
     Delete a quiz.
     """
-    deleteQuiz(id: UUID!): UUID!
+    deleteQuiz(assessmentId: UUID!): UUID!
 }
 
 type QuizMutation {
+    """
+    Id of the quiz to modify.
+    """
+    assessmentId: UUID!
     """
     Add a multiple choice question to the quiz questions, at the end of the list.
     """
@@ -28,7 +32,8 @@ type QuizMutation {
     # add other types of questions here
 
     """
-    Remove the e question with the given number from the quiz.
+    Removes the question with the given number from the quiz.
+    This will also update the numbers of the following questions.
     """
     removeQuestion(number: Int! @Positive): Quiz!
     """
@@ -47,7 +52,7 @@ type QuizMutation {
     setQuestionPoolingMode(questionPoolingMode: QuestionPoolingMode!): Quiz!
     """
     Set the number of questions that are randomly selected from the list of questions.
-    Should only be considered if questionPoolingMode is RANDOM.
+    Will only be considered if questionPoolingMode is RANDOM.
     """
     setNumberOfRandomlySelectedQuestions(numberOfRandomlySelectedQuestions: Int! @Positive): Quiz!
 }
@@ -61,6 +66,9 @@ input CreateQuizInput {
 
     """
     Threshold of the quiz, i.e., how many questions the user has to answer correctly to pass the quiz.
+
+    If this is greater than the number of questions, the behavior is the same
+    as if it was equal to the number of questions.
     """
     requiredCorrectAnswers: Int! @PositiveOrZero
 
@@ -71,14 +79,19 @@ input CreateQuizInput {
 
     """
     Number of questions that are randomly selected from the list of questions.
-    Should only be considered if questionPoolingMode is RANDOM.
+    Should only be set if questionPoolingMode is RANDOM.
+
+    If this is greater than the number of questions, the behavior is the same
+    as if it was equal to the number of questions.
+
+    If this is null or not set, the behavior is the same as if it was equal to the number of questions.
     """
-    numberOfRandomlySelectedQuestions: Int! @Positive
+    numberOfRandomlySelectedQuestions: Int @Positive
 
     """
     List of multiple choice questions.
     """
-    multipleChoiceQuestions: [CreateMultipleChoiceQuestionInput!]
+    multipleChoiceQuestions: [CreateMultipleChoiceQuestionInput!]! = []
 
     # other types of questions
 }
@@ -86,8 +99,9 @@ input CreateQuizInput {
 input CreateMultipleChoiceQuestionInput {
     """
     Number of the question, used for ordering.
+    This can be omitted, in which case a number, one higher than the highest number of the existing questions, will be used.
     """
-    number: Int! @Positive
+    number: Int @Positive
     """
     Text of the question, can be markdown.
     """
@@ -95,7 +109,7 @@ input CreateMultipleChoiceQuestionInput {
     """
     List of answers.
     """
-    answers: [MultipleChoiceAnswerInput!]!
+    answers: [MultipleChoiceAnswerInput!]! @ContainerSize(min: 2)
     """
     Optional hint for the question, can be markdown.
     """
@@ -107,10 +121,6 @@ input UpdateMultipleChoiceQuestionInput {
     UUID of the question to update.
     """
     id: UUID!
-    """
-    Number of the question, used for ordering.
-    """
-    number: Int! @Positive
     """
     Text of the question, can be markdown.
     """

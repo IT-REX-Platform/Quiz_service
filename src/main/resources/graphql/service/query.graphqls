@@ -2,7 +2,7 @@ type Query {
     """
     Get quiz by assessment ID.
     """
-    quizByAssessmentId(id: UUID!): Quiz!
+    quizByAssessmentId(assessmentId: UUID!): Quiz!
     """
     Get all quizzes.
     """

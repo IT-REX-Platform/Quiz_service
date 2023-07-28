@@ -34,8 +34,8 @@ class CreateQuizMutationTest {
     @Transactional
     @Commit
     void testCreateQuizWithQuestions(GraphQlTester graphQlTester) {
+        UUID assessmentId = UUID.randomUUID();
         CreateQuizInput createQuizInput = CreateQuizInput.builder()
-                .setAssessmentId(UUID.randomUUID())
                 .setRequiredCorrectAnswers(1)
                 .setQuestionPoolingMode(QuestionPoolingMode.RANDOM)
                 .setNumberOfRandomlySelectedQuestions(2)
@@ -72,8 +72,8 @@ class CreateQuizMutationTest {
                 .build();
 
         String query = """
-                mutation createQuiz($input: CreateQuizInput!) {
-                    createQuiz(input: $input) {
+                mutation createQuiz($id: UUID!, $input: CreateQuizInput!) {
+                    createQuiz(assessmentId: $id, input: $input) {
                         assessmentId
                         requiredCorrectAnswers
                         questionPoolingMode
@@ -98,10 +98,11 @@ class CreateQuizMutationTest {
         // so check the fields manually
         List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("input", createQuizInput)
+                .variable("id", assessmentId)
                 .execute()
 
                 .path("createQuiz.assessmentId").entity(UUID.class)
-                .isEqualTo(createQuizInput.getAssessmentId())
+                .isEqualTo(assessmentId)
 
                 .path("createQuiz.requiredCorrectAnswers").entity(Integer.class)
                 .isEqualTo(1)
@@ -134,8 +135,8 @@ class CreateQuizMutationTest {
      */
     @Test
     void testCreateQuizWithDuplicateNumbersInQuestion(GraphQlTester graphQlTester) {
+        UUID assessmentId = UUID.randomUUID();
         CreateQuizInput createQuizInput = CreateQuizInput.builder()
-                .setAssessmentId(UUID.randomUUID())
                 .setRequiredCorrectAnswers(1)
                 .setQuestionPoolingMode(QuestionPoolingMode.RANDOM)
                 .setNumberOfRandomlySelectedQuestions(2)
@@ -172,14 +173,15 @@ class CreateQuizMutationTest {
                 .build();
 
         String query = """
-                mutation createQuiz($input: CreateQuizInput!) {
-                    createQuiz(input: $input) {
+                mutation createQuiz($id: UUID!, $input: CreateQuizInput!) {
+                    createQuiz(assessmentId: $id, input: $input) {
                         assessmentId
                     }
                 }""";
 
         graphQlTester.document(query)
                 .variable("input", createQuizInput)
+                .variable("id", assessmentId)
                 .execute()
                 .errors()
                 .satisfy(errors -> {

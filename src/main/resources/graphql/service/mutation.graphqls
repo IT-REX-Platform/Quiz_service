@@ -2,7 +2,7 @@ type Mutation {
     """
     Create a quiz.
     """
-    createQuiz(input: CreateQuizInput!): Quiz!
+    createQuiz(assessmentId: UUID!, input: CreateQuizInput!): Quiz!
 
     """
     Modify a quiz.
@@ -60,10 +60,6 @@ type QuizMutation {
 
 
 input CreateQuizInput {
-    """
-    Identifier of the quiz, same as the identifier of the assessment.
-    """
-    assessmentId: UUID!
 
     """
     Threshold of the quiz, i.e., how many questions the user has to answer correctly to pass the quiz.

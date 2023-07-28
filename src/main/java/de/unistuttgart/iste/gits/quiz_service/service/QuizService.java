@@ -55,10 +55,11 @@ public class QuizService {
      * @return the created quiz
      * @throws ValidationException if the question numbers are not unique or any question does not validate
      */
-    public Quiz createQuiz(CreateQuizInput input) {
+    public Quiz createQuiz(UUID assessmentId, CreateQuizInput input) {
         quizValidator.validateCreateQuizInput(input);
 
         QuizEntity entity = quizMapper.createQuizInputToEntity(input);
+        entity.setAssessmentId(assessmentId);
 
         QuizEntity savedEntity = quizRepository.save(entity);
         return entityToDto(savedEntity);

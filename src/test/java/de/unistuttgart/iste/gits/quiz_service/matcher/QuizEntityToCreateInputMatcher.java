@@ -26,10 +26,6 @@ public class QuizEntityToCreateInputMatcher extends TypeSafeDiagnosingMatcher<Qu
 
     @Override
     protected boolean matchesSafely(QuizEntity item, Description mismatchDescription) {
-        if (!item.getAssessmentId().equals(expected.getAssessmentId())) {
-            mismatchDescription.appendText("assessmentId was ").appendValue(item.getAssessmentId());
-            return false;
-        }
         if (item.getRequiredCorrectAnswers() != expected.getRequiredCorrectAnswers()) {
             mismatchDescription.appendText("requiredCorrectAnswers was ").appendValue(item.getRequiredCorrectAnswers());
             return false;

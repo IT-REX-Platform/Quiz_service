@@ -28,8 +28,8 @@ public class QuizController {
     }
 
     @MutationMapping
-    public Quiz createQuiz(@Argument CreateQuizInput input) {
-        return quizService.createQuiz(input);
+    public Quiz createQuiz(@Argument UUID assessmentId, @Argument CreateQuizInput input) {
+        return quizService.createQuiz(assessmentId, input);
     }
 
     @MutationMapping

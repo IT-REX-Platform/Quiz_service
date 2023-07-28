@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * This is the entry point of the application.
  */
 @SpringBootApplication
-public class QuizApplication {
+public class QuizServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(QuizApplication.class, args);
+        SpringApplication.run(QuizServiceApplication.class, args);
     }
 
 }

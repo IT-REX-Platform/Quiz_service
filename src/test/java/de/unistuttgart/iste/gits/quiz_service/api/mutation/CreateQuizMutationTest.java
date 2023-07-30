@@ -26,6 +26,75 @@ class CreateQuizMutationTest {
     private QuizRepository quizRepository;
 
     /**
+     * Given a quiz with no questions
+     * When the "createQuiz" mutation is executed
+     * Then the quiz is created
+     */
+    @Test
+    @Transactional
+    @Commit
+    void testCreateQuizWithoutQuestions(GraphQlTester graphQlTester) {
+        UUID assessmentId = UUID.randomUUID();
+        CreateQuizInput createQuizInput = CreateQuizInput.builder()
+                .setRequiredCorrectAnswers(1)
+                .setQuestionPoolingMode(QuestionPoolingMode.RANDOM)
+                .setNumberOfRandomlySelectedQuestions(2)
+                .setMultipleChoiceQuestions(List.of())
+                .build();
+
+        String query = """
+                mutation createQuiz($id: UUID!, $input: CreateQuizInput!) {
+                    createQuiz(assessmentId: $id, input: $input) {
+                        assessmentId
+                        requiredCorrectAnswers
+                        questionPoolingMode
+                        numberOfRandomlySelectedQuestions
+                        questionPool {
+                            number
+                            hint
+                            type
+                            ... on MultipleChoiceQuestion {
+                                text
+                                answers {
+                                    text
+                                    correct
+                                    feedback
+                                }
+                            }
+                        }
+                    }
+                }""";
+
+        // note that deserialization of the result into Quiz dto is not possible because "Question" is an interface
+        // so check the fields manually
+        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+                .variable("input", createQuizInput)
+                .variable("id", assessmentId)
+                .execute()
+
+                .path("createQuiz.assessmentId").entity(UUID.class)
+                .isEqualTo(assessmentId)
+
+                .path("createQuiz.requiredCorrectAnswers").entity(Integer.class)
+                .isEqualTo(1)
+
+                .path("createQuiz.questionPoolingMode").entity(QuestionPoolingMode.class)
+                .isEqualTo(QuestionPoolingMode.RANDOM)
+
+                .path("createQuiz.numberOfRandomlySelectedQuestions").entity(Integer.class)
+                .isEqualTo(2)
+
+                .path("createQuiz.questionPool")
+                .entityList(MultipleChoiceQuestion.class)
+                .get();
+
+        assertThat(questions, is(empty()));
+
+        assertThat(quizRepository.count(), is(1L));
+        assertThat(quizRepository.findAll().get(0), matchesCreateQuizInput(createQuizInput));
+    }
+
+    /**
      * Given a quiz with two questions
      * When the "createQuiz" mutation is executed
      * Then the quiz is created

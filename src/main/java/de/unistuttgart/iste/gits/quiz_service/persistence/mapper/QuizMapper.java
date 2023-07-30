@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
-import static java.util.Comparator.*;
+import static java.util.Comparator.comparing;
 
 @Component
 @RequiredArgsConstructor
@@ -74,13 +74,17 @@ public class QuizMapper {
     }
 
     private void assignNumbersIfNull(List<CreateMultipleChoiceQuestionInput> createMultipleChoiceQuestionInputs) {
-        createMultipleChoiceQuestionInputs.sort(
-                comparing(CreateMultipleChoiceQuestionInput::getNumber, nullsFirst(naturalOrder())));
-        int highestNumber = createMultipleChoiceQuestionInputs.get(createMultipleChoiceQuestionInputs.size() - 1).getNumber();
+        OptionalInt maxNumber = createMultipleChoiceQuestionInputs.stream()
+                .map(CreateMultipleChoiceQuestionInput::getNumber)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .max();
 
-        for (int i = 0; i < createMultipleChoiceQuestionInputs.size(); i++) {
-            if (createMultipleChoiceQuestionInputs.get(i).getNumber() == null) {
-                createMultipleChoiceQuestionInputs.get(i).setNumber(highestNumber + i + 1);
+        for (CreateMultipleChoiceQuestionInput createMultipleChoiceQuestionInput : createMultipleChoiceQuestionInputs) {
+            if (createMultipleChoiceQuestionInput.getNumber() == null) {
+                int newNumber = maxNumber.orElse(0) + 1;
+                createMultipleChoiceQuestionInput.setNumber(newNumber);
+                maxNumber = OptionalInt.of(newNumber);
             }
         }
 

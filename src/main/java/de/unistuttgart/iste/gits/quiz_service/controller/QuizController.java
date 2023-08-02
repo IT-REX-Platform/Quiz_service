@@ -1,5 +1,6 @@
 package de.unistuttgart.iste.gits.quiz_service.controller;
 
+import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.service.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,11 @@ public class QuizController {
     @SchemaMapping(typeName = "QuizMutation")
     public Quiz setNumberOfRandomlySelectedQuestions(@Argument int numberOfRandomlySelectedQuestions, QuizMutation quizMutation) {
         return quizService.setNumberOfRandomlySelectedQuestions(quizMutation.getAssessmentId(), numberOfRandomlySelectedQuestions);
+    }
+
+    @MutationMapping
+    public Quiz logQuizCompleted(@Argument QuizCompletedInput input, @ContextValue LoggedInUser currentUser) {
+        return quizService.publishProgress(input, currentUser.getId());
     }
 
 }

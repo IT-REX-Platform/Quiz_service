@@ -1,6 +1,10 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
+import de.unistuttgart.iste.gits.common.event.ContentChangeEvent;
+import de.unistuttgart.iste.gits.common.event.CrudOperation;
+import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
 import de.unistuttgart.iste.gits.generated.dto.*;
+import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
@@ -10,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -19,11 +24,13 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class QuizService {
 
     private final QuizRepository quizRepository;
     private final QuizMapper quizMapper;
     private final QuizValidator quizValidator;
+    private final TopicPublisher topicPublisher;
 
     /**
      * Returns all quizzes for the given assessment ids.
@@ -270,4 +277,84 @@ public class QuizService {
                                 "Question with number {0} not found in quiz with id {1}.",
                                 number, quizEntity.getAssessmentId())));
     }
+
+    /**
+     * removes all Quizzes when linked Content gets deleted
+     *
+     * @param dto event object containing changes to content
+     */
+    public void removeContentIds(ContentChangeEvent dto) {
+
+        // validate event message
+        try {
+            checkCompletenessOfDto(dto);
+        } catch (NullPointerException e) {
+            log.error(e.getMessage());
+            return;
+        }
+        // only consider DELETE Operations
+        if (!dto.getOperation().equals(CrudOperation.DELETE) || dto.getContentIds().isEmpty()) {
+            return;
+        }
+
+        // find all quizzes
+        List<QuizEntity> quizEntities = quizRepository.findQuizEntitiesByAssessmentIdIn(dto.getContentIds());
+
+        // delete all found quizzes
+        quizRepository.deleteAllInBatch(quizEntities);
+
+    }
+
+    /**
+     * helper function to make sure received event message is complete
+     *
+     * @param dto event message under evaluation
+     * @throws NullPointerException if any of the fields are null
+     */
+    private void checkCompletenessOfDto(ContentChangeEvent dto) throws NullPointerException {
+        if (dto.getOperation() == null || dto.getContentIds() == null) {
+            throw new NullPointerException("incomplete message received: all fields of a message must be non-null");
+        }
+    }
+
+    /**
+     * publishes user progress on a quiz to dapr topic
+     *
+     * @param input  user progress made
+     * @param userId the user that made progress
+     * @return quiz that was worked on
+     */
+    public Quiz publishProgress(QuizCompletedInput input, UUID userId) {
+        QuizEntity quizEntity = quizRepository.getReferenceById(input.getQuizId());
+        boolean success = input.getNumberOfCorrectAnswers() >= quizEntity.getRequiredCorrectAnswers();
+        double correctness = calcCorrectness(input.getNumberOfCorrectAnswers(), quizEntity);
+
+        UserProgressLogEvent userProgressLogEvent = UserProgressLogEvent.builder()
+                .userId(userId)
+                .contentId(quizEntity.getAssessmentId())
+                .hintsUsed(input.getNumberOfHintsUsed())
+                .success(success)
+                .timeToComplete(null)
+                .correctness(correctness)
+                .build();
+        topicPublisher.notifyUserWorkedOnContent(userProgressLogEvent);
+        return quizMapper.entityToDto(quizEntity);
+    }
+
+    /**
+     * Calculates the correctness value for a quiz
+     *
+     * @param correctAnswers number of correct answers
+     * @param quizEntity     quizEntity source
+     * @return calculated correctness value
+     */
+    private double calcCorrectness(double correctAnswers, QuizEntity quizEntity) {
+        if (quizEntity.getQuestionPoolingMode().equals(QuestionPoolingMode.RANDOM) && quizEntity.getNumberOfRandomlySelectedQuestions() != null) {
+            return correctAnswers / quizEntity.getNumberOfRandomlySelectedQuestions();
+        } else {
+            return correctAnswers / quizEntity.getQuestionPool().size();
+        }
+
+    }
+
 }

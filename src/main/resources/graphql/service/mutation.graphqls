@@ -13,7 +13,12 @@ type Mutation {
     Delete a quiz.
     """
     deleteQuiz(assessmentId: UUID!): UUID!
-        @deprecated(reason: "Only for development, will be removed in production. Use deleteAssessment in contents service instead.")
+    @deprecated(reason: "Only for development, will be removed in production. Use deleteAssessment in contents service instead.")
+
+    """
+    Log that a multiple choice quiz is completed.
+    """
+    logQuizCompleted(input: QuizCompletedInput!): Quiz!
 }
 
 type QuizMutation {
@@ -146,4 +151,21 @@ input MultipleChoiceAnswerInput {
     Feedback for when the user selects this answer, can be markdown.
     """
     feedback: String @Size(max: 1000)
+}
+
+input QuizCompletedInput {
+    """
+    ID of the quiz.
+    """
+    quizId: UUID!
+
+    """
+    Number of questions the user answered correctly.
+    """
+    numberOfCorrectAnswers: Int!
+
+    """
+    Number of hints the user requested.
+    """
+    numberOfHintsUsed: Int!
 }

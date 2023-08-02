@@ -351,6 +351,8 @@ public class QuizService {
     private double calcCorrectness(double correctAnswers, QuizEntity quizEntity) {
         if (quizEntity.getQuestionPoolingMode().equals(QuestionPoolingMode.RANDOM) && quizEntity.getNumberOfRandomlySelectedQuestions() != null) {
             return correctAnswers / quizEntity.getNumberOfRandomlySelectedQuestions();
+        } else if (quizEntity.getQuestionPool().isEmpty()) {
+            return 0.0;
         } else {
             return correctAnswers / quizEntity.getQuestionPool().size();
         }

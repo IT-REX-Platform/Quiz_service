@@ -298,7 +298,7 @@ public class QuizService {
         }
 
         // find all quizzes
-        List<QuizEntity> quizEntities = quizRepository.findQuizEntitiesByAssessmentIdIn(dto.getContentIds());
+        List<QuizEntity> quizEntities = quizRepository.findAllById(dto.getContentIds());
 
         // delete all found quizzes
         quizRepository.deleteAllInBatch(quizEntities);
@@ -350,7 +350,12 @@ public class QuizService {
      */
     private double calcCorrectness(double correctAnswers, QuizEntity quizEntity) {
         if (quizEntity.getQuestionPoolingMode().equals(QuestionPoolingMode.RANDOM) && quizEntity.getNumberOfRandomlySelectedQuestions() != null) {
+
+            if (quizEntity.getNumberOfRandomlySelectedQuestions() == 0) {
+                return 0.0;
+            }
             return correctAnswers / quizEntity.getNumberOfRandomlySelectedQuestions();
+
         } else if (quizEntity.getQuestionPool().isEmpty()) {
             return 0.0;
         } else {

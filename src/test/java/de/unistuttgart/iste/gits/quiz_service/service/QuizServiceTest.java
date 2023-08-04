@@ -9,7 +9,6 @@ import de.unistuttgart.iste.gits.generated.dto.QuizCompletedInput;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceAnswerEmbeddable;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceQuestionEntity;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -174,10 +172,32 @@ class QuizServiceTest {
                 .setNumberOfHintsUsed(0)
                 .build();
 
-        MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder().text("Pick me! Pick Me!").correct(false).feedback("Fell for it").build();
-        MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder().text("No me!").correct(true).feedback("Well done!").build();
-        MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder().id(UUID.randomUUID()).number(0).type(QuestionType.MULTIPLE_CHOICE).text("This is a question").answers(List.of(wrongAnswer, correctAnswer)).hint("Wink Wink").build();
-        MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder().id(UUID.randomUUID()).number(0).type(QuestionType.MULTIPLE_CHOICE).text("This is a question").answers(List.of(wrongAnswer, correctAnswer)).hint("Wink Wink").build();
+        MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
+                .text("Pick me! Pick Me!")
+                .correct(false)
+                .feedback("Fell for it")
+                .build();
+        MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
+                .text("No me!")
+                .correct(true)
+                .feedback("Well done!")
+                .build();
+        MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder()
+                .id(UUID.randomUUID())
+                .number(0)
+                .type(QuestionType.MULTIPLE_CHOICE)
+                .text("This is a question")
+                .answers(List.of(wrongAnswer, correctAnswer))
+                .hint("Wink Wink")
+                .build();
+        MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder()
+                .id(UUID.randomUUID())
+                .number(0)
+                .type(QuestionType.MULTIPLE_CHOICE)
+                .text("This is a question")
+                .answers(List.of(wrongAnswer, correctAnswer))
+                .hint("Wink Wink")
+                .build();
 
         QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
                 .questionPool(List.of(questionEntity, questionEntity2))

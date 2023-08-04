@@ -350,18 +350,18 @@ public class QuizService {
      */
     private double calcCorrectness(double correctAnswers, QuizEntity quizEntity) {
         if (correctAnswers == 0.0) {
-            return 0.0;
+            return correctAnswers;
         }
 
         if (quizEntity.getQuestionPoolingMode().equals(QuestionPoolingMode.RANDOM) && quizEntity.getNumberOfRandomlySelectedQuestions() != null) {
 
             if (quizEntity.getNumberOfRandomlySelectedQuestions() == 0) {
-                return 0.0;
+                return 1.0;
             }
             return correctAnswers / quizEntity.getNumberOfRandomlySelectedQuestions();
 
         } else if (quizEntity.getQuestionPool().isEmpty()) {
-            return 0.0;
+            return 1.0;
         } else {
             return correctAnswers / quizEntity.getQuestionPool().size();
         }

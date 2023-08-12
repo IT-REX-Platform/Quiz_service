@@ -7,5 +7,5 @@ type Query {
     """
     Get all quizzes.
     """
-    quizzes: [Quiz!]!
+    quizzes: [Quiz!]! @deprecated(reason: "In the production system, you shouldn't be able to get all quizzes.")
 }

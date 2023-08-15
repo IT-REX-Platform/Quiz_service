@@ -26,7 +26,7 @@ public class SubscriptionController {
 
     @Topic(name = "content-changes", pubsubName = "gits")
     @PostMapping(path = "/quiz-service/content-changes-pubsub")
-    public Mono<Void> updateAssociation(@RequestBody(required = false) CloudEvent<ContentChangeEvent> cloudEvent, @RequestHeader Map<String, String> headers) {
+    public Mono<Void> updateAssociation(@RequestBody CloudEvent<ContentChangeEvent> cloudEvent, @RequestHeader Map<String, String> headers) {
 
         return Mono.fromRunnable(() -> quizService.removeContentIds(cloudEvent.getData()));
     }

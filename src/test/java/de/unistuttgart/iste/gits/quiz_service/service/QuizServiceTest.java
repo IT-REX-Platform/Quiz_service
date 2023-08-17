@@ -3,12 +3,11 @@ package de.unistuttgart.iste.gits.quiz_service.service;
 import de.unistuttgart.iste.gits.common.event.ContentChangeEvent;
 import de.unistuttgart.iste.gits.common.event.CrudOperation;
 import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
-import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
-import de.unistuttgart.iste.gits.generated.dto.QuestionType;
-import de.unistuttgart.iste.gits.generated.dto.QuizCompletedInput;
+import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceAnswerEmbeddable;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceQuestionEntity;
+import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
@@ -127,35 +126,53 @@ class QuizServiceTest {
         UUID assessmentId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
-                .setQuizId(assessmentId)
-                .setNumberOfCorrectAnswers(2)
-                .setNumberOfHintsUsed(0)
-                .build();
+
+        // create Database entities
+        List<QuestionEntity> questions = createDummyQuestions();
 
         QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
-                .questionPool(new ArrayList<>())
+                .questionPool(questions)
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .requiredCorrectAnswers(1)
                 .numberOfRandomlySelectedQuestions(2).build();
 
+        // create Inputs
+        QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
+                .setQuestionId(questions.get(0).getId())
+                .setCorrect(true)
+                .setUsedHint(false)
+                .build();
+        QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
+                .setQuestionId(questions.get(1).getId())
+                .setCorrect(true)
+                .setUsedHint(false)
+                .build();
+
+        QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
+                .setQuizId(assessmentId)
+                .setCompletedQuestions(List.of(inputQuestion, inputQuestion2))
+                .build();
+
+        // create expected Progress event
         UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
                 .userId(userId)
                 .contentId(assessmentId)
-                .hintsUsed(quizCompletedInput.getNumberOfHintsUsed())
+                .hintsUsed(0)
                 .success(true)
                 .timeToComplete(null)
-                .correctness((double) quizCompletedInput.getNumberOfCorrectAnswers() / quizEntity.getNumberOfRandomlySelectedQuestions())
+                .correctness(2.0 / quizEntity.getNumberOfRandomlySelectedQuestions())
                 .build();
 
         //mock repository
         when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
         doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
+        when(quizRepository.save(any())).thenReturn(quizEntity);
 
         // invoke method under test
         quizService.publishProgress(quizCompletedInput, userId);
 
         verify(quizRepository, times(1)).getReferenceById(assessmentId);
+        verify(quizRepository, times(1)).save(any());
         verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
 
     }
@@ -166,12 +183,63 @@ class QuizServiceTest {
         UUID assessmentId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
-                .setQuizId(assessmentId)
-                .setNumberOfCorrectAnswers(1)
-                .setNumberOfHintsUsed(0)
+        // create Database entities
+        List<QuestionEntity> questions = createDummyQuestions();
+
+        QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
+                .questionPool(questions)
+                .questionPoolingMode(QuestionPoolingMode.ORDERED)
+                .requiredCorrectAnswers(2)
+                .numberOfRandomlySelectedQuestions(2).build();
+
+        // create Inputs
+        QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
+                .setQuestionId(questions.get(0).getId())
+                .setCorrect(true)
+                .setUsedHint(false)
+                .build();
+        QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
+                .setQuestionId(questions.get(1).getId())
+                .setCorrect(false)
+                .setUsedHint(true)
                 .build();
 
+        QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
+                .setQuizId(assessmentId)
+                .setCompletedQuestions(List.of(inputQuestion, inputQuestion2))
+                .build();
+
+        // create expected Progress event
+        UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
+                .userId(userId)
+                .contentId(assessmentId)
+                .hintsUsed(1)
+                .success(false)
+                .timeToComplete(null)
+                .correctness(1.0 / quizEntity.getQuestionPool().size())
+                .build();
+
+        //mock repository
+        when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
+        when(quizRepository.save(any())).thenReturn(quizEntity);
+        doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
+
+        // invoke method under test
+        quizService.publishProgress(quizCompletedInput, userId);
+
+        verify(quizRepository, times(1)).getReferenceById(assessmentId);
+        verify(quizRepository, times(1)).save(any());
+        verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
+
+    }
+
+    /**
+     * creates some dummy multiple choice questions
+     *
+     * @return List of 2 Multiple Choice Question (database) Entities
+     */
+    private List<QuestionEntity> createDummyQuestions() {
+        List<QuestionEntity> questions = new ArrayList<>();
         MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
                 .text("Pick me! Pick Me!")
                 .correct(false)
@@ -199,31 +267,10 @@ class QuizServiceTest {
                 .hint("Wink Wink")
                 .build();
 
-        QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
-                .questionPool(List.of(questionEntity, questionEntity2))
-                .questionPoolingMode(QuestionPoolingMode.ORDERED)
-                .requiredCorrectAnswers(2)
-                .numberOfRandomlySelectedQuestions(2).build();
+        questions.add(questionEntity);
+        questions.add(questionEntity2);
 
-        UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
-                .userId(userId)
-                .contentId(assessmentId)
-                .hintsUsed(quizCompletedInput.getNumberOfHintsUsed())
-                .success(false)
-                .timeToComplete(null)
-                .correctness((double) quizCompletedInput.getNumberOfCorrectAnswers() / quizEntity.getQuestionPool().size())
-                .build();
-
-        //mock repository
-        when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
-        doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
-
-        // invoke method under test
-        quizService.publishProgress(quizCompletedInput, userId);
-
-        verify(quizRepository, times(1)).getReferenceById(assessmentId);
-        verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
-
+        return questions;
     }
 
 }

@@ -6,6 +6,7 @@ import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionEntity;
+import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionStatisticEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
@@ -326,19 +327,61 @@ public class QuizService {
      */
     public Quiz publishProgress(QuizCompletedInput input, UUID userId) {
         QuizEntity quizEntity = quizRepository.getReferenceById(input.getQuizId());
-        boolean success = input.getNumberOfCorrectAnswers() >= quizEntity.getRequiredCorrectAnswers();
-        double correctness = calcCorrectness(input.getNumberOfCorrectAnswers(), quizEntity);
 
+        updateQuestionStatistics(input, userId, quizEntity);
+
+        // count the number of questions that were answered correctly
+        long numbCorrectAnswers = input.getCompletedQuestions().stream().filter(QuestionCompletedInput::getCorrect).count();
+
+        boolean success = numbCorrectAnswers >= quizEntity.getRequiredCorrectAnswers();
+        double correctness = calcCorrectness(numbCorrectAnswers, quizEntity);
+
+        // create new user progress event message
         UserProgressLogEvent userProgressLogEvent = UserProgressLogEvent.builder()
                 .userId(userId)
                 .contentId(quizEntity.getAssessmentId())
-                .hintsUsed(input.getNumberOfHintsUsed())
+                .hintsUsed((int) input.getCompletedQuestions().stream().filter(QuestionCompletedInput::getUsedHint).count())
                 .success(success)
                 .timeToComplete(null)
                 .correctness(correctness)
                 .build();
+
+        // publish new user progress event message
         topicPublisher.notifyUserWorkedOnContent(userProgressLogEvent);
         return quizMapper.entityToDto(quizEntity);
+    }
+
+    /**
+     * Method that updates Statistics for a question. Any changes are discarded if any of the received question IDs do not exist.
+     *
+     * @param input      Object containing the IDs of the answered questions and their correctness
+     * @param userId     ID of user completing the quiz
+     * @param quizEntity quiz, questions are a part of
+     */
+    private void updateQuestionStatistics(QuizCompletedInput input, UUID userId, QuizEntity quizEntity) {
+
+        for (QuestionCompletedInput completedQuestion : input.getCompletedQuestions()) {
+
+            // find question in quiz. throws an exception if question can not be found
+            QuestionEntity questionEntity = getQuestionInQuizById(quizEntity, completedQuestion.getQuestionId());
+            int index = quizEntity.getQuestionPool().indexOf(questionEntity);
+
+            // create new Question Statistic
+            QuestionStatisticEntity newQuestionStatistic = QuestionStatisticEntity.builder()
+                    .questionId(questionEntity.getId())
+                    .userId(userId)
+                    .answeredCorrectly(completedQuestion.getCorrect())
+                    .build();
+
+            questionEntity.getQuestionStatistics().add(newQuestionStatistic);
+
+            //overwrite outdated question
+            quizEntity.getQuestionPool().set(index, questionEntity);
+        }
+
+        //persist changes
+        quizRepository.save(quizEntity);
+
     }
 
     /**

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "Question")
@@ -28,5 +30,10 @@ public class QuestionEntity {
 
     @Column(length = 1000, nullable = true)
     private String hint;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "question_id")
+    @Builder.Default
+    private List<QuestionStatisticEntity> questionStatistics = new ArrayList<>();
 
 }

@@ -76,7 +76,7 @@ interface Question {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String
+    hint: ResourceMarkdown
 }
 
 """
@@ -86,7 +86,7 @@ type MultipleChoiceQuestion implements Question {
     """
     Text of the question, can be markdown.
     """
-    text: String!
+    text: ResourceMarkdown!
     """
     List of answers.
     """
@@ -116,14 +116,14 @@ type MultipleChoiceQuestion implements Question {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String
+    hint: ResourceMarkdown
 }
 
 type MultipleChoiceAnswer {
     """
     Text of the answer, can be markdown.
     """
-    text: String!
+    text: ResourceMarkdown!
     """
     Whether the answer is correct or not.
     """
@@ -131,7 +131,7 @@ type MultipleChoiceAnswer {
     """
     Feedback for when the user selects this answer, can be markdown.
     """
-    feedback: String
+    feedback: ResourceMarkdown
 }
 
 type ClozeQuestion implements Question {
@@ -165,7 +165,7 @@ type ClozeQuestion implements Question {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String
+    hint: ResourceMarkdown
 }
 
 
@@ -180,7 +180,7 @@ type ClozeTextElement implements ClozeElement {
     """
     Text of the element, can be markdown.
     """
-    text: String!
+    text: ResourceMarkdown!
 
     # inherited from ClozeElement
     """
@@ -201,7 +201,7 @@ type ClozeBlankElement implements ClozeElement {
     """
     Feedback for the blank when the user selects a wrong answer, can be markdown.
     """
-    feedback: String
+    feedback: ResourceMarkdown
 
     # inherited from ClozeElement
     """
@@ -222,7 +222,7 @@ type AssociationQuestion implements Question {
     """
     Text to display above the assignment question, can be markdown.
     """
-    text: String!
+    text: ResourceMarkdown!
     """
     List of correct associations.
     """
@@ -253,7 +253,7 @@ type AssociationQuestion implements Question {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String
+    hint: ResourceMarkdown
 }
 
 type SingleAssociation {
@@ -269,7 +269,7 @@ type SingleAssociation {
     """
     Feedback for the assignment when the user assigns a wrong answer, can be markdown.
     """
-    feedback: String
+    feedback: ResourceMarkdown
 }
 
 """
@@ -277,19 +277,23 @@ A question with a clear, correct answer that can be automatically checked.
 Differs from self-assessment questions in that the user has to enter one of the correct answers and
 the answer is checked automatically.
 """
-type FreeTextQuestion {
+type ExactAnswerQuestion implements Question {
     """
     Text of the question, can be markdown.
     """
-    text: String!
+    text: ResourceMarkdown!
     """
-    A list of possible correct answers.
+    A list of possible correct answers. The user has to enter one of these answers.
     """
     correctAnswers: [String!]!
     """
+    If the answer is case sensitive. If true, the answer is checked case sensitive.
+    """
+    isCaseSensitive: Boolean!
+    """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
-    feedback: String
+    feedback: ResourceMarkdown
 
     # inherited from Question
     """
@@ -308,7 +312,47 @@ type FreeTextQuestion {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String
+    hint: ResourceMarkdown
+}
+
+type NumericQuestion implements Question {
+    """
+    Text of the question, can be markdown.
+    """
+    text: ResourceMarkdown!
+    """
+    The correct answer to the question.
+    """
+    correctAnswer: Float!
+    """
+    The number of decimal places to consider when checking the answer.
+    Both the correct answer and the user's answer are rounded to this number of decimal places.
+    """
+    decimalPlaces: Int!
+
+    """
+    Feedback for the question when the user enters a wrong answer, can be markdown.
+    """
+    feedback: ResourceMarkdown
+
+    # inherited from Question
+    """
+    Unique identifier of the question.
+    """
+    id: UUID!
+    """
+    Number of the question, i.e., the position of the question in the list of questions.
+    Only relevant if questionPoolingMode is ORDERED.
+    """
+    number: Int!
+    """
+    Type of the question.
+    """
+    type: QuestionType!
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: ResourceMarkdown
 }
 
 """
@@ -320,11 +364,11 @@ type SelfAssessmentQuestion {
     """
     Text of the question, can be markdown.
     """
-    text: String!
+    text: ResourceMarkdown!
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: String!
+    solutionSuggestion: ResourceMarkdown!
 
     # inherited from Question
     """
@@ -343,7 +387,7 @@ type SelfAssessmentQuestion {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String
+    hint: ResourceMarkdown
 }
 
 """
@@ -353,7 +397,8 @@ enum QuestionType {
     MULTIPLE_CHOICE
     CLOZE
     ASSIGNMENT
-    FREE_TEXT
+    EXACT_ANSWER
+    NUMERIC_QUESTION
     SELF_ASSESSMENT
     # add more types here
 }

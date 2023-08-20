@@ -35,6 +35,42 @@ type QuizMutation {
     """
     updateMultipleChoiceQuestion(input: UpdateMultipleChoiceQuestionInput!): Quiz!
 
+    """
+    Add a cloze question to the quiz questions, at the end of the list.
+    """
+    addClozeQuestion(input: CreateClozeQuestionInput!): Quiz!
+    """
+    Update a cloze question in the quiz questions.
+    """
+    updateClozeQuestion(input: UpdateClozeQuestionInput!): Quiz!
+
+    """
+    Add an association question to the quiz questions, at the end of the list.
+    """
+    addAssociationQuestion(input: CreateAssociationQuestionInput!): Quiz!
+    """
+    Update an association question in the quiz questions.
+    """
+    updateAssociationQuestion(input: UpdateAssociationQuestionInput!): Quiz!
+
+    """
+    Add a free text question to the quiz questions, at the end of the list.
+    """
+    addFreeTextQuestion(input: CreateFreeTextQuestionInput!): Quiz!
+    """
+    Update a free text question in the quiz questions.
+    """
+    updateFreeTextQuestion(input: UpdateFreeTextQuestionInput!): Quiz!
+
+    """
+    Add a self assessment question to the quiz questions, at the end of the list.
+    """
+    addSelfAssessmentQuestion(input: CreateSelfAssessmentQuestionInput!): Quiz!
+    """
+    Update a self assessment question in the quiz questions.
+    """
+    updateSelfAssessmentQuestion(input: UpdateSelfAssessmentQuestionInput!): Quiz!
+
     # add other types of questions here
 
     """
@@ -89,13 +125,6 @@ input CreateQuizInput {
     If this is null or not set, the behavior is the same as if it was equal to the number of questions.
     """
     numberOfRandomlySelectedQuestions: Int @Positive
-
-    """
-    List of multiple choice questions.
-    """
-    multipleChoiceQuestions: [CreateMultipleChoiceQuestionInput!]! = []
-
-    # other types of questions
 }
 
 input CreateMultipleChoiceQuestionInput {
@@ -151,6 +180,210 @@ input MultipleChoiceAnswerInput {
     Feedback for when the user selects this answer, can be markdown.
     """
     feedback: String @Size(max: 1000)
+}
+
+input CreateClozeQuestionInput {
+    """
+    Number of the question, used for ordering.
+    This can be omitted, in which case a number, one higher than the highest number of the existing questions, will be used.
+    """
+    number: Int @Positive
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    List of cloze elements.
+    """
+    clozeElements: [ClozeElementInput!]! @ContainerSize(min: 1)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input UpdateClozeQuestionInput {
+    """
+    UUID of the question to update.
+    """
+    id: UUID!
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    List of cloze elements.
+    """
+    clozeElements: [ClozeElementInput!]! @ContainerSize(min: 1)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input ClozeElementInput {
+    """
+    Type of the element.
+    """
+    type: ClozeElementType!
+
+    """
+    Text of the element, can be markdown. Only used for TEXT type.
+    """
+    text: String! @Size(max: 1000)
+
+    """
+    The correct answer for the blank. Only used for BLANK type.
+    """
+    correctAnswer: String!
+    """
+    Wrong answers for the blank. Only used for BLANK type.
+    """
+    wrongAnswers: [String!]!
+    """
+    Feedback for the blank when the user selects a wrong answer, can be markdown. Only used for BLANK type.
+    """
+    feedback: String
+}
+
+input CreateAssociationQuestionInput {
+    """
+    Number of the question, used for ordering.
+    This can be omitted, in which case a number, one higher than the highest number of the existing questions, will be used.
+    """
+    number: Int @Positive
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    List of associations.
+    """
+    associations: [AssociationInput!]! @ContainerSize(min: 2)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input UpdateAssociationQuestionInput {
+    """
+    UUID of the question to update.
+    """
+    id: UUID!
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    List of associations.
+    """
+    associations: [AssociationInput!]! @ContainerSize(min: 2)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input AssociationInput {
+    """
+    Text of the left side of the association, can be markdown.
+    """
+    left: String! @Size(max: 255)
+    """
+    Text of the right side of the association, can be markdown.
+    """
+    right: String! @Size(max: 255)
+    """
+    Feedback for the association when the user selects a wrong answer, can be markdown.
+    """
+    feedback: String @Size(max: 1000)
+}
+
+input CreateFreeTextQuestionInput {
+    """
+    Number of the question, used for ordering.
+    This can be omitted, in which case a number, one higher than the highest number of the existing questions, will be used.
+    """
+    number: Int @Positive
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    A list of possible correct answers.
+    """
+    correctAnswers: [String!]! @ContainerSize(min: 1) @Size(max: 255)
+    """
+    Feedback for the question when the user enters a wrong answer, can be markdown.
+    """
+    feedback: String @Size(max: 1000)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input UpdateFreeTextQuestionInput {
+    """
+    UUID of the question to update.
+    """
+    id: UUID!
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    A list of possible correct answers.
+    """
+    correctAnswers: [String!]! @ContainerSize(min: 1) @Size(max: 255)
+    """
+    Feedback for the question when the user enters a wrong answer, can be markdown.
+    """
+    feedback: String @Size(max: 1000)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input CreateSelfAssessmentQuestionInput {
+    """
+    Number of the question, used for ordering.
+    This can be omitted, in which case a number, one higher than the highest number of the existing questions, will be used.
+    """
+    number: Int @Positive
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    A possible correct answer to the question.
+    """
+    solutionSuggestion: String! @Size(max: 1000)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
+}
+
+input UpdateSelfAssessmentQuestionInput {
+    """
+    UUID of the question to update.
+    """
+    id: UUID!
+    """
+    Text of the question, can be markdown.
+    """
+    text: String! @Size(max: 1000)
+    """
+    A possible correct answer to the question.
+    """
+    solutionSuggestion: String! @Size(max: 1000)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String @Size(max: 1000)
 }
 
 input QuizCompletedInput {

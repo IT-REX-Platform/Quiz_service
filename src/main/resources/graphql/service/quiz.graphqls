@@ -134,10 +134,226 @@ type MultipleChoiceAnswer {
     feedback: String
 }
 
+type ClozeQuestion implements Question {
+    """
+    The elements of the cloze question.
+    """
+    clozeElements: [ClozeElement!]!
+    """
+    All selectable answers for the blanks (computed). This contains the correct answers as well as wrong answers.
+    """
+    allBlanks: [String!]!
+    """
+    Whether the blanks must be answered in free text or by selecting the correct answer from a list.
+    """
+    showBlanksList: Boolean!
+
+    # inherited from Question
+    """
+    Unique identifier of the question.
+    """
+    id: UUID!
+    """
+    Number of the question, i.e., the position of the question in the list of questions.
+    Only relevant if questionPoolingMode is ORDERED.
+    """
+    number: Int!
+    """
+    Type of the question.
+    """
+    type: QuestionType!
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String
+}
+
+
+interface ClozeElement {
+    """
+    Type of the element.
+    """
+    type: ClozeElementType!
+}
+
+type ClozeTextElement implements ClozeElement {
+    """
+    Text of the element, can be markdown.
+    """
+    text: String!
+
+    # inherited from ClozeElement
+    """
+    Type of the element. Must be TEXT.
+    """
+    type: ClozeElementType!
+}
+
+type ClozeBlankElement implements ClozeElement {
+    """
+    The correct answer for the blank.
+    """
+    correctAnswer: String!
+    """
+    Wrong answers for the blank.
+    """
+    wrongAnswers: [String!]!
+    """
+    Feedback for the blank when the user selects a wrong answer, can be markdown.
+    """
+    feedback: String
+
+    # inherited from ClozeElement
+    """
+    Type of the element. Must be BLANK.
+    """
+    type: ClozeElementType!
+}
+
+enum ClozeElementType {
+    TEXT
+    BLANK
+}
+
+"""
+Association question, i.e., a question where the user has to assign the correct right side to each left side.
+"""
+type AssociationQuestion implements Question {
+    """
+    Text to display above the assignment question, can be markdown.
+    """
+    text: String!
+    """
+    List of correct associations.
+    """
+    correctAssociations: [SingleAssociation!]!
+    """
+    Computed list of all the left sides of the associations, shuffled.
+    """
+    leftSide: [String!]!
+    """
+    Computed list of all the right sides of the associations, shuffled.
+    """
+    rightSide: [String!]!
+
+    # inherited from Question
+    """
+    Unique identifier of the question.
+    """
+    id: UUID!
+    """
+    Number of the question, i.e., the position of the question in the list of questions.
+    Only relevant if questionPoolingMode is ORDERED.
+    """
+    number: Int!
+    """
+    Type of the question.
+    """
+    type: QuestionType!
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String
+}
+
+type SingleAssociation {
+    """
+    The left side of the assignment.
+    """
+    left: String!
+    """
+    The right side of the assignment.
+    """
+    right: String!
+
+    """
+    Feedback for the assignment when the user assigns a wrong answer, can be markdown.
+    """
+    feedback: String
+}
+
+"""
+A question with a clear, correct answer that can be automatically checked.
+Differs from self-assessment questions in that the user has to enter one of the correct answers and
+the answer is checked automatically.
+"""
+type FreeTextQuestion {
+    """
+    Text of the question, can be markdown.
+    """
+    text: String!
+    """
+    A list of possible correct answers.
+    """
+    correctAnswers: [String!]!
+    """
+    Feedback for the question when the user enters a wrong answer, can be markdown.
+    """
+    feedback: String
+
+    # inherited from Question
+    """
+    Unique identifier of the question.
+    """
+    id: UUID!
+    """
+    Number of the question, i.e., the position of the question in the list of questions.
+    Only relevant if questionPoolingMode is ORDERED.
+    """
+    number: Int!
+    """
+    Type of the question.
+    """
+    type: QuestionType!
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String
+}
+
+"""
+A single question with a free text answer field, where the answer is not automatically checked.
+The user has to enter a solution and self-assess whether it is correct or not.
+This is useful for questions where the answer is not clear-cut, e.g. when the user should explain a concept.
+"""
+type SelfAssessmentQuestion {
+    """
+    Text of the question, can be markdown.
+    """
+    text: String!
+    """
+    A possible correct answer to the question.
+    """
+    solutionSuggestion: String!
+
+    # inherited from Question
+    """
+    Unique identifier of the question.
+    """
+    id: UUID!
+    """
+    Number of the question, i.e., the position of the question in the list of questions.
+    Only relevant if questionPoolingMode is ORDERED.
+    """
+    number: Int!
+    """
+    Type of the question.
+    """
+    type: QuestionType!
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: String
+}
+
 """
 The type of a question.
 """
 enum QuestionType {
     MULTIPLE_CHOICE
+    CLOZE
+    ASSIGNMENT
+    FREE_TEXT
+    SELF_ASSESSMENT
     # add more types here
 }

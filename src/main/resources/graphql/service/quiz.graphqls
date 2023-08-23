@@ -172,28 +172,16 @@ type ClozeQuestion implements Question {
     hint: ResourceMarkdown
 }
 
+union ClozeElement = ClozeTextElement | ClozeBlankElement
 
-interface ClozeElement {
-    """
-    Type of the element.
-    """
-    type: ClozeElementType!
-}
-
-type ClozeTextElement implements ClozeElement {
+type ClozeTextElement {
     """
     Text of the element, can be markdown.
     """
     text: ResourceMarkdown!
-
-    # inherited from ClozeElement
-    """
-    Type of the element. Must be TEXT.
-    """
-    type: ClozeElementType!
 }
 
-type ClozeBlankElement implements ClozeElement {
+type ClozeBlankElement {
     """
     The correct answer for the blank.
     """
@@ -202,12 +190,6 @@ type ClozeBlankElement implements ClozeElement {
     Feedback for the blank when the user selects a wrong answer, can be markdown.
     """
     feedback: ResourceMarkdown
-
-    # inherited from ClozeElement
-    """
-    Type of the element. Must be BLANK.
-    """
-    type: ClozeElementType!
 }
 
 enum ClozeElementType {

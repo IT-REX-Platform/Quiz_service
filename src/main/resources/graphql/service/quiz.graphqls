@@ -140,6 +140,10 @@ type ClozeQuestion implements Question {
     """
     clozeElements: [ClozeElement!]!
     """
+    Addtional wrong answers for the blanks.
+    """
+    additionalWrongAnswers: [String!]!
+    """
     All selectable answers for the blanks (computed). This contains the correct answers as well as wrong answers.
     """
     allBlanks: [String!]!
@@ -194,10 +198,6 @@ type ClozeBlankElement implements ClozeElement {
     The correct answer for the blank.
     """
     correctAnswer: String!
-    """
-    Wrong answers for the blank.
-    """
-    wrongAnswers: [String!]!
     """
     Feedback for the blank when the user selects a wrong answer, can be markdown.
     """

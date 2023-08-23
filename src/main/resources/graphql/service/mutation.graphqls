@@ -136,7 +136,7 @@ input CreateMultipleChoiceQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     List of answers.
     """
@@ -155,7 +155,7 @@ input UpdateMultipleChoiceQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     List of answers.
     """
@@ -171,7 +171,7 @@ input MultipleChoiceAnswerInput {
     """
     Text of the answer, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     Whether the answer is correct or not.
     """
@@ -189,17 +189,17 @@ input CreateClozeQuestionInput {
     """
     number: Int @Positive
     """
-    Text of the question, can be markdown.
-    """
-    text: String! @Size(max: 1000)
-    """
     List of cloze elements.
     """
     clozeElements: [ClozeElementInput!]! @ContainerSize(min: 1)
     """
+    List of additional wrong answers.
+    """
+    additionalWrongAnswers: [String!]! @ContainerSize(min: 0) @Size(max: 255)
+    """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input UpdateClozeQuestionInput {
@@ -208,17 +208,17 @@ input UpdateClozeQuestionInput {
     """
     id: UUID!
     """
-    Text of the question, can be markdown.
-    """
-    text: String! @Size(max: 1000)
-    """
     List of cloze elements.
     """
     clozeElements: [ClozeElementInput!]! @ContainerSize(min: 1)
     """
+    List of additional wrong answers.
+    """
+    additionalWrongAnswers: [String!]! @ContainerSize(min: 0) @Size(max: 255)
+    """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input ClozeElementInput {
@@ -237,13 +237,9 @@ input ClozeElementInput {
     """
     correctAnswer: String!
     """
-    Wrong answers for the blank. Only used for BLANK type.
-    """
-    wrongAnswers: [String!]!
-    """
     Feedback for the blank when the user selects a wrong answer, can be markdown. Only used for BLANK type.
     """
-    feedback: String
+    feedback: ResourceMarkdownInput
 }
 
 input CreateAssociationQuestionInput {
@@ -255,7 +251,7 @@ input CreateAssociationQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     List of associations.
     """
@@ -263,7 +259,7 @@ input CreateAssociationQuestionInput {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input UpdateAssociationQuestionInput {
@@ -274,7 +270,7 @@ input UpdateAssociationQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     List of associations.
     """
@@ -282,7 +278,7 @@ input UpdateAssociationQuestionInput {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input AssociationInput {
@@ -297,7 +293,7 @@ input AssociationInput {
     """
     Feedback for the association when the user selects a wrong answer, can be markdown.
     """
-    feedback: String @Size(max: 1000)
+    feedback: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input CreateFreeTextQuestionInput {
@@ -309,7 +305,7 @@ input CreateFreeTextQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     A list of possible correct answers.
     """
@@ -317,11 +313,11 @@ input CreateFreeTextQuestionInput {
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
-    feedback: String @Size(max: 1000)
+    feedback: ResourceMarkdownInput @Size(max: 1000)
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input UpdateFreeTextQuestionInput {
@@ -332,7 +328,7 @@ input UpdateFreeTextQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     A list of possible correct answers.
     """
@@ -340,11 +336,11 @@ input UpdateFreeTextQuestionInput {
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
-    feedback: String @Size(max: 1000)
+    feedback: ResourceMarkdownInput @Size(max: 1000)
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input CreateSelfAssessmentQuestionInput {
@@ -356,15 +352,15 @@ input CreateSelfAssessmentQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: String! @Size(max: 1000)
+    solutionSuggestion: ResourceMarkdownInput! @Size(max: 1000)
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input UpdateSelfAssessmentQuestionInput {
@@ -375,15 +371,15 @@ input UpdateSelfAssessmentQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput! @Size(max: 1000)
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: String! @Size(max: 1000)
+    solutionSuggestion: ResourceMarkdownInput! @Size(max: 1000)
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
 input QuizCompletedInput {

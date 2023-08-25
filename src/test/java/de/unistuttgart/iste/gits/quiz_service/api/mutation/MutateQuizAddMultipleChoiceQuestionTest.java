@@ -4,6 +4,7 @@ import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
+import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import graphql.ErrorType;
@@ -23,6 +24,16 @@ import static org.hamcrest.Matchers.*;
 @TablesToDelete({"multiple_choice_question_answers", "multiple_choice_question", "quiz_question_pool", "question", "quiz"})
 class MutateQuizAddMultipleChoiceQuestionTest {
 
+    private static final String UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION = QuizFragments.FRAGMENT_DEFINITION + """
+            mutation($id: UUID!, $input: CreateMultipleChoiceQuestionInput!) {
+                mutateQuiz(assessmentId: $id) {
+                    addMultipleChoiceQuestion(input: $input) {
+                        ...QuizAllFields
+                    }
+                }
+            }
+            """;
+
     @Autowired
     private QuizRepository quizRepository;
 
@@ -40,42 +51,20 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText("what is the capital of France?")
+                .setText(new ResourceMarkdownInput("what is the capital of France?"))
                 .setNumber(2)
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Paris")
+                                .setAnswerText(new ResourceMarkdownInput("Paris"))
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Madrid")
+                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
                                 .setCorrect(false)
                                 .build()))
                 .build();
 
-        String query = """
-                mutation($id: UUID!, $input: CreateMultipleChoiceQuestionInput!) {
-                    mutateQuiz(assessmentId: $id) {
-                        addMultipleChoiceQuestion(input: $input) {
-                            questionPool {
-                                number
-                                type
-                                hint
-                                ... on MultipleChoiceQuestion {
-                                    text
-                                    answers {
-                                        text
-                                        correct
-                                        feedback
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                """;
-
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        List<MultipleChoiceQuestion> questions = graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
@@ -102,42 +91,20 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText("what is the capital of France?")
+                .setText(new ResourceMarkdownInput("what is the capital of France?"))
                 .setNumber(null) // number should be assigned automatically
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Paris")
+                                .setAnswerText(new ResourceMarkdownInput("Paris"))
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Madrid")
+                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
                                 .setCorrect(false)
                                 .build()))
                 .build();
 
-        String query = """
-                mutation($id: UUID!, $input: CreateMultipleChoiceQuestionInput!) {
-                    mutateQuiz(assessmentId: $id) {
-                        addMultipleChoiceQuestion(input: $input) {
-                            questionPool {
-                                number
-                                type
-                                hint
-                                ... on MultipleChoiceQuestion {
-                                    text
-                                    answers {
-                                        text
-                                        correct
-                                        feedback
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                """;
-
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        List<MultipleChoiceQuestion> questions = graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
@@ -166,42 +133,20 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText("what is the capital of France?")
+                .setText(new ResourceMarkdownInput("what is the capital of France?"))
                 .setNumber(1) // already existing number
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Paris")
+                                .setAnswerText(new ResourceMarkdownInput("Paris"))
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Madrid")
+                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
                                 .setCorrect(false)
                                 .build()))
                 .build();
 
-        String query = """
-                mutation($id: UUID!, $input: CreateMultipleChoiceQuestionInput!) {
-                    mutateQuiz(assessmentId: $id) {
-                        addMultipleChoiceQuestion(input: $input) {
-                            questionPool {
-                                number
-                                type
-                                hint
-                                ... on MultipleChoiceQuestion {
-                                    text
-                                    answers {
-                                        text
-                                        correct
-                                        feedback
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                """;
-
-        graphQlTester.document(query)
+        graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
@@ -228,41 +173,19 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText("what is the capital of France?")
+                .setText(new ResourceMarkdownInput("what is the capital of France?"))
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Berlin")
+                                .setAnswerText(new ResourceMarkdownInput("Berlin"))
                                 .setCorrect(false)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Madrid")
+                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
                                 .setCorrect(false)
                                 .build()))
                 .build();
 
-        String query = """
-                mutation($id: UUID!, $input: CreateMultipleChoiceQuestionInput!) {
-                    mutateQuiz(assessmentId: $id) {
-                        addMultipleChoiceQuestion(input: $input) {
-                            questionPool {
-                                number
-                                type
-                                hint
-                                ... on MultipleChoiceQuestion {
-                                    text
-                                    answers {
-                                        text
-                                        correct
-                                        feedback
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                """;
-
-        graphQlTester.document(query)
+        graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
@@ -289,37 +212,15 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText("what is the capital of France?")
+                .setText(new ResourceMarkdownInput("what is the capital of France?"))
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Paris")
+                                .setAnswerText(new ResourceMarkdownInput("Paris"))
                                 .setCorrect(true)
                                 .build()))
                 .build();
 
-        String query = """
-                mutation($id: UUID!, $input: CreateMultipleChoiceQuestionInput!) {
-                    mutateQuiz(assessmentId: $id) {
-                        addMultipleChoiceQuestion(input: $input) {
-                            questionPool {
-                                number
-                                type
-                                hint
-                                ... on MultipleChoiceQuestion {
-                                    text
-                                    answers {
-                                        text
-                                        correct
-                                        feedback
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                """;
-
-        graphQlTester.document(query)
+        graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()

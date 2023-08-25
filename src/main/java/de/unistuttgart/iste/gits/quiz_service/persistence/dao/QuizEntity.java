@@ -4,8 +4,7 @@ import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity(name = "Quiz")
 @Data
@@ -19,7 +18,8 @@ public class QuizEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("number ASC")
-    private List<QuestionEntity> questionPool;
+    @Builder.Default
+    private List<QuestionEntity> questionPool = new ArrayList<>();
 
     @Column(nullable = false)
     private int requiredCorrectAnswers;

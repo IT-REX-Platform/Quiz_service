@@ -9,14 +9,7 @@ import java.util.List;
 @Component
 public class QuizValidator {
     public void validateCreateQuizInput(CreateQuizInput input) {
-        input.getMultipleChoiceQuestions().forEach(this::validateCreateMultipleChoiceQuestionInput);
-
-        List<Integer> allQuestionsNumbers = input.getMultipleChoiceQuestions()
-                .stream()
-                .map(CreateMultipleChoiceQuestionInput::getNumber)
-                .toList();
-
-        validateNumbersUnique(allQuestionsNumbers);
+        // no validation needed
     }
 
     public void validateCreateMultipleChoiceQuestionInput(CreateMultipleChoiceQuestionInput input) {
@@ -30,16 +23,6 @@ public class QuizValidator {
     private void validateAtLeastOneAnswerCorrect(List<MultipleChoiceAnswerInput> answers) {
         if (answers.stream().noneMatch(MultipleChoiceAnswerInput::getCorrect)) {
             throw new ValidationException("At least one answer must be correct");
-        }
-    }
-
-    private void validateNumbersUnique(List<Integer> numbers) {
-        if (numbers.size() != numbers.stream().distinct().count()) {
-            List<Integer> duplicateNumbers = numbers.stream()
-                    .filter(number -> numbers.stream().filter(number::equals).count() > 1)
-                    .toList();
-            throw new ValidationException("Question numbers must be unique, but the following numbers are used multiple times: "
-                                          + duplicateNumbers);
         }
     }
 }

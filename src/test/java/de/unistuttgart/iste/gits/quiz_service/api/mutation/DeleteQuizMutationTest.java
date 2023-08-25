@@ -1,5 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
+import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
+import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
 import de.unistuttgart.iste.gits.generated.dto.QuestionType;
@@ -38,15 +40,15 @@ class DeleteQuizMutationTest {
                 .questionPool(List.of(
                         MultipleChoiceQuestionEntity.builder()
                                 .type(QuestionType.MULTIPLE_CHOICE)
-                                .text("What is the answer to life, the universe and everything?")
+                                .text(new ResourceMarkdownEmbeddable("What is the answer to life, the universe and everything?"))
                                 .number(1)
                                 .answers(List.of(
                                         MultipleChoiceAnswerEmbeddable.builder()
-                                                .text("42")
+                                                .answerText(new ResourceMarkdownEntity("42"))
                                                 .correct(true)
                                                 .build(),
                                         MultipleChoiceAnswerEmbeddable.builder()
-                                                .text("24")
+                                                .answerText(new ResourceMarkdownEntity("24"))
                                                 .correct(false)
                                                 .build()
                                 ))

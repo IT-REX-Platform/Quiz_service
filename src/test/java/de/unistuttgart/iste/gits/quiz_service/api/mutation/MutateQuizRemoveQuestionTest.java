@@ -4,6 +4,7 @@ import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.generated.dto.MultipleChoiceQuestion;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
+import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceQuestionEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
@@ -44,27 +45,16 @@ class MutateQuizRemoveQuestionTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        String query = """
+        String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!) {
                     mutateQuiz(assessmentId: $id) {
                         removeQuestion(number: 2) {
-                            questionPool {
-                                number
-                                type
-                                hint
-                                ... on MultipleChoiceQuestion {
-                                    text
-                                    answers {
-                                        text
-                                        correct
-                                        feedback
-                                    }
-                                }
-                            }
+                            ...QuizAllFields
                         }
                     }
                 }
                 """;
+
         List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()

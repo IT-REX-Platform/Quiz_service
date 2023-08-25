@@ -5,7 +5,7 @@ import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceAnsw
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import java.util.Objects;
+import static de.unistuttgart.iste.gits.quiz_service.matcher.ResourceMarkdownMatchers.markdownMatches;
 
 /**
  * Matcher for comparing a {@link MultipleChoiceAnswer} to a {@link MultipleChoiceAnswerEmbeddable}.
@@ -24,15 +24,14 @@ public class MultipleChoiceAnswerDtoToEntityMatcher extends TypeSafeDiagnosingMa
 
     @Override
     protected boolean matchesSafely(MultipleChoiceAnswer item, Description mismatchDescription) {
-        if (!item.getText().equals(expected.getText())) {
-            mismatchDescription.appendText("text was ").appendValue(item.getText());
-            return false;
+        if (!markdownMatches(item.getAnswerText(), expected.getAnswerText())) {
+            mismatchDescription.appendText("answer text was ").appendValue(item.getAnswerText());
         }
         if (item.getCorrect() != expected.isCorrect()) {
             mismatchDescription.appendText("correct was ").appendValue(item.getCorrect());
             return false;
         }
-        if (!Objects.equals(item.getFeedback(), expected.getFeedback())) {
+        if (!markdownMatches(item.getFeedback(), expected.getFeedback())) {
             mismatchDescription.appendText("feedback was ").appendValue(item.getFeedback());
             return false;
         }

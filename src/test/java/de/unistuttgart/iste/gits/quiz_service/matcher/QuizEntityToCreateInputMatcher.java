@@ -7,8 +7,6 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import java.util.Objects;
 
-import static de.unistuttgart.iste.gits.quiz_service.matcher.MultipleChoiceQuestionEntityToCreateInputMatcher.matchesInput;
-
 /**
  * Matcher for comparing a {@link QuizEntity} to a {@link CreateQuizInput}.
  */
@@ -37,18 +35,6 @@ public class QuizEntityToCreateInputMatcher extends TypeSafeDiagnosingMatcher<Qu
         if (!Objects.equals(item.getNumberOfRandomlySelectedQuestions(), expected.getNumberOfRandomlySelectedQuestions())) {
             mismatchDescription.appendText("numberOfRandomlySelectedQuestions was ").appendValue(item.getNumberOfRandomlySelectedQuestions());
             return false;
-        }
-        if (item.getQuestionPool().size() != expected.getMultipleChoiceQuestions().size()) {
-            // TODO add other question types
-            mismatchDescription.appendText("questionPool size was ").appendValue(item.getQuestionPool().size());
-            return false;
-        }
-
-        for (int i = 0; i < item.getQuestionPool().size(); i++) {
-            if (!matchesInput(expected.getMultipleChoiceQuestions().get(i))
-                    .matchesSafely(item.getQuestionPool().get(i), mismatchDescription)) {
-                return false;
-            }
         }
 
         return true;

@@ -1,5 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service;
 
+import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
+import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
 import de.unistuttgart.iste.gits.generated.dto.QuestionType;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.*;
@@ -26,16 +28,16 @@ public class TestData {
         var builder = MultipleChoiceQuestionEntity.builder()
                 .type(QuestionType.MULTIPLE_CHOICE)
                 .number(number)
-                .text(text);
+                .text(new ResourceMarkdownEmbeddable(text));
 
         var correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .text(correctAnswerText)
+                .answerText(new ResourceMarkdownEntity(correctAnswerText))
                 .correct(true)
                 .build();
 
         var wrongAnswers = Arrays.stream(wrongAnswerText)
                 .map(answer -> MultipleChoiceAnswerEmbeddable.builder()
-                        .text(answer)
+                        .answerText(new ResourceMarkdownEntity(answer))
                         .correct(false)
                         .build());
 

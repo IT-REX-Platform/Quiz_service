@@ -1,7 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.dao;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Embeddable
@@ -11,14 +11,13 @@ import lombok.*;
 @AllArgsConstructor
 public class MultipleChoiceAnswerEmbeddable {
 
-    @Column(length = 1000, nullable = false)
-    @Builder.Default
-    private String text = "";
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    private ResourceMarkdownEntity answerText;
 
     @Column(nullable = false)
     @Builder.Default
     private boolean correct = false;
 
-    @Column(length = 1000, nullable = true)
-    private String feedback;
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    private ResourceMarkdownEntity feedback;
 }

@@ -6,11 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.stream.Stream;
-
-import static java.util.Comparator.comparing;
-
 @Component
 @RequiredArgsConstructor
 public class QuizMapper {
@@ -42,23 +37,7 @@ public class QuizMapper {
     }
 
     public QuizEntity createQuizInputToEntity(CreateQuizInput createQuizInput) {
-        List<CreateMultipleChoiceQuestionInput> multipleChoiceQuestions = createQuizInput.getMultipleChoiceQuestions();
-        // add other questions types here
-
-        assignNumbersIfNull(multipleChoiceQuestions);
-
-        List<QuestionEntity> allQuestions =
-                Stream.concat(
-                                multipleChoiceQuestions.stream().map(this::multipleChoiceQuestionInputToEntity),
-                                // add other questions types here
-                                Stream.empty())
-                        .sorted(comparing(QuestionEntity::getNumber))
-                        .toList();
-
-        QuizEntity entity = mapper.map(createQuizInput, QuizEntity.class);
-        entity.setQuestionPool(allQuestions);
-
-        return entity;
+        return mapper.map(createQuizInput, QuizEntity.class);
     }
 
     public QuestionEntity multipleChoiceQuestionInputToEntity(CreateMultipleChoiceQuestionInput input) {
@@ -71,22 +50,5 @@ public class QuizMapper {
         MultipleChoiceQuestionEntity result = mapper.map(input, MultipleChoiceQuestionEntity.class);
         result.setType(QuestionType.MULTIPLE_CHOICE);
         return result;
-    }
-
-    private void assignNumbersIfNull(List<CreateMultipleChoiceQuestionInput> createMultipleChoiceQuestionInputs) {
-        OptionalInt maxNumber = createMultipleChoiceQuestionInputs.stream()
-                .map(CreateMultipleChoiceQuestionInput::getNumber)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .max();
-
-        for (CreateMultipleChoiceQuestionInput createMultipleChoiceQuestionInput : createMultipleChoiceQuestionInputs) {
-            if (createMultipleChoiceQuestionInput.getNumber() == null) {
-                int newNumber = maxNumber.orElse(0) + 1;
-                createMultipleChoiceQuestionInput.setNumber(newNumber);
-                maxNumber = OptionalInt.of(newNumber);
-            }
-        }
-
     }
 }

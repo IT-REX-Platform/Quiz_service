@@ -136,7 +136,7 @@ input CreateMultipleChoiceQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     List of answers.
     """
@@ -144,7 +144,7 @@ input CreateMultipleChoiceQuestionInput {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input UpdateMultipleChoiceQuestionInput {
@@ -155,7 +155,7 @@ input UpdateMultipleChoiceQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     List of answers.
     """
@@ -163,7 +163,7 @@ input UpdateMultipleChoiceQuestionInput {
     """
     Optional hint for the question, can be markdown.
     """
-    hint: String @Size(max: 1000)
+    hint: ResourceMarkdownInput
 
 }
 
@@ -171,7 +171,7 @@ input MultipleChoiceAnswerInput {
     """
     Text of the answer, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    answerText: ResourceMarkdownInput!
     """
     Whether the answer is correct or not.
     """
@@ -179,7 +179,7 @@ input MultipleChoiceAnswerInput {
     """
     Feedback for when the user selects this answer, can be markdown.
     """
-    feedback: String @Size(max: 1000)
+    feedback: ResourceMarkdownInput
 }
 
 input CreateClozeQuestionInput {
@@ -228,9 +228,9 @@ input ClozeElementInput {
     type: ClozeElementType!
 
     """
-    Text of the element, can be markdown. Only used for TEXT type.
+    Text of the element. Only used for TEXT type.
     """
-    text: String! @Size(max: 1000)
+    text: ResourceMarkdownInput!
 
     """
     The correct answer for the blank. Only used for BLANK type.

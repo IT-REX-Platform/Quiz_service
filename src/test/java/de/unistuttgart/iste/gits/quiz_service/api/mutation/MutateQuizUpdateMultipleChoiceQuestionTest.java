@@ -4,6 +4,7 @@ import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
+import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import jakarta.transaction.Transactional;
@@ -39,36 +40,23 @@ class MutateQuizUpdateMultipleChoiceQuestionTest {
 
         UpdateMultipleChoiceQuestionInput input = UpdateMultipleChoiceQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
-                .setText("what is the capital of France?")
+                .setText(new ResourceMarkdownInput("what is the capital of France?"))
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Paris")
+                                .setAnswerText(new ResourceMarkdownInput("Paris"))
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setText("Madrid")
+                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
                                 .setCorrect(false)
                                 .build()))
                 .build();
 
-        String query = """
+        String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!, $input: UpdateMultipleChoiceQuestionInput!) {
                     mutateQuiz(assessmentId: $id) {
                         updateMultipleChoiceQuestion(input: $input) {
-                            questionPool {
-                                id
-                                number
-                                type
-                                hint
-                                ... on MultipleChoiceQuestion {
-                                    text
-                                    answers {
-                                        text
-                                        correct
-                                        feedback
-                                    }
-                                }
-                            }
+                            ...QuizAllFields
                         }
                     }
                 }
@@ -83,6 +71,7 @@ class MutateQuizUpdateMultipleChoiceQuestionTest {
                 .get();
 
         assertThat(questions, hasSize(1));
+        System.out.println(questions.get(0));
         assertThat(questions.get(0), matchesInput(input));
 
         QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();

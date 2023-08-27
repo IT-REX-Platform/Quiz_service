@@ -47,29 +47,37 @@ type QuizMutation {
     """
     Add an association question to the quiz questions, at the end of the list.
     """
-    addAssociationQuestion(input: CreateAssociationQuestionInput!): Quiz!
+    addAssociationQuestion(input: CreateAssociationQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
     """
     Update an association question in the quiz questions.
     """
-    updateAssociationQuestion(input: UpdateAssociationQuestionInput!): Quiz!
+    updateAssociationQuestion(input: UpdateAssociationQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
 
     """
-    Add a free text question to the quiz questions, at the end of the list.
+    Add an free text question with exact answer to the quiz questions, at the end of the list.
     """
-    addFreeTextQuestion(input: CreateFreeTextQuestionInput!): Quiz!
+    addExactAnswerQuestion(input: CreateExactAnswerQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
     """
-    Update a free text question in the quiz questions.
+    Update an free text question with exact answer in the quiz questions.
     """
-    updateFreeTextQuestion(input: UpdateFreeTextQuestionInput!): Quiz!
+    updateExactAnswerQuestion(input: UpdateExactAnswerQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    """
+    Add a numeric question to the quiz questions, at the end of the list.
+    """
+    addNumericQuestion(input: CreateNumericQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    """
+    Update a numeric question in the quiz questions.
+    """
+    updateNumericQuestion(input: UpdateNumericQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
 
     """
     Add a self assessment question to the quiz questions, at the end of the list.
     """
-    addSelfAssessmentQuestion(input: CreateSelfAssessmentQuestionInput!): Quiz!
+    addSelfAssessmentQuestion(input: CreateSelfAssessmentQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
     """
     Update a self assessment question in the quiz questions.
     """
-    updateSelfAssessmentQuestion(input: UpdateSelfAssessmentQuestionInput!): Quiz!
+    updateSelfAssessmentQuestion(input: UpdateSelfAssessmentQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
 
     # add other types of questions here
 
@@ -195,7 +203,11 @@ input CreateClozeQuestionInput {
     """
     List of additional wrong answers.
     """
-    additionalWrongAnswers: [String!]! @ContainerSize(min: 0) @Size(max: 255)
+    additionalWrongAnswers: [String!]! = [] @ContainerSize(min: 0) @Size(max: 255)
+    """
+    If true, the list of possible answers will be shown to the user.
+    """
+    showBlanksList: Boolean! = true
     """
     Optional hint for the question, can be markdown.
     """
@@ -216,6 +228,10 @@ input UpdateClozeQuestionInput {
     """
     additionalWrongAnswers: [String!]! @ContainerSize(min: 0) @Size(max: 255)
     """
+    If true, the list of possible answers will be shown to the user.
+    """
+    showBlanksList: Boolean! = true
+    """
     Optional hint for the question, can be markdown.
     """
     hint: ResourceMarkdownInput @Size(max: 1000)
@@ -230,12 +246,12 @@ input ClozeElementInput {
     """
     Text of the element. Only used for TEXT type.
     """
-    text: ResourceMarkdownInput!
+    text: ResourceMarkdownInput
 
     """
     The correct answer for the blank. Only used for BLANK type.
     """
-    correctAnswer: String!
+    correctAnswer: String @Size(max: 255)
     """
     Feedback for the blank when the user selects a wrong answer, can be markdown. Only used for BLANK type.
     """
@@ -296,7 +312,7 @@ input AssociationInput {
     feedback: ResourceMarkdownInput @Size(max: 1000)
 }
 
-input CreateFreeTextQuestionInput {
+input CreateExactAnswerQuestionInput {
     """
     Number of the question, used for ordering.
     This can be omitted, in which case a number, one higher than the highest number of the existing questions, will be used.
@@ -306,6 +322,10 @@ input CreateFreeTextQuestionInput {
     Text of the question, can be markdown.
     """
     text: ResourceMarkdownInput! @Size(max: 1000)
+    """
+    If the answer is case sensitive. If true, the answer is checked case sensitive.
+    """
+    caseSensitive: Boolean! = false
     """
     A list of possible correct answers.
     """
@@ -320,7 +340,7 @@ input CreateFreeTextQuestionInput {
     hint: ResourceMarkdownInput @Size(max: 1000)
 }
 
-input UpdateFreeTextQuestionInput {
+input UpdateExactAnswerQuestionInput {
     """
     UUID of the question to update.
     """
@@ -333,6 +353,65 @@ input UpdateFreeTextQuestionInput {
     A list of possible correct answers.
     """
     correctAnswers: [String!]! @ContainerSize(min: 1) @Size(max: 255)
+    """
+    If the answer is case sensitive. If true, the answer is checked case sensitive.
+    """
+    caseSensitive: Boolean! = false
+    """
+    Feedback for the question when the user enters a wrong answer, can be markdown.
+    """
+    feedback: ResourceMarkdownInput @Size(max: 1000)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: ResourceMarkdownInput @Size(max: 1000)
+}
+
+input CreateNumericQuestionInput {
+    """
+    Number of the question, used for ordering.
+    This can be omitted, in which case a number, one higher than the highest number of the existing questions, will be used.
+    """
+    number: Int @Positive
+    """
+    Text of the question, can be markdown.
+    """
+    text: ResourceMarkdownInput! @Size(max: 1000)
+    """
+    The correct answer for the question.
+    """
+    correctAnswer: Float!
+    """
+    The allowed deviation from the correct answer.
+    """
+    tolerance: Float! @Positive
+    """
+    Feedback for the question when the user enters a wrong answer, can be markdown.
+    """
+    feedback: ResourceMarkdownInput @Size(max: 1000)
+    """
+    Optional hint for the question, can be markdown.
+    """
+    hint: ResourceMarkdownInput @Size(max: 1000)
+}
+
+input UpdateNumericQuestionInput {
+    """
+    UUID of the question to update.
+    """
+    id: UUID!
+    """
+    Text of the question, can be markdown.
+    """
+    text: ResourceMarkdownInput! @Size(max: 1000)
+    """
+    The correct answer for the question.
+    """
+    correctAnswer: Float!
+    """
+    The allowed deviation from the correct answer.
+    """
+    tolerance: Float! @Positive
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """

@@ -1,13 +1,9 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
-import de.unistuttgart.iste.gits.common.event.ContentChangeEvent;
-import de.unistuttgart.iste.gits.common.event.CrudOperation;
-import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
+import de.unistuttgart.iste.gits.common.event.*;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionEntity;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionStatisticEntity;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
+import de.unistuttgart.iste.gits.quiz_service.persistence.dao.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import de.unistuttgart.iste.gits.quiz_service.validation.QuizValidator;
@@ -101,12 +97,11 @@ public class QuizService {
         quizValidator.validateCreateMultipleChoiceQuestionInput(input);
 
         return modifyQuiz(quizId, entity -> {
-            if (input.getNumber() == null) {
-                assignNumber(input, entity);
-            }
-            checkNumberIsUnique(entity, input.getNumber());
+            int number = input.getNumber() == null ? assignNumber(entity) : input.getNumber();
+            checkNumberIsUnique(entity, number);
 
             QuestionEntity questionEntity = quizMapper.multipleChoiceQuestionInputToEntity(input);
+            questionEntity.setNumber(number);
             entity.getQuestionPool().add(questionEntity);
         });
     }
@@ -128,6 +123,49 @@ public class QuizService {
 
             int indexOfQuestion = entity.getQuestionPool().indexOf(questionEntity);
             entity.getQuestionPool().set(indexOfQuestion, quizMapper.multipleChoiceQuestionInputToEntity(input));
+        });
+    }
+
+    /**
+     * Adds a cloze question to a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the question to add
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz does not exist
+     * @throws ValidationException     if input is invalid, see
+     *                                 {@link QuizValidator#validateCreateClozeQuestionInput(CreateClozeQuestionInput)}
+     */
+    public Quiz addClozeQuestion(UUID quizId, CreateClozeQuestionInput input) {
+        quizValidator.validateCreateClozeQuestionInput(input);
+
+        return modifyQuiz(quizId, entity -> {
+            int number = input.getNumber() == null ? assignNumber(entity) : input.getNumber();
+            checkNumberIsUnique(entity, number);
+
+            QuestionEntity questionEntity = quizMapper.clozeQuestionInputToEntity(input);
+            questionEntity.setNumber(number);
+            entity.getQuestionPool().add(questionEntity);
+        });
+    }
+
+    /**
+     * Updates a cloze question in a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the updated question
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz or the question does not exist
+     * @throws ValidationException     if input is invalid, see
+     */
+    public Quiz updateClozeQuestion(UUID quizId, UpdateClozeQuestionInput input) {
+        quizValidator.validateUpdateClozeQuestionInput(input);
+
+        return modifyQuiz(quizId, entity -> {
+            QuestionEntity questionEntity = getQuestionInQuizById(entity, input.getId());
+
+            int indexOfQuestion = entity.getQuestionPool().indexOf(questionEntity);
+            entity.getQuestionPool().set(indexOfQuestion, quizMapper.clozeQuestionInputToEntity(input));
         });
     }
 
@@ -174,7 +212,6 @@ public class QuizService {
         });
     }
 
-
     public Quiz setRequiredCorrectAnswers(UUID quizId, int requiredCorrectAnswers) {
         return modifyQuiz(quizId, entity -> entity.setRequiredCorrectAnswers(requiredCorrectAnswers));
     }
@@ -220,9 +257,11 @@ public class QuizService {
         }
     }
 
-    private void assignNumber(CreateMultipleChoiceQuestionInput input, QuizEntity entity) {
-        int newNumber = entity.getQuestionPool().get(entity.getQuestionPool().size() - 1).getNumber() + 1;
-        input.setNumber(newNumber);
+    private int assignNumber(QuizEntity entity) {
+        if (entity.getQuestionPool().isEmpty()) {
+            return 1;
+        }
+        return entity.getQuestionPool().get(entity.getQuestionPool().size() - 1).getNumber() + 1;
     }
 
     private Quiz entityToDto(QuizEntity entity) {
@@ -285,7 +324,6 @@ public class QuizService {
      * @param dto event object containing changes to content
      */
     public void removeContentIds(ContentChangeEvent dto) {
-
         // validate event message
         try {
             checkCompletenessOfDto(dto);
@@ -317,6 +355,7 @@ public class QuizService {
             throw new NullPointerException("incomplete message received: all fields of a message must be non-null");
         }
     }
+
 
     /**
      * publishes user progress on a quiz to dapr topic
@@ -391,7 +430,7 @@ public class QuizService {
      * @param quizEntity     quizEntity source
      * @return calculated correctness value
      */
-    private double calcCorrectness(double correctAnswers, QuizEntity quizEntity) {
+    protected double calcCorrectness(double correctAnswers, QuizEntity quizEntity) {
         if (correctAnswers == 0.0) {
             return correctAnswers;
         }
@@ -410,5 +449,4 @@ public class QuizService {
         }
 
     }
-
 }

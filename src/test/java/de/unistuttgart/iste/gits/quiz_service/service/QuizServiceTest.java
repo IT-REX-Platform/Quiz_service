@@ -15,6 +15,8 @@ import org.modelmapper.ModelMapper;
 
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 
@@ -226,6 +228,43 @@ class QuizServiceTest {
         verify(quizRepository, times(1)).save(any());
         verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
 
+    }
+
+    @Test
+    void testCalculateCorrectnessEdgeCases() {
+
+        var actualWithZeroCorrectAnswers = quizService.calcCorrectness(0.0, QuizEntity.builder().build());
+        assertThat(actualWithZeroCorrectAnswers, is(0.0));
+
+        var quizEntityWithZeroQuestions = QuizEntity.builder()
+                .questionPool(new ArrayList<>())
+                .questionPoolingMode(QuestionPoolingMode.ORDERED)
+                .build();
+
+        var actualWithZeroQuestions = quizService.calcCorrectness(1.0, quizEntityWithZeroQuestions);
+        assertThat(actualWithZeroQuestions, is(1.0));
+
+        var quizEntityWithRandomlySelectedQuestionsZero = QuizEntity.builder()
+                .questionPool(List.of(MultipleChoiceQuestionEntity.builder().build()))
+                .questionPoolingMode(QuestionPoolingMode.RANDOM)
+                .numberOfRandomlySelectedQuestions(0)
+                .build();
+        var actualWithRandomlySelectedQuestionsZero
+                = quizService.calcCorrectness(1.0, quizEntityWithRandomlySelectedQuestionsZero);
+
+        assertThat(actualWithRandomlySelectedQuestionsZero, is(1.0));
+
+        var quizEntityWithRandomlySelectedQuestionsNull = QuizEntity.builder()
+                .questionPool(List.of(MultipleChoiceQuestionEntity.builder().build(),
+                        MultipleChoiceQuestionEntity.builder().build()))
+                .questionPoolingMode(QuestionPoolingMode.RANDOM)
+                .numberOfRandomlySelectedQuestions(null)
+                .build();
+
+        var actualWithRandomlySelectedQuestionsNull
+                = quizService.calcCorrectness(1.0, quizEntityWithRandomlySelectedQuestionsNull);
+
+        assertThat(actualWithRandomlySelectedQuestionsNull, is(0.5));
     }
 
     /**

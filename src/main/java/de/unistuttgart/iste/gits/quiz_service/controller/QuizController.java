@@ -55,6 +55,16 @@ public class QuizController {
     }
 
     @SchemaMapping(typeName = "QuizMutation")
+    public Quiz addClozeQuestion(@Argument CreateClozeQuestionInput input, QuizMutation quizMutation) {
+        return quizService.addClozeQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz updateClozeQuestion(@Argument UpdateClozeQuestionInput input, QuizMutation quizMutation) {
+        return quizService.updateClozeQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
     public Quiz removeQuestion(@Argument int number, QuizMutation quizMutation) {
         return quizService.removeQuestion(quizMutation.getAssessmentId(), number);
     }

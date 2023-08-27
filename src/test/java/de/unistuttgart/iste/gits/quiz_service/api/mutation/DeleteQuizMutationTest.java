@@ -1,11 +1,8 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
-import de.unistuttgart.iste.gits.generated.dto.QuestionType;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.*;
+import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import graphql.ErrorType;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,7 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import java.util.List;
 import java.util.UUID;
 
+import static de.unistuttgart.iste.gits.quiz_service.TestData.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -38,21 +36,20 @@ class DeleteQuizMutationTest {
                 .numberOfRandomlySelectedQuestions(1)
                 .requiredCorrectAnswers(1)
                 .questionPool(List.of(
-                        MultipleChoiceQuestionEntity.builder()
-                                .type(QuestionType.MULTIPLE_CHOICE)
-                                .text(new ResourceMarkdownEmbeddable("What is the answer to life, the universe and everything?"))
-                                .number(1)
-                                .answers(List.of(
-                                        MultipleChoiceAnswerEmbeddable.builder()
-                                                .answerText(new ResourceMarkdownEntity("42"))
-                                                .correct(true)
-                                                .build(),
-                                        MultipleChoiceAnswerEmbeddable.builder()
-                                                .answerText(new ResourceMarkdownEntity("24"))
-                                                .correct(false)
-                                                .build()
-                                ))
-                                .build()
+                        createMultipleChoiceQuestion(1,
+                                "what is the capital of Germany?",
+                                "Berlin", "Paris"
+                        ),
+                        createClozeQuestion(2,
+                                clozeText("This is an example text with a "),
+                                clozeBlank("blank"), clozeText(".")
+                        ),
+                        createAssociationQuestion(3,
+                                association("left1", "right1"),
+                                association("left2", "right2")),
+                        createExactAnswerQuestion(4, "question text", "answer text"),
+                        createNumericQuestion(5, "question text", 42),
+                        createSelfAssessmentQuestion(6, "question text", "answer text")
                 ))
                 .build();
         quizRepository.save(quizEntity);

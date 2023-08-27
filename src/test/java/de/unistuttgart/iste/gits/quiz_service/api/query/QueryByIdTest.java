@@ -1,9 +1,9 @@
 package de.unistuttgart.iste.gits.quiz_service.api.query;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
-import de.unistuttgart.iste.gits.generated.dto.MultipleChoiceQuestion;
-import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
+import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
 import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
@@ -14,13 +14,18 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import java.util.List;
 import java.util.UUID;
 
-import static de.unistuttgart.iste.gits.quiz_service.TestData.createMultipleChoiceQuestion;
+import static de.unistuttgart.iste.gits.quiz_service.TestData.*;
 import static de.unistuttgart.iste.gits.quiz_service.matcher.MultipleChoiceQuestionDtoToEntityMatcher.matchesEntity;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @GraphQlApiTest
-@TablesToDelete({"multiple_choice_question_answers", "multiple_choice_question", "quiz_question_pool", "question", "quiz"})
+@TablesToDelete({"multiple_choice_question_answers", "multiple_choice_question",
+        "cloze_question_additional_wrong_answers", "cloze_question_cloze_elements", "cloze_question",
+        "association_question_correct_associations", "association_question",
+        "exact_answer_question_correct_answers", "exact_answer_question",
+        "numeric_question", "self_assessment_question",
+        "quiz_question_pool", "question", "quiz"})
 class QueryByIdTest {
 
     @Autowired
@@ -81,7 +86,7 @@ class QueryByIdTest {
      * Then the correct quiz with the correct data is returned
      */
     @Test
-    void queryQuizWithQuestions(GraphQlTester graphQlTester) {
+    void queryQuizWithQuestions(GraphQlTester graphQlTester) throws Exception {
         QuizEntity quizEntity = QuizEntity.builder()
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
@@ -89,9 +94,96 @@ class QueryByIdTest {
                 .requiredCorrectAnswers(1)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "What is the answer to life, the universe and everything?",
-                                "42", "24")))
+                                "42", "24"),
+                        createAssociationQuestion(2, association("A", "1"), association("B", "2")),
+                        createClozeQuestion(3, clozeText("text"), clozeBlank("answer")),
+                        createExactAnswerQuestion(4, "question", "answer"),
+                        createNumericQuestion(5, "question", 42),
+                        createSelfAssessmentQuestion(6, "question", "answer")))
                 .build();
-        quizRepository.save(quizEntity);
+        quizEntity = quizRepository.save(quizEntity);
+
+        Question[] expectedQuestions = new Question[]{
+                MultipleChoiceQuestion.builder()
+                        .setNumber(1)
+                        .setText(new ResourceMarkdown("What is the answer to life, the universe and everything?", List.of()))
+                        .setHint(new ResourceMarkdown("hint", List.of()))
+                        .setId(quizEntity.getQuestionPool().get(0).getId())
+                        .setAnswers(List.of(
+                                MultipleChoiceAnswer.builder()
+                                        .setAnswerText(new ResourceMarkdown("42", List.of()))
+                                        .setCorrect(true)
+                                        .setFeedback(new ResourceMarkdown("feedback", List.of()))
+                                        .build(),
+                                MultipleChoiceAnswer.builder()
+                                        .setAnswerText(new ResourceMarkdown("24", List.of()))
+                                        .setCorrect(false)
+                                        .setFeedback(new ResourceMarkdown("feedback", List.of()))
+                                        .build()))
+                        .setType(QuestionType.MULTIPLE_CHOICE)
+                        .setNumberOfCorrectAnswers(1)
+                        .build(),
+                AssociationQuestion.builder()
+                        .setNumber(2)
+                        .setId(quizEntity.getQuestionPool().get(1).getId())
+                        .setText(new ResourceMarkdown("text", List.of()))
+                        .setHint(new ResourceMarkdown("hint", List.of()))
+                        .setId(quizEntity.getQuestionPool().get(1).getId())
+                        .setType(QuestionType.ASSOCIATION)
+                        .setCorrectAssociations(List.of(
+                                new SingleAssociation("A", "1", new ResourceMarkdown("feedback", List.of())),
+                                new SingleAssociation("B", "2", new ResourceMarkdown("feedback", List.of()))))
+                        .setLeftSide(List.of("A", "B"))
+                        .setRightSide(List.of("1", "2"))
+                        .build(),
+                ClozeQuestion.builder()
+                        .setNumber(3)
+                        .setHint(new ResourceMarkdown("hint", List.of()))
+                        .setId(quizEntity.getQuestionPool().get(2).getId())
+                        .setType(QuestionType.CLOZE)
+                        .setShowBlanksList(true)
+                        .setAdditionalWrongAnswers(List.of("wrong1", "wrong2"))
+                        .setClozeElements(List.of(
+                                ClozeTextElement.builder()
+                                        .setText(new ResourceMarkdown("text", List.of()))
+                                        .build(),
+                                ClozeBlankElement.builder()
+                                        .setCorrectAnswer("answer")
+                                        .setFeedback(new ResourceMarkdown("feedback", List.of()))
+                                        .build()))
+                        .setAllBlanks(List.of("answer", "wrong1", "wrong2"))
+                        .build(),
+                ExactAnswerQuestion.builder()
+                        .setNumber(4)
+                        .setHint(new ResourceMarkdown("hint", List.of()))
+                        .setId(quizEntity.getQuestionPool().get(3).getId())
+                        .setType(QuestionType.EXACT_ANSWER)
+                        .setText(new ResourceMarkdown("question", List.of()))
+                        .setCorrectAnswers(List.of("answer"))
+                        .setCaseSensitive(true)
+                        .setFeedback(new ResourceMarkdown("feedback", List.of()))
+                        .build(),
+                NumericQuestion.builder()
+                        .setNumber(5)
+                        .setHint(new ResourceMarkdown("hint", List.of()))
+                        .setId(quizEntity.getQuestionPool().get(4).getId())
+                        .setType(QuestionType.NUMERIC)
+                        .setText(new ResourceMarkdown("question", List.of()))
+                        .setCorrectAnswer(42)
+                        .setFeedback(new ResourceMarkdown("feedback", List.of()))
+                        .setTolerance(1)
+                        .build(),
+                SelfAssessmentQuestion.builder()
+                        .setNumber(6)
+                        .setHint(new ResourceMarkdown("hint", List.of()))
+                        .setId(quizEntity.getQuestionPool().get(5).getId())
+                        .setType(QuestionType.SELF_ASSESSMENT)
+                        .setText(new ResourceMarkdown("question", List.of()))
+                        .setSolutionSuggestion(new ResourceMarkdown("answer", List.of()))
+                        .build()
+        };
+
+        String expectedJson = new ObjectMapper().writeValueAsString(expectedQuestions);
 
         String query = QuizFragments.FRAGMENT_DEFINITION + """
                 query($id: UUID!) {
@@ -101,7 +193,7 @@ class QueryByIdTest {
                 }
                 """;
 
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
 
@@ -118,11 +210,8 @@ class QueryByIdTest {
                 .isEqualTo(1)
 
                 .path("findQuizzesByAssessmentIds[0].questionPool")
-                .entityList(MultipleChoiceQuestion.class)
-                .get();
+                .matchesJson(expectedJson);
 
-        assertThat(questions, hasSize(1));
-        assertThat(questions.get(0), matchesEntity(quizEntity.getQuestionPool().get(0)));
     }
 
     /**
@@ -148,9 +237,6 @@ class QueryByIdTest {
                 query($id: UUID!) {
                     findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         ...QuizAllFields
-                        selectedQuestions {
-                            ...QuestionsAllFields
-                        }
                     }
                 }
                 """;
@@ -191,9 +277,6 @@ class QueryByIdTest {
                 query($id: UUID!) {
                     findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         ...QuizAllFields
-                        selectedQuestions {
-                            ...QuestionsAllFields
-                        }
                     }
                 }
                 """;

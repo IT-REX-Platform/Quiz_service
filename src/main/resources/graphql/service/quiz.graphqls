@@ -202,7 +202,7 @@ Association question, i.e., a question where the user has to assign the correct 
 """
 type AssociationQuestion implements Question {
     """
-    Text to display above the assignment question, can be markdown.
+    Text to display above the association question, can be markdown.
     """
     text: ResourceMarkdown!
     """
@@ -240,16 +240,16 @@ type AssociationQuestion implements Question {
 
 type SingleAssociation {
     """
-    The left side of the assignment.
+    The left side of the association.
     """
     left: String!
     """
-    The right side of the assignment.
+    The right side of the association.
     """
     right: String!
 
     """
-    Feedback for the assignment when the user assigns a wrong answer, can be markdown.
+    Feedback for the association when the user assigns a wrong answer, can be markdown.
     """
     feedback: ResourceMarkdown
 }
@@ -271,7 +271,7 @@ type ExactAnswerQuestion implements Question {
     """
     If the answer is case sensitive. If true, the answer is checked case sensitive.
     """
-    isCaseSensitive: Boolean!
+    caseSensitive: Boolean!
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
@@ -307,10 +307,9 @@ type NumericQuestion implements Question {
     """
     correctAnswer: Float!
     """
-    The number of decimal places to consider when checking the answer.
-    Both the correct answer and the user's answer are rounded to this number of decimal places.
+    The tolerance for the correct answer. The user's answer is correct if it is within the tolerance of the correct answer.
     """
-    decimalPlaces: Int!
+    tolerance: Float!
 
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
@@ -342,7 +341,7 @@ A single question with a free text answer field, where the answer is not automat
 The user has to enter a solution and self-assess whether it is correct or not.
 This is useful for questions where the answer is not clear-cut, e.g. when the user should explain a concept.
 """
-type SelfAssessmentQuestion {
+type SelfAssessmentQuestion implements Question {
     """
     Text of the question, can be markdown.
     """
@@ -378,9 +377,9 @@ The type of a question.
 enum QuestionType {
     MULTIPLE_CHOICE
     CLOZE
-    ASSIGNMENT
+    ASSOCIATION
     EXACT_ANSWER
-    NUMERIC_QUESTION
+    NUMERIC
     SELF_ASSESSMENT
     # add more types here
 }

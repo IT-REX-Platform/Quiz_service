@@ -224,10 +224,9 @@ public class QuizService {
         return modifyQuiz(quizId, entity -> entity.setNumberOfRandomlySelectedQuestions(numberOfRandomlySelectedQuestions));
     }
 
-    public void requireQuizExists(UUID id) {
-        if (!quizRepository.existsById(id)) {
-            throw new EntityNotFoundException("Quiz with id " + id + " not found");
-        }
+    public QuizEntity requireQuizExists(UUID id) {
+        return quizRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz with id " + id + " not found"));
     }
 
     /**
@@ -240,8 +239,7 @@ public class QuizService {
      * @throws EntityNotFoundException if the quiz does not exist
      */
     private Quiz modifyQuiz(UUID quiz, Consumer<QuizEntity> modifier) {
-        requireQuizExists(quiz);
-        QuizEntity entity = quizRepository.findById(quiz).orElseThrow();
+        QuizEntity entity = requireQuizExists(quiz);
 
         modifier.accept(entity);
 

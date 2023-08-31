@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -96,14 +97,7 @@ public class QuizService {
     public Quiz addMultipleChoiceQuestion(UUID quizId, CreateMultipleChoiceQuestionInput input) {
         quizValidator.validateCreateMultipleChoiceQuestionInput(input);
 
-        return modifyQuiz(quizId, entity -> {
-            int number = input.getNumber() == null ? assignNumber(entity) : input.getNumber();
-            checkNumberIsUnique(entity, number);
-
-            QuestionEntity questionEntity = quizMapper.multipleChoiceQuestionInputToEntity(input);
-            questionEntity.setNumber(number);
-            entity.getQuestionPool().add(questionEntity);
-        });
+        return addQuestion(quizId, input, input.getNumber(), quizMapper::multipleChoiceQuestionInputToEntity);
     }
 
     /**
@@ -118,12 +112,7 @@ public class QuizService {
     public Quiz updateMultipleChoiceQuestion(UUID quizId, UpdateMultipleChoiceQuestionInput input) {
         quizValidator.validateUpdateMultipleChoiceQuestionInput(input);
 
-        return modifyQuiz(quizId, entity -> {
-            QuestionEntity questionEntity = getQuestionInQuizById(entity, input.getId());
-
-            int indexOfQuestion = entity.getQuestionPool().indexOf(questionEntity);
-            entity.getQuestionPool().set(indexOfQuestion, quizMapper.multipleChoiceQuestionInputToEntity(input));
-        });
+        return updateQuestion(quizId, input, input.getId(), quizMapper::multipleChoiceQuestionInputToEntity);
     }
 
     /**
@@ -139,14 +128,7 @@ public class QuizService {
     public Quiz addClozeQuestion(UUID quizId, CreateClozeQuestionInput input) {
         quizValidator.validateCreateClozeQuestionInput(input);
 
-        return modifyQuiz(quizId, entity -> {
-            int number = input.getNumber() == null ? assignNumber(entity) : input.getNumber();
-            checkNumberIsUnique(entity, number);
-
-            QuestionEntity questionEntity = quizMapper.clozeQuestionInputToEntity(input);
-            questionEntity.setNumber(number);
-            entity.getQuestionPool().add(questionEntity);
-        });
+        return addQuestion(quizId, input, input.getNumber(), quizMapper::clozeQuestionInputToEntity);
     }
 
     /**
@@ -156,16 +138,142 @@ public class QuizService {
      * @param input  the updated question
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz or the question does not exist
-     * @throws ValidationException     if input is invalid, see
+     * @throws ValidationException     if input is invalid,
+     *                                 see {@link QuizValidator#validateUpdateClozeQuestionInput(UpdateClozeQuestionInput)}
      */
     public Quiz updateClozeQuestion(UUID quizId, UpdateClozeQuestionInput input) {
         quizValidator.validateUpdateClozeQuestionInput(input);
 
+        return updateQuestion(quizId, input, input.getId(), quizMapper::clozeQuestionInputToEntity);
+    }
+
+    /**
+     * Adds an association question to a quiz.
+     *
+     * @param assessmentId the id of the quiz
+     * @param input        the question to add
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz does not exist
+     * @throws ValidationException     if invalid
+     */
+    public Quiz addAssociationQuestion(UUID assessmentId, CreateAssociationQuestionInput input) {
+        quizValidator.validateCreateAssociationQuestionInput(input);
+
+        return addQuestion(assessmentId, input, input.getNumber(), quizMapper::associationQuestionInputToEntity);
+    }
+
+    /**
+     * Updates an association question in a quiz.
+     *
+     * @param assessmentId the id of the quiz
+     * @param input        the updated question
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz or the question does not exist
+     * @throws ValidationException     if invalid
+     */
+    public Quiz updateAssociationQuestion(UUID assessmentId, UpdateAssociationQuestionInput input) {
+        quizValidator.validateUpdateAssociationQuestionInput(input);
+
+        return updateQuestion(assessmentId, input, input.getId(), quizMapper::associationQuestionInputToEntity);
+    }
+
+    /**
+     * Adds an exact answer question to a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the question to add
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz does not exist
+     */
+    public Quiz addExactAnswerQuestion(UUID quizId, CreateExactAnswerQuestionInput input) {
+        return addQuestion(quizId, input, input.getNumber(), quizMapper::exactAnswerQuestionInputToEntity);
+    }
+
+    /**
+     * Updates an exact answer question in a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the updated question
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz or the question does not exist
+     */
+    public Quiz updateExactAnswerQuestion(UUID quizId, UpdateExactAnswerQuestionInput input) {
+        return updateQuestion(quizId, input, input.getId(), quizMapper::exactAnswerQuestionInputToEntity);
+    }
+
+    /**
+     * Adds a numeric question to a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the question to add
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz does not exist
+     */
+    public Quiz addNumericQuestion(UUID quizId, CreateNumericQuestionInput input) {
+        return addQuestion(quizId, input, input.getNumber(), quizMapper::numericQuestionInputToEntity);
+    }
+
+    /**
+     * Updates a numeric question in a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the updated question
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz or the question does not exist
+     */
+    public Quiz updateNumericQuestion(UUID quizId, UpdateNumericQuestionInput input) {
+        return updateQuestion(quizId, input, input.getId(), quizMapper::numericQuestionInputToEntity);
+    }
+
+    /**
+     * Adds a self assessment question to a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the question to add
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz does not exist
+     */
+    public Quiz addSelfAssessmentQuestion(UUID quizId, CreateSelfAssessmentQuestionInput input) {
+        return addQuestion(quizId, input, input.getNumber(), quizMapper::selfAssessmentQuestionInputToEntity);
+    }
+
+    /**
+     * Updates a self assessment question in a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param input  the updated question
+     * @return the modified quiz
+     * @throws EntityNotFoundException if the quiz or the question does not exist
+     */
+    public Quiz updateSelfAssessmentQuestion(UUID quizId, UpdateSelfAssessmentQuestionInput input) {
+        return updateQuestion(quizId, input, input.getId(), quizMapper::selfAssessmentQuestionInputToEntity);
+    }
+
+    private <I, E extends QuestionEntity> Quiz updateQuestion(UUID quizId,
+                                                              I input,
+                                                              UUID questionId,
+                                                              Function<I, E> mapping) {
         return modifyQuiz(quizId, entity -> {
-            QuestionEntity questionEntity = getQuestionInQuizById(entity, input.getId());
+            QuestionEntity questionEntity = getQuestionInQuizById(entity, questionId);
 
             int indexOfQuestion = entity.getQuestionPool().indexOf(questionEntity);
-            entity.getQuestionPool().set(indexOfQuestion, quizMapper.clozeQuestionInputToEntity(input));
+            QuestionEntity newQuestionEntity = mapping.apply(input);
+            newQuestionEntity.setNumber(questionEntity.getNumber());
+            entity.getQuestionPool().set(indexOfQuestion, newQuestionEntity);
+        });
+    }
+
+    private <I, E extends QuestionEntity> Quiz addQuestion(UUID quizId,
+                                                           I input,
+                                                           Integer questionNumber,
+                                                           Function<I, E> mapping) {
+        return modifyQuiz(quizId, entity -> {
+            int number = questionNumber == null ? assignNumber(entity) : questionNumber;
+            checkNumberIsUnique(entity, number);
+
+            E questionEntity = mapping.apply(input);
+            questionEntity.setNumber(number);
+            entity.getQuestionPool().add(questionEntity);
         });
     }
 
@@ -447,4 +555,5 @@ public class QuizService {
         }
 
     }
+
 }

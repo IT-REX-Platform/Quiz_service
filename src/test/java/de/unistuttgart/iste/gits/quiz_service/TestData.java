@@ -84,10 +84,14 @@ public class TestData {
     }
 
     public static AssociationEmbeddable association(String left, String right) {
+        return association(left, right, "feedback");
+    }
+
+    public static AssociationEmbeddable association(String left, String right, String feedback) {
         return AssociationEmbeddable.builder()
                 .left(left)
                 .right(right)
-                .feedback(new ResourceMarkdownEmbeddable("feedback"))
+                .feedback(new ResourceMarkdownEmbeddable(feedback))
                 .build();
     }
 

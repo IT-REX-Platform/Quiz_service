@@ -65,4 +65,22 @@ public class QuizValidator {
             }
         }
     }
+
+    public void validateCreateAssociationQuestionInput(CreateAssociationQuestionInput input) {
+        validateSidesUnique(input.getCorrectAssociations());
+    }
+
+    public void validateUpdateAssociationQuestionInput(UpdateAssociationQuestionInput input) {
+        validateSidesUnique(input.getCorrectAssociations());
+    }
+
+    private void validateSidesUnique(List<AssociationInput> associationInputs) {
+        List<String> leftSide = associationInputs.stream().map(AssociationInput::getLeft).toList();
+        List<String> rightSide = associationInputs.stream().map(AssociationInput::getRight).toList();
+
+        if (leftSide.size() != leftSide.stream().distinct().count()
+            || rightSide.size() != rightSide.stream().distinct().count()) {
+            throw new ValidationException("Each side of the associations must only contain unique values");
+        }
+    }
 }

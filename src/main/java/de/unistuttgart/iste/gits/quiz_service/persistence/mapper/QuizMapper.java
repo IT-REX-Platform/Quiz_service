@@ -153,4 +153,52 @@ public class QuizMapper {
         result.setType(QuestionType.CLOZE);
         return result;
     }
+
+    public QuestionEntity associationQuestionInputToEntity(CreateAssociationQuestionInput input) {
+        var result = mapper.map(input, AssociationQuestionEntity.class);
+        result.setType(QuestionType.ASSOCIATION);
+        return result;
+    }
+
+    public QuestionEntity associationQuestionInputToEntity(UpdateAssociationQuestionInput input) {
+        var result = mapper.map(input, AssociationQuestionEntity.class);
+        result.setType(QuestionType.ASSOCIATION);
+        return result;
+    }
+
+    public QuestionEntity exactAnswerQuestionInputToEntity(CreateExactAnswerQuestionInput input) {
+        var result = mapper.map(input, ExactAnswerQuestionEntity.class);
+        result.setType(QuestionType.EXACT_ANSWER);
+        return result;
+    }
+
+    public QuestionEntity exactAnswerQuestionInputToEntity(UpdateExactAnswerQuestionInput input) {
+        var result = mapper.map(input, ExactAnswerQuestionEntity.class);
+        result.setType(QuestionType.EXACT_ANSWER);
+        return result;
+    }
+
+    public QuestionEntity numericQuestionInputToEntity(CreateNumericQuestionInput input) {
+        var result = mapper.map(input, NumericQuestionEntity.class);
+        result.setType(QuestionType.NUMERIC);
+        return result;
+    }
+
+    public QuestionEntity numericQuestionInputToEntity(UpdateNumericQuestionInput input) {
+        var result = mapper.map(input, NumericQuestionEntity.class);
+        result.setType(QuestionType.NUMERIC);
+        return result;
+    }
+
+    public QuestionEntity selfAssessmentQuestionInputToEntity(CreateSelfAssessmentQuestionInput input) {
+        var result = mapper.map(input, SelfAssessmentQuestionEntity.class);
+        result.setType(QuestionType.SELF_ASSESSMENT);
+        return result;
+    }
+
+    public QuestionEntity selfAssessmentQuestionInputToEntity(UpdateSelfAssessmentQuestionInput input) {
+        var result = mapper.map(input, SelfAssessmentQuestionEntity.class);
+        result.setType(QuestionType.SELF_ASSESSMENT);
+        return result;
+    }
 }

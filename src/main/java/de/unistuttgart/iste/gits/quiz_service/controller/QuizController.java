@@ -65,6 +65,46 @@ public class QuizController {
     }
 
     @SchemaMapping(typeName = "QuizMutation")
+    public Quiz addAssociationQuestion(@Argument CreateAssociationQuestionInput input, QuizMutation quizMutation) {
+        return quizService.addAssociationQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz updateAssociationQuestion(@Argument UpdateAssociationQuestionInput input, QuizMutation quizMutation) {
+        return quizService.updateAssociationQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz addExactAnswerQuestion(@Argument CreateExactAnswerQuestionInput input, QuizMutation quizMutation) {
+        return quizService.addExactAnswerQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz updateExactAnswerQuestion(@Argument UpdateExactAnswerQuestionInput input, QuizMutation quizMutation) {
+        return quizService.updateExactAnswerQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz addNumericQuestion(@Argument CreateNumericQuestionInput input, QuizMutation quizMutation) {
+        return quizService.addNumericQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz updateNumericQuestion(@Argument UpdateNumericQuestionInput input, QuizMutation quizMutation) {
+        return quizService.updateNumericQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz addSelfAssessmentQuestion(@Argument CreateSelfAssessmentQuestionInput input, QuizMutation quizMutation) {
+        return quizService.addSelfAssessmentQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
+    public Quiz updateSelfAssessmentQuestion(@Argument UpdateSelfAssessmentQuestionInput input, QuizMutation quizMutation) {
+        return quizService.updateSelfAssessmentQuestion(quizMutation.getAssessmentId(), input);
+    }
+
+    @SchemaMapping(typeName = "QuizMutation")
     public Quiz removeQuestion(@Argument int number, QuizMutation quizMutation) {
         return quizService.removeQuestion(quizMutation.getAssessmentId(), number);
     }

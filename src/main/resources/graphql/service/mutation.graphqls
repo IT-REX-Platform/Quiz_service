@@ -47,37 +47,37 @@ type QuizMutation {
     """
     Add an association question to the quiz questions, at the end of the list.
     """
-    addAssociationQuestion(input: CreateAssociationQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    addAssociationQuestion(input: CreateAssociationQuestionInput!): Quiz!
     """
     Update an association question in the quiz questions.
     """
-    updateAssociationQuestion(input: UpdateAssociationQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    updateAssociationQuestion(input: UpdateAssociationQuestionInput!): Quiz!
 
     """
     Add an free text question with exact answer to the quiz questions, at the end of the list.
     """
-    addExactAnswerQuestion(input: CreateExactAnswerQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    addExactAnswerQuestion(input: CreateExactAnswerQuestionInput!): Quiz!
     """
     Update an free text question with exact answer in the quiz questions.
     """
-    updateExactAnswerQuestion(input: UpdateExactAnswerQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    updateExactAnswerQuestion(input: UpdateExactAnswerQuestionInput!): Quiz!
     """
     Add a numeric question to the quiz questions, at the end of the list.
     """
-    addNumericQuestion(input: CreateNumericQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    addNumericQuestion(input: CreateNumericQuestionInput!): Quiz!
     """
     Update a numeric question in the quiz questions.
     """
-    updateNumericQuestion(input: UpdateNumericQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    updateNumericQuestion(input: UpdateNumericQuestionInput!): Quiz!
 
     """
     Add a self assessment question to the quiz questions, at the end of the list.
     """
-    addSelfAssessmentQuestion(input: CreateSelfAssessmentQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    addSelfAssessmentQuestion(input: CreateSelfAssessmentQuestionInput!): Quiz!
     """
     Update a self assessment question in the quiz questions.
     """
-    updateSelfAssessmentQuestion(input: UpdateSelfAssessmentQuestionInput!): Quiz! @deprecated(reason: "Not implemented yet")
+    updateSelfAssessmentQuestion(input: UpdateSelfAssessmentQuestionInput!): Quiz!
 
     # add other types of questions here
 
@@ -267,15 +267,15 @@ input CreateAssociationQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     List of associations.
     """
-    associations: [AssociationInput!]! @ContainerSize(min: 2)
+    correctAssociations: [AssociationInput!]! @ContainerSize(min: 2)
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input UpdateAssociationQuestionInput {
@@ -286,15 +286,15 @@ input UpdateAssociationQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     List of associations.
     """
-    associations: [AssociationInput!]! @ContainerSize(min: 2)
+    correctAssociations: [AssociationInput!]! @ContainerSize(min: 2)
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input AssociationInput {
@@ -309,7 +309,7 @@ input AssociationInput {
     """
     Feedback for the association when the user selects a wrong answer, can be markdown.
     """
-    feedback: ResourceMarkdownInput @Size(max: 1000)
+    feedback: ResourceMarkdownInput
 }
 
 input CreateExactAnswerQuestionInput {
@@ -321,7 +321,7 @@ input CreateExactAnswerQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     If the answer is case sensitive. If true, the answer is checked case sensitive.
     """
@@ -333,11 +333,11 @@ input CreateExactAnswerQuestionInput {
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
-    feedback: ResourceMarkdownInput @Size(max: 1000)
+    feedback: ResourceMarkdownInput
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input UpdateExactAnswerQuestionInput {
@@ -348,11 +348,11 @@ input UpdateExactAnswerQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     A list of possible correct answers.
     """
-    correctAnswers: [String!]! @ContainerSize(min: 1) @Size(max: 255)
+    correctAnswers: [String!]! @ContainerSize(min: 1)
     """
     If the answer is case sensitive. If true, the answer is checked case sensitive.
     """
@@ -360,11 +360,11 @@ input UpdateExactAnswerQuestionInput {
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
-    feedback: ResourceMarkdownInput @Size(max: 1000)
+    feedback: ResourceMarkdownInput
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input CreateNumericQuestionInput {
@@ -376,7 +376,7 @@ input CreateNumericQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     The correct answer for the question.
     """
@@ -388,11 +388,11 @@ input CreateNumericQuestionInput {
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
-    feedback: ResourceMarkdownInput @Size(max: 1000)
+    feedback: ResourceMarkdownInput
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input UpdateNumericQuestionInput {
@@ -403,7 +403,7 @@ input UpdateNumericQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     The correct answer for the question.
     """
@@ -415,11 +415,11 @@ input UpdateNumericQuestionInput {
     """
     Feedback for the question when the user enters a wrong answer, can be markdown.
     """
-    feedback: ResourceMarkdownInput @Size(max: 1000)
+    feedback: ResourceMarkdownInput
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input CreateSelfAssessmentQuestionInput {
@@ -431,15 +431,15 @@ input CreateSelfAssessmentQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: ResourceMarkdownInput! @Size(max: 1000)
+    solutionSuggestion: ResourceMarkdownInput!
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input UpdateSelfAssessmentQuestionInput {
@@ -450,15 +450,15 @@ input UpdateSelfAssessmentQuestionInput {
     """
     Text of the question, can be markdown.
     """
-    text: ResourceMarkdownInput! @Size(max: 1000)
+    text: ResourceMarkdownInput!
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: ResourceMarkdownInput! @Size(max: 1000)
+    solutionSuggestion: ResourceMarkdownInput!
     """
     Optional hint for the question, can be markdown.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: ResourceMarkdownInput
 }
 
 input QuizCompletedInput {

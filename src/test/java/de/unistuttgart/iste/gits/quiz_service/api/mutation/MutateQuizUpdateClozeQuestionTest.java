@@ -71,6 +71,10 @@ class MutateQuizUpdateClozeQuestionTest {
                 .variable("id", quizEntity.getAssessmentId())
                 .variable("input", input)
                 .execute()
+                .path("mutateQuiz.updateClozeQuestion.questionPool[0].number")
+                .entity(Integer.class)
+                .isEqualTo(1)
+
                 .path("mutateQuiz.updateClozeQuestion.questionPool[0].clozeElements[0]")
                 .entity(ClozeTextElement.class)
                 .isEqualTo(ClozeTextElement.builder()

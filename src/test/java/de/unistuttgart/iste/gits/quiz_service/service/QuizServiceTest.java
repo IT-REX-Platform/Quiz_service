@@ -5,7 +5,7 @@ import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbedd
 import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.*;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import de.unistuttgart.iste.gits.quiz_service.validation.QuizValidator;
@@ -51,10 +51,9 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(List.of(quizEntity));
 
         // invoke method under test
-        quizService.removeContentIds(contentChangeEvent);
+        quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
 
-        verify(quizRepository, times(1)).findAllById(any());
-        verify(quizRepository, times(1)).deleteAllInBatch(any());
+        verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
 
     @Test
@@ -71,10 +70,9 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(new ArrayList<QuizEntity>());
 
         // invoke method under test
-        quizService.removeContentIds(contentChangeEvent);
+        quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
 
-        verify(quizRepository, times(1)).findAllById(any());
-        verify(quizRepository, times(1)).deleteAllInBatch(any());
+        verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
 
     @Test
@@ -111,7 +109,7 @@ class QuizServiceTest {
 
         for (ContentChangeEvent event : events) {
             //invoke method under test
-            quizService.removeContentIds(event);
+            quizService.deleteQuizzesWhenQuizContentIsDeleted(event);
             verify(quizRepository, never()).findAllById(any());
             verify(quizRepository, never()).deleteAllInBatch(any());
         }

@@ -4,8 +4,4 @@ type Query {
     If any of the assessment IDs are not found, the corresponding quiz will be null.
     """
     findQuizzesByAssessmentIds(assessmentIds: [UUID!]!): [Quiz]!
-    """
-    Get all quizzes.
-    """
-    quizzes: [Quiz!]! @deprecated(reason: "In the production system, you shouldn't be able to get all quizzes.")
 }

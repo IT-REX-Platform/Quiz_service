@@ -6,7 +6,7 @@ import de.unistuttgart.iste.gits.generated.dto.CreateNumericQuestionInput;
 import de.unistuttgart.iste.gits.generated.dto.ResourceMarkdownInput;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.*;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;

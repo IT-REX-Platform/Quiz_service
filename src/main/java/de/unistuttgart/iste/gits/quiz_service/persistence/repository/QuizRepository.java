@@ -1,6 +1,6 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.repository;
 
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuizEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

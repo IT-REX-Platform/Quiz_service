@@ -3,7 +3,7 @@ package de.unistuttgart.iste.gits.quiz_service.service;
 import de.unistuttgart.iste.gits.common.event.*;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.*;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import de.unistuttgart.iste.gits.quiz_service.validation.QuizValidator;
@@ -35,30 +35,23 @@ public class QuizService {
      * If an assessment id does not exist, the corresponding quiz is null.
      *
      * @param assessmentIds the assessment ids
-     * @return the quizzes
+     * @return the (nullable) quizzes
      */
     public List<Quiz> findQuizzesByAssessmentIds(List<UUID> assessmentIds) {
         return assessmentIds.stream()
                 .map(quizRepository::findById)
-                .map(optionalQuiz -> optionalQuiz.map(this::entityToDto))
+                .map(optionalQuiz -> optionalQuiz.map(quizMapper::entityToDto))
                 .map(optionalQuiz -> optionalQuiz.orElse(null))
                 .toList();
     }
-
-    public List<Quiz> getAllQuizzes() {
-        return quizRepository.findAll()
-                .stream()
-                .map(this::entityToDto)
-                .toList();
-    }
-
 
     /**
      * Creates a new quiz.
      *
      * @param input the quiz to create
      * @return the created quiz
-     * @throws ValidationException if the question numbers are not unique or any question does not validate
+     * @throws ValidationException if the quiz is invalid according to
+     *                             {@link QuizValidator#validateCreateQuizInput(CreateQuizInput)}.
      */
     public Quiz createQuiz(UUID assessmentId, CreateQuizInput input) {
         quizValidator.validateCreateQuizInput(input);
@@ -67,14 +60,14 @@ public class QuizService {
         entity.setAssessmentId(assessmentId);
 
         QuizEntity savedEntity = quizRepository.save(entity);
-        return entityToDto(savedEntity);
+        return quizMapper.entityToDto(savedEntity);
     }
 
     /**
      * Deletes a quiz.
      *
      * @param id the id of the quiz to delete
-     * @return the id of the deleted quiz
+     * @return the id of the deleted quiz if the deletion was successful
      * @throws EntityNotFoundException if the quiz does not exist
      */
     public UUID deleteQuiz(UUID id) {
@@ -92,7 +85,8 @@ public class QuizService {
      * @param input  the question to add
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz does not exist
-     * @throws ValidationException     if the question number is not unique or if there is no correct answer
+     * @throws ValidationException     if input is invalid according to
+     *                                 {@link QuizValidator#validateCreateMultipleChoiceQuestionInput(CreateMultipleChoiceQuestionInput)}
      */
     public Quiz addMultipleChoiceQuestion(UUID quizId, CreateMultipleChoiceQuestionInput input) {
         quizValidator.validateCreateMultipleChoiceQuestionInput(input);
@@ -263,13 +257,24 @@ public class QuizService {
         });
     }
 
+    /**
+     * Adds a question to a quiz.
+     *
+     * @param quizId         the id of the quiz.
+     * @param input          the question input that contains the question to add.
+     * @param questionNumber the number of the question to add. If null, the number is assigned automatically.
+     * @param mapping        the mapping function that maps the input to a question entity.
+     * @param <I>            the type of the question input, e.g. {@link CreateMultipleChoiceQuestionInput}
+     * @param <E>            the type of the question entity, e.g. {@link MultipleChoiceQuestionEntity}
+     * @return the modified quiz
+     */
     private <I, E extends QuestionEntity> Quiz addQuestion(UUID quizId,
                                                            I input,
                                                            Integer questionNumber,
                                                            Function<I, E> mapping) {
         return modifyQuiz(quizId, entity -> {
             int number = questionNumber == null ? assignNumber(entity) : questionNumber;
-            checkNumberIsUnique(entity, number);
+            quizValidator.checkNumberIsUnique(entity, number);
 
             E questionEntity = mapping.apply(input);
             questionEntity.setNumber(number);
@@ -332,6 +337,13 @@ public class QuizService {
         return modifyQuiz(quizId, entity -> entity.setNumberOfRandomlySelectedQuestions(numberOfRandomlySelectedQuestions));
     }
 
+    /**
+     * Returns the quiz with the given id or throws an exception if the quiz does not exist.
+     *
+     * @param id the id of the quiz
+     * @return the quiz entity
+     * @throws EntityNotFoundException if the quiz does not exist
+     */
     public QuizEntity requireQuizExists(UUID id) {
         return quizRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Quiz with id " + id + " not found"));
@@ -352,15 +364,7 @@ public class QuizService {
         modifier.accept(entity);
 
         QuizEntity savedEntity = quizRepository.save(entity);
-        return entityToDto(savedEntity);
-    }
-
-    private void checkNumberIsUnique(QuizEntity quizEntity, int questionNumber) {
-        if (quizEntity.getQuestionPool().stream().anyMatch(q -> q.getNumber() == questionNumber)) {
-            throw new ValidationException("Question number must be unique, but the number "
-                                          + questionNumber
-                                          + " is already used.");
-        }
+        return quizMapper.entityToDto(savedEntity);
     }
 
     private int assignNumber(QuizEntity entity) {
@@ -368,40 +372,6 @@ public class QuizService {
             return 1;
         }
         return entity.getQuestionPool().get(entity.getQuestionPool().size() - 1).getNumber() + 1;
-    }
-
-    private Quiz entityToDto(QuizEntity entity) {
-        Quiz dto = quizMapper.entityToDto(entity);
-        return selectQuestions(dto);
-    }
-
-    /**
-     * Selects the questions for a quiz based on the question pooling mode.
-     * <p>
-     * If the question pooling mode is {@link QuestionPoolingMode#ORDERED}, all questions are selected
-     * and the order is preserved.
-     * If the question pooling mode is {@link QuestionPoolingMode#RANDOM}, the questions are shuffled
-     * and the number of questions is limited to {@link Quiz#getNumberOfRandomlySelectedQuestions()}.
-     *
-     * @param quiz the quiz
-     * @return the quiz with the selected questions
-     */
-    private Quiz selectQuestions(Quiz quiz) {
-        if (quiz.getQuestionPoolingMode() == QuestionPoolingMode.ORDERED) {
-            quiz.setSelectedQuestions(quiz.getQuestionPool());
-            return quiz;
-        }
-
-        int limit = quiz.getQuestionPool().size();
-        if (quiz.getNumberOfRandomlySelectedQuestions() != null) {
-            limit = Math.min(limit, quiz.getNumberOfRandomlySelectedQuestions());
-        }
-
-        List<Question> pool = new ArrayList<>(quiz.getQuestionPool());
-        Collections.shuffle(pool);
-        quiz.setSelectedQuestions(pool.subList(0, limit));
-
-        return quiz;
     }
 
     private QuestionEntity getQuestionInQuizById(QuizEntity quizEntity, UUID questionId) {
@@ -429,7 +399,7 @@ public class QuizService {
      *
      * @param dto event object containing changes to content
      */
-    public void removeContentIds(ContentChangeEvent dto) {
+    public void deleteQuizzesWhenQuizContentIsDeleted(ContentChangeEvent dto) {
         // validate event message
         try {
             checkCompletenessOfDto(dto);
@@ -442,11 +412,8 @@ public class QuizService {
             return;
         }
 
-        // find all quizzes
-        List<QuizEntity> quizEntities = quizRepository.findAllById(dto.getContentIds());
-
         // delete all found quizzes
-        quizRepository.deleteAllInBatch(quizEntities);
+        quizRepository.deleteAllByIdInBatch(dto.getContentIds());
 
     }
 
@@ -541,7 +508,8 @@ public class QuizService {
             return correctAnswers;
         }
 
-        if (quizEntity.getQuestionPoolingMode().equals(QuestionPoolingMode.RANDOM) && quizEntity.getNumberOfRandomlySelectedQuestions() != null) {
+        if (quizEntity.getQuestionPoolingMode().equals(QuestionPoolingMode.RANDOM)
+            && quizEntity.getNumberOfRandomlySelectedQuestions() != null) {
 
             if (quizEntity.getNumberOfRandomlySelectedQuestions() == 0) {
                 return 1.0;

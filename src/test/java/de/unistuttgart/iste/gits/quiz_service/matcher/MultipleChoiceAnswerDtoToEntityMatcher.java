@@ -1,7 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.matcher;
 
 import de.unistuttgart.iste.gits.generated.dto.MultipleChoiceAnswer;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceAnswerEmbeddable;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.MultipleChoiceAnswerEmbeddable;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 

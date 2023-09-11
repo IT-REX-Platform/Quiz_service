@@ -3,7 +3,7 @@ package de.unistuttgart.iste.gits.quiz_service;
 import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
 import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.generated.dto.*;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.*;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 
 import java.util.*;
 import java.util.stream.Stream;

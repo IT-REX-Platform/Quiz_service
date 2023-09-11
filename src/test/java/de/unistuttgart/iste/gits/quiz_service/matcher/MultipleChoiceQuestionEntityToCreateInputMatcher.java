@@ -2,8 +2,8 @@ package de.unistuttgart.iste.gits.quiz_service.matcher;
 
 import de.unistuttgart.iste.gits.generated.dto.CreateMultipleChoiceQuestionInput;
 import de.unistuttgart.iste.gits.generated.dto.QuestionType;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.MultipleChoiceQuestionEntity;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuestionEntity;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.MultipleChoiceQuestionEntity;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuestionEntity;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 

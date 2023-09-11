@@ -1,4 +1,4 @@
-package de.unistuttgart.iste.gits.quiz_service.persistence.dao;
+package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
 import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
 import jakarta.persistence.*;

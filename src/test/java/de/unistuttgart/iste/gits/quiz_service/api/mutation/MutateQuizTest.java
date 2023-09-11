@@ -3,7 +3,7 @@ package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
-import de.unistuttgart.iste.gits.quiz_service.persistence.dao.QuizEntity;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

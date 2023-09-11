@@ -1,12 +1,14 @@
-package de.unistuttgart.iste.gits.quiz_service.persistence.dao;
+package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
 import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Entity(name = "SelfAssessmentQuestion")
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity(name = "AssociationQuestion")
 @ToString(callSuper = true)
 @Getter
 @Setter
@@ -14,13 +16,14 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SelfAssessmentQuestionEntity extends QuestionEntity {
+public class AssociationQuestionEntity extends QuestionEntity {
 
     @Embedded
     @Builder.Default
     private ResourceMarkdownEmbeddable text = new ResourceMarkdownEmbeddable("");
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @ElementCollection
     @Builder.Default
-    private ResourceMarkdownEntity solutionSuggestion = new ResourceMarkdownEntity("");
+    private List<AssociationEmbeddable> correctAssociations = new ArrayList<>();
+
 }

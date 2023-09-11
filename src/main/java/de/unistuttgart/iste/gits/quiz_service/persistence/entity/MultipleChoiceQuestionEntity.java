@@ -1,4 +1,4 @@
-package de.unistuttgart.iste.gits.quiz_service.persistence.dao;
+package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
 import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
 import de.unistuttgart.iste.gits.generated.dto.QuestionType;

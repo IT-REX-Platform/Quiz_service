@@ -1,6 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.validation;
 
 import de.unistuttgart.iste.gits.generated.dto.*;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuizEntity;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
 
@@ -81,6 +82,21 @@ public class QuizValidator {
         if (leftSide.size() != leftSide.stream().distinct().count()
             || rightSide.size() != rightSide.stream().distinct().count()) {
             throw new ValidationException("Each side of the associations must only contain unique values");
+        }
+    }
+
+    /**
+     * Checks if the question number is unique in the quiz
+     *
+     * @param quizEntity     the quiz entity
+     * @param questionNumber the question number to check
+     * @throws ValidationException if the question number is not unique
+     */
+    public void checkNumberIsUnique(QuizEntity quizEntity, int questionNumber) {
+        if (quizEntity.getQuestionPool().stream().anyMatch(q -> q.getNumber() == questionNumber)) {
+            throw new ValidationException("Question number must be unique, but the number "
+                                          + questionNumber
+                                          + " is already used.");
         }
     }
 }

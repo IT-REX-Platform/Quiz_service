@@ -23,11 +23,6 @@ public class QuizController {
         return quizService.findQuizzesByAssessmentIds(assessmentIds);
     }
 
-    @QueryMapping
-    public List<Quiz> quizzes() {
-        return quizService.getAllQuizzes();
-    }
-
     @MutationMapping
     public Quiz createQuiz(@Argument UUID assessmentId, @Argument CreateQuizInput input) {
         return quizService.createQuiz(assessmentId, input);

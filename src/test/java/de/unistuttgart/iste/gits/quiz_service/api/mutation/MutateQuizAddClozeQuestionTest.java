@@ -107,9 +107,11 @@ class MutateQuizAddClozeQuestionTest {
         assertThat(clozeQuestionEntity.getClozeElements(), hasSize(2));
         assertThat(clozeQuestionEntity.getClozeElements().get(0).getType(), is(ClozeElementType.TEXT));
         assertThat(clozeQuestionEntity.getClozeElements().get(0).getText().getText(), is("what is the capital of France?"));
+        assertThat(clozeQuestionEntity.getClozeElements().get(0).getPosition(), is(1));
         assertThat(clozeQuestionEntity.getClozeElements().get(1).getType(), is(ClozeElementType.BLANK));
         assertThat(clozeQuestionEntity.getClozeElements().get(1).getCorrectAnswer(), is("Paris"));
         assertThat(clozeQuestionEntity.getClozeElements().get(1).getFeedback().getText(), is("feedback"));
+        assertThat(clozeQuestionEntity.getClozeElements().get(1).getPosition(), is(2));
 
         assertThat(clozeQuestionEntity.getHint().getText(), is("hint"));
     }

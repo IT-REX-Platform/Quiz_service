@@ -13,6 +13,9 @@ import lombok.*;
 @NoArgsConstructor
 public class ClozeElementEmbeddable {
 
+    @OrderColumn(nullable = false)
+    private int position;
+
     @Enumerated(EnumType.ORDINAL)
     private ClozeElementType type;
 

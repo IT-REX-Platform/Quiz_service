@@ -174,13 +174,22 @@ public class QuizMapper {
     public QuestionEntity clozeQuestionInputToEntity(CreateClozeQuestionInput input) {
         var result = mapper.map(input, ClozeQuestionEntity.class);
         result.setType(QuestionType.CLOZE);
+        setPositionNumbersInClozeElements(result.getClozeElements());
         return result;
     }
 
     public QuestionEntity clozeQuestionInputToEntity(UpdateClozeQuestionInput input) {
         var result = mapper.map(input, ClozeQuestionEntity.class);
         result.setType(QuestionType.CLOZE);
+        setPositionNumbersInClozeElements(result.getClozeElements());
         return result;
+    }
+
+    private void setPositionNumbersInClozeElements(List<ClozeElementEmbeddable> clozeElements) {
+        int position = 1;
+        for (ClozeElementEmbeddable clozeElement : clozeElements) {
+            clozeElement.setPosition(position++);
+        }
     }
 
     public QuestionEntity associationQuestionInputToEntity(CreateAssociationQuestionInput input) {

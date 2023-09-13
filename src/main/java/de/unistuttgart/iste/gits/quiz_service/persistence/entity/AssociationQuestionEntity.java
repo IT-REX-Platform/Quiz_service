@@ -1,6 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -18,9 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 public class AssociationQuestionEntity extends QuestionEntity {
 
-    @Embedded
-    @Builder.Default
-    private ResourceMarkdownEmbeddable text = new ResourceMarkdownEmbeddable("");
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String text;
 
     @ElementCollection
     @Builder.Default

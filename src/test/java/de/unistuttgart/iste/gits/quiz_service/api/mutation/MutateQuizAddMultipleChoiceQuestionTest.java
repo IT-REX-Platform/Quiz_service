@@ -51,15 +51,15 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText(new ResourceMarkdownInput("what is the capital of France?"))
+                .setText("what is the capital of France?")
                 .setNumber(2)
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Paris"))
+                                .setAnswerText("Paris")
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
+                                .setAnswerText("Madrid")
                                 .setCorrect(false)
                                 .build()))
                 .build();
@@ -91,15 +91,15 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText(new ResourceMarkdownInput("what is the capital of France?"))
+                .setText("what is the capital of France?")
                 .setNumber(null) // number should be assigned automatically
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Paris"))
+                                .setAnswerText("Paris")
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
+                                .setAnswerText("Madrid")
                                 .setCorrect(false)
                                 .build()))
                 .build();
@@ -133,15 +133,15 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText(new ResourceMarkdownInput("what is the capital of France?"))
+                .setText("what is the capital of France?")
                 .setNumber(1) // already existing number
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Paris"))
+                                .setAnswerText("Paris")
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
+                                .setAnswerText("Madrid")
                                 .setCorrect(false)
                                 .build()))
                 .build();
@@ -173,14 +173,14 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText(new ResourceMarkdownInput("what is the capital of France?"))
+                .setText("what is the capital of France?")
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Berlin"))
+                                .setAnswerText("Berlin")
                                 .setCorrect(false)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
+                                .setAnswerText("Madrid")
                                 .setCorrect(false)
                                 .build()))
                 .build();
@@ -212,10 +212,10 @@ class MutateQuizAddMultipleChoiceQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
-                .setText(new ResourceMarkdownInput("what is the capital of France?"))
+                .setText("what is the capital of France?")
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Paris"))
+                                .setAnswerText("Paris")
                                 .setCorrect(true)
                                 .build()))
                 .build();

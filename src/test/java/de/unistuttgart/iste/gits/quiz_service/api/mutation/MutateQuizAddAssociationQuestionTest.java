@@ -1,6 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.generated.dto.*;
@@ -51,11 +50,11 @@ class MutateQuizAddAssociationQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateAssociationQuestionInput input = CreateAssociationQuestionInput.builder()
-                .setHint(new ResourceMarkdownInput("hint"))
-                .setText(new ResourceMarkdownInput("question"))
+                .setHint("hint")
+                .setText("question")
                 .setCorrectAssociations(List.of(
-                        new AssociationInput("a", "b", new ResourceMarkdownInput("feedback1")),
-                        new AssociationInput("c", "d", new ResourceMarkdownInput("feedback2"))))
+                        new AssociationInput("a", "b", "feedback1"),
+                        new AssociationInput("c", "d", "feedback2")))
                 .build();
 
 
@@ -67,19 +66,19 @@ class MutateQuizAddAssociationQuestionTest {
                 .entity(Integer.class)
                 .isEqualTo(1)
 
-                .path("mutateQuiz.addAssociationQuestion.questionPool[0].text.text")
+                .path("mutateQuiz.addAssociationQuestion.questionPool[0].text")
                 .entity(String.class)
                 .isEqualTo("question")
 
-                .path("mutateQuiz.addAssociationQuestion.questionPool[0].hint.text")
+                .path("mutateQuiz.addAssociationQuestion.questionPool[0].hint")
                 .entity(String.class)
                 .isEqualTo("hint")
 
                 .path("mutateQuiz.addAssociationQuestion.questionPool[0].correctAssociations")
                 .entityList(SingleAssociation.class)
                 .contains(
-                        new SingleAssociation("a", "b", new ResourceMarkdown("feedback1", List.of())),
-                        new SingleAssociation("c", "d", new ResourceMarkdown("feedback2", List.of())))
+                        new SingleAssociation("a", "b", "feedback1"),
+                        new SingleAssociation("c", "d", "feedback2"))
 
                 .path("mutateQuiz.addAssociationQuestion.questionPool[0].leftSide")
                 .entityList(String.class)
@@ -97,12 +96,12 @@ class MutateQuizAddAssociationQuestionTest {
         assertThat(questionEntity, instanceOf(AssociationQuestionEntity.class));
         AssociationQuestionEntity associationQuestionEntity = (AssociationQuestionEntity) questionEntity;
 
-        assertThat(associationQuestionEntity.getHint().getText(), is("hint"));
-        assertThat(associationQuestionEntity.getText().getText(), is("question"));
+        assertThat(associationQuestionEntity.getHint(), is("hint"));
+        assertThat(associationQuestionEntity.getText(), is("question"));
         assertThat(associationQuestionEntity.getCorrectAssociations(), hasSize(2));
         assertThat(associationQuestionEntity.getCorrectAssociations(), containsInAnyOrder(
-                new AssociationEmbeddable("a", "b", new ResourceMarkdownEmbeddable("feedback1")),
-                new AssociationEmbeddable("c", "d", new ResourceMarkdownEmbeddable("feedback2"))));
+                new AssociationEmbeddable("a", "b", "feedback1"),
+                new AssociationEmbeddable("c", "d", "feedback2")));
 
     }
 
@@ -121,11 +120,11 @@ class MutateQuizAddAssociationQuestionTest {
 
         CreateAssociationQuestionInput input = CreateAssociationQuestionInput.builder()
                 .setNumber(2)
-                .setHint(new ResourceMarkdownInput("hint"))
-                .setText(new ResourceMarkdownInput("question"))
+                .setHint("hint")
+                .setText("question")
                 .setCorrectAssociations(List.of(
-                        new AssociationInput("a", "b", new ResourceMarkdownInput("feedback1")),
-                        new AssociationInput("c", "b", new ResourceMarkdownInput("feedback2"))))
+                        new AssociationInput("a", "b", "feedback1"),
+                        new AssociationInput("c", "b", "feedback2")))
                 .build();
 
         graphQlTester.document(ADD_ASSOCIATION_QUESTION_MUTATION)

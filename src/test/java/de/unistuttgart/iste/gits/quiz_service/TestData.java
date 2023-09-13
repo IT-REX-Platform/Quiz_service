@@ -1,7 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 
@@ -25,20 +23,20 @@ public class TestData {
 
         var builder = MultipleChoiceQuestionEntity.builder()
                 .type(QuestionType.MULTIPLE_CHOICE)
-                .hint(new ResourceMarkdownEntity("hint"))
+                .hint("hint")
                 .number(number)
-                .text(new ResourceMarkdownEmbeddable(text));
+                .text(text);
 
         var correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .answerText(new ResourceMarkdownEntity(correctAnswerText))
-                .feedback(new ResourceMarkdownEntity("feedback"))
+                .answerText(correctAnswerText)
+                .feedback("feedback")
                 .correct(true)
                 .build();
 
         var wrongAnswers = Arrays.stream(wrongAnswerText)
                 .map(answer -> MultipleChoiceAnswerEmbeddable.builder()
-                        .answerText(new ResourceMarkdownEntity(answer))
-                        .feedback(new ResourceMarkdownEntity("feedback"))
+                        .answerText(answer)
+                        .feedback("feedback")
                         .correct(false)
                         .build());
 
@@ -54,14 +52,14 @@ public class TestData {
                 .showBlanksList(true)
                 .additionalWrongAnswers(Arrays.asList("wrong1", "wrong2"))
                 .clozeElements(Arrays.asList(clozeElements))
-                .hint(new ResourceMarkdownEntity("hint"))
+                .hint("hint")
                 .build();
     }
 
     public static ClozeElementEmbeddable clozeText(String text) {
         return ClozeElementEmbeddable.builder()
                 .type(ClozeElementType.TEXT)
-                .text(new ResourceMarkdownEmbeddable(text))
+                .text(text)
                 .build();
     }
 
@@ -69,7 +67,7 @@ public class TestData {
         return ClozeElementEmbeddable.builder()
                 .type(ClozeElementType.BLANK)
                 .correctAnswer(correctAnswer)
-                .feedback(new ResourceMarkdownEntity("feedback"))
+                .feedback("feedback")
                 .build();
     }
 
@@ -77,9 +75,9 @@ public class TestData {
         return AssociationQuestionEntity.builder()
                 .type(QuestionType.ASSOCIATION)
                 .number(number)
-                .text(new ResourceMarkdownEmbeddable("text"))
+                .text("text")
                 .correctAssociations(Arrays.asList(associations))
-                .hint(new ResourceMarkdownEntity("hint"))
+                .hint("hint")
                 .build();
     }
 
@@ -91,7 +89,7 @@ public class TestData {
         return AssociationEmbeddable.builder()
                 .left(left)
                 .right(right)
-                .feedback(new ResourceMarkdownEmbeddable(feedback))
+                .feedback(feedback)
                 .build();
     }
 
@@ -99,11 +97,11 @@ public class TestData {
         return ExactAnswerQuestionEntity.builder()
                 .type(QuestionType.EXACT_ANSWER)
                 .number(number)
-                .text(new ResourceMarkdownEmbeddable(question))
+                .text(question)
                 .correctAnswers(Collections.singletonList(answer))
-                .feedback(new ResourceMarkdownEntity("feedback"))
+                .feedback("feedback")
                 .caseSensitive(true)
-                .hint(new ResourceMarkdownEntity("hint"))
+                .hint("hint")
                 .build();
     }
 
@@ -111,11 +109,11 @@ public class TestData {
         return NumericQuestionEntity.builder()
                 .type(QuestionType.NUMERIC)
                 .number(number)
-                .text(new ResourceMarkdownEmbeddable(question))
-                .feedback(new ResourceMarkdownEntity("feedback"))
+                .text(question)
+                .feedback("feedback")
                 .tolerance(1)
                 .correctAnswer(answer)
-                .hint(new ResourceMarkdownEntity("hint"))
+                .hint("hint")
                 .build();
     }
 
@@ -123,9 +121,9 @@ public class TestData {
         return SelfAssessmentQuestionEntity.builder()
                 .type(QuestionType.SELF_ASSESSMENT)
                 .number(number)
-                .text(new ResourceMarkdownEmbeddable(question))
-                .solutionSuggestion(new ResourceMarkdownEntity(answer))
-                .hint(new ResourceMarkdownEntity("hint"))
+                .text(question)
+                .solutionSuggestion(answer)
+                .hint("hint")
                 .build();
     }
 }

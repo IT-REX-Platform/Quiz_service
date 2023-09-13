@@ -1,6 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
 import de.unistuttgart.iste.gits.generated.dto.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,9 +19,8 @@ public class MultipleChoiceQuestionEntity extends QuestionEntity {
         this.setType(QuestionType.MULTIPLE_CHOICE);
     }
 
-    @Embedded
-    @Builder.Default
-    private ResourceMarkdownEmbeddable text = new ResourceMarkdownEmbeddable("");
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String text;
 
     @ElementCollection
     @Builder.Default

@@ -45,15 +45,15 @@ class MutateQuizUpdateClozeQuestionTest {
                 .setClozeElements(List.of(
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.TEXT)
-                                .setText(new ResourceMarkdownInput("This is an example text with a blank."))
+                                .setText("This is an example text with a blank.")
                                 .build(),
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.BLANK)
                                 .setCorrectAnswer("blank")
-                                .setFeedback(new ResourceMarkdownInput("new feedback"))
+                                .setFeedback("new feedback")
                                 .build()))
                 .setShowBlanksList(false)
-                .setHint(new ResourceMarkdownInput("new hint"))
+                .setHint("new hint")
                 .setAdditionalWrongAnswers(List.of("new wrong answer"))
                 .build();
 
@@ -78,14 +78,14 @@ class MutateQuizUpdateClozeQuestionTest {
                 .path("mutateQuiz.updateClozeQuestion.questionPool[0].clozeElements[0]")
                 .entity(ClozeTextElement.class)
                 .isEqualTo(ClozeTextElement.builder()
-                        .setText(new ResourceMarkdown("This is an example text with a blank.", List.of()))
+                        .setText("This is an example text with a blank.")
                         .build())
 
                 .path("mutateQuiz.updateClozeQuestion.questionPool[0].clozeElements[1]")
                 .entity(ClozeBlankElement.class)
                 .isEqualTo(ClozeBlankElement.builder()
                         .setCorrectAnswer("blank")
-                        .setFeedback(new ResourceMarkdown("new feedback", List.of()))
+                        .setFeedback("new feedback")
                         .build())
 
                 .path("mutateQuiz.updateClozeQuestion.questionPool[0].showBlanksList")
@@ -93,8 +93,8 @@ class MutateQuizUpdateClozeQuestionTest {
                 .isEqualTo(false)
 
                 .path("mutateQuiz.updateClozeQuestion.questionPool[0].hint")
-                .entity(ResourceMarkdown.class)
-                .isEqualTo(new ResourceMarkdown("new hint", List.of()))
+                .entity(String.class)
+                .isEqualTo("new hint")
 
                 .path("mutateQuiz.updateClozeQuestion.questionPool[0].additionalWrongAnswers")
                 .entityList(String.class)
@@ -103,16 +103,16 @@ class MutateQuizUpdateClozeQuestionTest {
         QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
         ClozeQuestionEntity updatedQuestion = (ClozeQuestionEntity) updatedQuiz.getQuestionPool().get(0);
-        assertThat(updatedQuestion.getHint().getText(), is("new hint"));
+        assertThat(updatedQuestion.getHint(), is("new hint"));
         assertThat(updatedQuestion.isShowBlanksList(), is(false));
         assertThat(updatedQuestion.getAdditionalWrongAnswers(), hasSize(1));
         assertThat(updatedQuestion.getAdditionalWrongAnswers().get(0), is("new wrong answer"));
         assertThat(updatedQuestion.getClozeElements(), hasSize(2));
         assertThat(updatedQuestion.getClozeElements().get(0).getType(), is(ClozeElementType.TEXT));
-        assertThat(updatedQuestion.getClozeElements().get(0).getText().getText(), is("This is an example text with a blank."));
+        assertThat(updatedQuestion.getClozeElements().get(0).getText(), is("This is an example text with a blank."));
         assertThat(updatedQuestion.getClozeElements().get(1).getType(), is(ClozeElementType.BLANK));
         assertThat(updatedQuestion.getClozeElements().get(1).getCorrectAnswer(), is("blank"));
-        assertThat(updatedQuestion.getClozeElements().get(1).getFeedback().getText(), is("new feedback"));
+        assertThat(updatedQuestion.getClozeElements().get(1).getFeedback(), is("new feedback"));
 
     }
 }

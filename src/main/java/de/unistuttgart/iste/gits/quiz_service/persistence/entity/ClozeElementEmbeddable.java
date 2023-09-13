@@ -1,7 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.generated.dto.ClozeElementType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,13 +14,12 @@ public class ClozeElementEmbeddable {
     @Enumerated(EnumType.ORDINAL)
     private ClozeElementType type;
 
-    @Embedded
-    @Builder.Default
-    private ResourceMarkdownEmbeddable text = new ResourceMarkdownEmbeddable("");
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String text;
 
     @Column(nullable = true)
     private String correctAnswer;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    private ResourceMarkdownEntity feedback;
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String feedback;
 }

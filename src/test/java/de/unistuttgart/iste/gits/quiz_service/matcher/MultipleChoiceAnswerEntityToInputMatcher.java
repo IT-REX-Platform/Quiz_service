@@ -5,7 +5,7 @@ import de.unistuttgart.iste.gits.quiz_service.persistence.entity.MultipleChoiceA
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import static de.unistuttgart.iste.gits.quiz_service.matcher.ResourceMarkdownMatchers.markdownMatches;
+import java.util.Objects;
 
 /**
  * Matcher for comparing a {@link MultipleChoiceAnswerEmbeddable} to a {@link MultipleChoiceAnswerInput}.
@@ -24,7 +24,7 @@ public class MultipleChoiceAnswerEntityToInputMatcher extends TypeSafeDiagnosing
 
     @Override
     protected boolean matchesSafely(MultipleChoiceAnswerEmbeddable item, Description mismatchDescription) {
-        if (!markdownMatches(item.getAnswerText(), expected.getAnswerText())) {
+        if (!Objects.equals(item.getAnswerText(), expected.getAnswerText())) {
             mismatchDescription.appendText("answer text was ").appendValue(item.getAnswerText());
             return false;
         }
@@ -32,7 +32,7 @@ public class MultipleChoiceAnswerEntityToInputMatcher extends TypeSafeDiagnosing
             mismatchDescription.appendText("correct was ").appendValue(item.isCorrect());
             return false;
         }
-        if (!markdownMatches(item.getFeedback(), expected.getFeedback())) {
+        if (!Objects.equals(item.getFeedback(), expected.getFeedback())) {
             mismatchDescription.appendText("feedback was ").appendValue(item.getFeedback());
             return false;
         }

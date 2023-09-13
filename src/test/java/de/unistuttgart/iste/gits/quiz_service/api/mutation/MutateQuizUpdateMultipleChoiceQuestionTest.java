@@ -40,14 +40,14 @@ class MutateQuizUpdateMultipleChoiceQuestionTest {
 
         UpdateMultipleChoiceQuestionInput input = UpdateMultipleChoiceQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
-                .setText(new ResourceMarkdownInput("what is the capital of France?"))
+                .setText("what is the capital of France?")
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Paris"))
+                                .setAnswerText("Paris")
                                 .setCorrect(true)
                                 .build(),
                         MultipleChoiceAnswerInput.builder()
-                                .setAnswerText(new ResourceMarkdownInput("Madrid"))
+                                .setAnswerText("Madrid")
                                 .setCorrect(false)
                                 .build()))
                 .build();

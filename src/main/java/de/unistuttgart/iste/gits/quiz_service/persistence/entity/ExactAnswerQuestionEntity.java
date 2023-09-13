@@ -1,7 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -18,9 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 public class ExactAnswerQuestionEntity extends QuestionEntity {
 
-    @Embedded
-    @Builder.Default
-    private ResourceMarkdownEmbeddable text = new ResourceMarkdownEmbeddable("");
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String text;
 
     @ElementCollection
     private List<String> correctAnswers;
@@ -28,6 +25,6 @@ public class ExactAnswerQuestionEntity extends QuestionEntity {
     @Column(nullable = false)
     private boolean caseSensitive;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    private ResourceMarkdownEntity feedback;
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String feedback;
 }

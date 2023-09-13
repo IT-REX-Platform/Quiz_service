@@ -3,7 +3,6 @@ package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.generated.dto.CreateNumericQuestionInput;
-import de.unistuttgart.iste.gits.generated.dto.ResourceMarkdownInput;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
@@ -52,9 +51,9 @@ class MutateQuizAddNumericQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateNumericQuestionInput input = CreateNumericQuestionInput.builder()
-                .setHint(new ResourceMarkdownInput("hint"))
-                .setText(new ResourceMarkdownInput("question"))
-                .setFeedback(new ResourceMarkdownInput("feedback"))
+                .setHint("hint")
+                .setText("question")
+                .setFeedback("feedback")
                 .setCorrectAnswer(2.0)
                 .setTolerance(0.5)
                 .build();
@@ -67,13 +66,13 @@ class MutateQuizAddNumericQuestionTest {
                 .path("mutateQuiz.addNumericQuestion.questionPool[0].number")
                 .entity(Integer.class).isEqualTo(1)
 
-                .path("mutateQuiz.addNumericQuestion.questionPool[0].hint.text")
+                .path("mutateQuiz.addNumericQuestion.questionPool[0].hint")
                 .entity(String.class).isEqualTo("hint")
 
-                .path("mutateQuiz.addNumericQuestion.questionPool[0].text.text")
+                .path("mutateQuiz.addNumericQuestion.questionPool[0].text")
                 .entity(String.class).isEqualTo("question")
 
-                .path("mutateQuiz.addNumericQuestion.questionPool[0].feedback.text")
+                .path("mutateQuiz.addNumericQuestion.questionPool[0].feedback")
                 .entity(String.class).isEqualTo("feedback")
 
                 .path("mutateQuiz.addNumericQuestion.questionPool[0].correctAnswer")
@@ -90,9 +89,9 @@ class MutateQuizAddNumericQuestionTest {
         assertThat(questionEntity, instanceOf(NumericQuestionEntity.class));
         NumericQuestionEntity numericQuestionEntity = (NumericQuestionEntity) questionEntity;
 
-        assertThat(numericQuestionEntity.getHint().getText(), is("hint"));
-        assertThat(numericQuestionEntity.getText().getText(), is("question"));
-        assertThat(numericQuestionEntity.getFeedback().getText(), is("feedback"));
+        assertThat(numericQuestionEntity.getHint(), is("hint"));
+        assertThat(numericQuestionEntity.getText(), is("question"));
+        assertThat(numericQuestionEntity.getFeedback(), is("feedback"));
         assertThat(numericQuestionEntity.getCorrectAnswer(), is(2.0));
         assertThat(numericQuestionEntity.getTolerance(), is(0.5));
 

@@ -88,6 +88,8 @@ public class QuizMapper {
     }
 
     public ClozeQuestion clozeQuestionEntityToDto(ClozeQuestionEntity clozeQuestionEntity) {
+        // manual mapping necessary because of ClozeElement interface
+        // which cannot automatically be mapped by model mapper
         ClozeQuestion result = ClozeQuestion.builder()
                 .setType(QuestionType.CLOZE)
                 .setNumber(clozeQuestionEntity.getNumber())
@@ -97,11 +99,8 @@ public class QuizMapper {
                 .setClozeElements(clozeQuestionEntity.getClozeElements().stream()
                         .map(this::clozeElementEntityToDto)
                         .toList())
+                .setHint(clozeQuestionEntity.getHint())
                 .build();
-
-        if (clozeQuestionEntity.getHint() != null) {
-            result.setHint(mapper.map(clozeQuestionEntity.getHint(), ResourceMarkdown.class));
-        }
 
         List<String> allBlanks = new ArrayList<>(result.getAdditionalWrongAnswers().size() + result.getClozeElements().size());
         allBlanks.addAll(result.getAdditionalWrongAnswers());

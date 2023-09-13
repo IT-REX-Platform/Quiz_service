@@ -142,17 +142,17 @@ input CreateMultipleChoiceQuestionInput {
     """
     number: Int @Positive
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     List of answers.
     """
     answers: [MultipleChoiceAnswerInput!]! @ContainerSize(min: 2)
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input UpdateMultipleChoiceQuestionInput {
@@ -161,33 +161,33 @@ input UpdateMultipleChoiceQuestionInput {
     """
     id: UUID!
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     List of answers.
     """
     answers: [MultipleChoiceAnswerInput!]!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 
 }
 
 input MultipleChoiceAnswerInput {
     """
-    Text of the answer, can be markdown.
+    Text of the answer, in SlateJS JSON format.
     """
-    answerText: ResourceMarkdownInput!
+    answerText: JSON!
     """
     Whether the answer is correct or not.
     """
     correct: Boolean!
     """
-    Feedback for when the user selects this answer, can be markdown.
+    Feedback for when the user selects this answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdownInput
+    feedback: JSON
 }
 
 input CreateClozeQuestionInput {
@@ -209,9 +209,9 @@ input CreateClozeQuestionInput {
     """
     showBlanksList: Boolean! = true
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: JSON
 }
 
 input UpdateClozeQuestionInput {
@@ -232,9 +232,9 @@ input UpdateClozeQuestionInput {
     """
     showBlanksList: Boolean! = true
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput @Size(max: 1000)
+    hint: JSON
 }
 
 input ClozeElementInput {
@@ -246,16 +246,16 @@ input ClozeElementInput {
     """
     Text of the element. Only used for TEXT type.
     """
-    text: ResourceMarkdownInput
+    text: JSON
 
     """
     The correct answer for the blank. Only used for BLANK type.
     """
     correctAnswer: String @Size(max: 255)
     """
-    Feedback for the blank when the user selects a wrong answer, can be markdown. Only used for BLANK type.
+    Feedback for the blank when the user selects a wrong answer, in SlateJS JSON format. Only used for BLANK type.
     """
-    feedback: ResourceMarkdownInput
+    feedback: JSON
 }
 
 input CreateAssociationQuestionInput {
@@ -265,17 +265,17 @@ input CreateAssociationQuestionInput {
     """
     number: Int @Positive
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     List of associations.
     """
     correctAssociations: [AssociationInput!]! @ContainerSize(min: 2)
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input UpdateAssociationQuestionInput {
@@ -284,32 +284,32 @@ input UpdateAssociationQuestionInput {
     """
     id: UUID!
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     List of associations.
     """
     correctAssociations: [AssociationInput!]! @ContainerSize(min: 2)
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input AssociationInput {
     """
-    Text of the left side of the association, can be markdown.
+    Text of the left side of the association, in SlateJS JSON format.
     """
     left: String! @Size(max: 255)
     """
-    Text of the right side of the association, can be markdown.
+    Text of the right side of the association, in SlateJS JSON format.
     """
     right: String! @Size(max: 255)
     """
-    Feedback for the association when the user selects a wrong answer, can be markdown.
+    Feedback for the association when the user selects a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdownInput
+    feedback: JSON
 }
 
 input CreateExactAnswerQuestionInput {
@@ -319,9 +319,9 @@ input CreateExactAnswerQuestionInput {
     """
     number: Int @Positive
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     If the answer is case sensitive. If true, the answer is checked case sensitive.
     """
@@ -331,13 +331,13 @@ input CreateExactAnswerQuestionInput {
     """
     correctAnswers: [String!]! @ContainerSize(min: 1) @Size(max: 255)
     """
-    Feedback for the question when the user enters a wrong answer, can be markdown.
+    Feedback for the question when the user enters a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdownInput
+    feedback: JSON
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input UpdateExactAnswerQuestionInput {
@@ -346,9 +346,9 @@ input UpdateExactAnswerQuestionInput {
     """
     id: UUID!
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     A list of possible correct answers.
     """
@@ -358,13 +358,13 @@ input UpdateExactAnswerQuestionInput {
     """
     caseSensitive: Boolean! = false
     """
-    Feedback for the question when the user enters a wrong answer, can be markdown.
+    Feedback for the question when the user enters a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdownInput
+    feedback: JSON
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input CreateNumericQuestionInput {
@@ -374,9 +374,9 @@ input CreateNumericQuestionInput {
     """
     number: Int @Positive
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     The correct answer for the question.
     """
@@ -386,13 +386,13 @@ input CreateNumericQuestionInput {
     """
     tolerance: Float! @Positive
     """
-    Feedback for the question when the user enters a wrong answer, can be markdown.
+    Feedback for the question when the user enters a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdownInput
+    feedback: JSON
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input UpdateNumericQuestionInput {
@@ -401,9 +401,9 @@ input UpdateNumericQuestionInput {
     """
     id: UUID!
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     The correct answer for the question.
     """
@@ -413,13 +413,13 @@ input UpdateNumericQuestionInput {
     """
     tolerance: Float! @Positive
     """
-    Feedback for the question when the user enters a wrong answer, can be markdown.
+    Feedback for the question when the user enters a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdownInput
+    feedback: JSON
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input CreateSelfAssessmentQuestionInput {
@@ -429,17 +429,17 @@ input CreateSelfAssessmentQuestionInput {
     """
     number: Int @Positive
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: ResourceMarkdownInput!
+    solutionSuggestion: JSON!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input UpdateSelfAssessmentQuestionInput {
@@ -448,17 +448,17 @@ input UpdateSelfAssessmentQuestionInput {
     """
     id: UUID!
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdownInput!
+    text: JSON!
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: ResourceMarkdownInput!
+    solutionSuggestion: JSON!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdownInput
+    hint: JSON
 }
 
 input QuizCompletedInput {

@@ -1,8 +1,6 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
 import de.unistuttgart.iste.gits.common.event.*;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
@@ -273,30 +271,30 @@ class QuizServiceTest {
     private List<QuestionEntity> createDummyQuestions() {
         List<QuestionEntity> questions = new ArrayList<>();
         MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .answerText(new ResourceMarkdownEntity("Pick me! Pick Me!"))
+                .answerText("Pick me! Pick Me!")
                 .correct(false)
-                .feedback(new ResourceMarkdownEntity("Fell for it"))
+                .feedback("Fell for it")
                 .build();
         MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .answerText(new ResourceMarkdownEntity("No me!"))
+                .answerText("No me!")
                 .correct(true)
-                .feedback(new ResourceMarkdownEntity("Well done!"))
+                .feedback("Well done!")
                 .build();
         MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder()
                 .id(UUID.randomUUID())
                 .number(0)
                 .type(QuestionType.MULTIPLE_CHOICE)
-                .text(new ResourceMarkdownEmbeddable("This is a question"))
+                .text("This is a question")
                 .answers(List.of(wrongAnswer, correctAnswer))
-                .hint(new ResourceMarkdownEntity("Wink Wink"))
+                .hint("Wink Wink")
                 .build();
         MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder()
                 .id(UUID.randomUUID())
                 .number(0)
                 .type(QuestionType.MULTIPLE_CHOICE)
-                .text(new ResourceMarkdownEmbeddable("This is a question"))
+                .text("This is a question")
                 .answers(List.of(wrongAnswer, correctAnswer))
-                .hint(new ResourceMarkdownEntity("Wink Wink"))
+                .hint("Wink Wink")
                 .build();
 
         questions.add(questionEntity);

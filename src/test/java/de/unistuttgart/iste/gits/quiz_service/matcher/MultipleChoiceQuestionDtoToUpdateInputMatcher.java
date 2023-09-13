@@ -6,8 +6,6 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import java.util.Objects;
 
-import static de.unistuttgart.iste.gits.quiz_service.matcher.ResourceMarkdownMatchers.markdownMatches;
-
 /**
  * Matcher for comparing a {@link MultipleChoiceQuestion} to a {@link UpdateMultipleChoiceQuestionInput}.
  */
@@ -33,12 +31,12 @@ public class MultipleChoiceQuestionDtoToUpdateInputMatcher extends TypeSafeDiagn
             mismatchDescription.appendText("type was ").appendValue(item.getType());
             return false;
         }
-        if (!markdownMatches(item.getHint(), expected.getHint())) {
-            mismatchDescription.appendText("hint was ").appendValue(item.getHint().getText());
+        if (!Objects.equals(item.getHint(), expected.getHint())) {
+            mismatchDescription.appendText("hint was ").appendValue(item.getHint());
             return false;
         }
-        if (!markdownMatches(item.getText(), expected.getText())) {
-            mismatchDescription.appendText("text was ").appendValue(item.getText().getText());
+        if (!Objects.equals(item.getText(), expected.getText())) {
+            mismatchDescription.appendText("text was ").appendValue(item.getText());
             return false;
         }
         if (item.getAnswers().size() != expected.getAnswers().size()) {

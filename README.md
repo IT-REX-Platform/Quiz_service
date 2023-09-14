@@ -16,7 +16,17 @@ The Cloze Quiz prompts users to fill in the blanks within a given text, testing 
 
 The Self-Assessment Quiz presents users with questions that require free-text responses. Users can later compare their answers with correct solutions, similar to flashcards.
 
+### AssociationQuestion
 
+In an Association Question, users are tasked with establishing associations between different elements. This type of quiz challenges users to match items from two or more columns, identifying correct pairings.
+
+### ExactAnswerQuestion
+
+The Exact Answer Question presents users with questions that require precise, specific responses. Users need to provide answers that precisely match predefined correct solutions.
+
+### NumericQuestion
+
+In a Numeric Question, users must respond with numerical values. This quiz type is used for questions that demand numeric answers, such as mathematical calculations or numerical data input.
 
 
 

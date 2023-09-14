@@ -16,9 +16,7 @@ The Cloze Quiz prompts users to fill in the blanks within a given text, testing 
 
 The Self-Assessment Quiz presents users with questions that require free-text responses. Users can later compare their answers with correct solutions, similar to flashcards.
 
-## Purpose
 
-The Quiz Service aims to provide versatile assessment options to enhance the learning experience. Users can access various quiz types to assess their knowledge and understanding effectively.
 
 
 

@@ -2,7 +2,6 @@ package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
-import de.unistuttgart.iste.gits.generated.dto.ResourceMarkdownInput;
 import de.unistuttgart.iste.gits.generated.dto.UpdateExactAnswerQuestionInput;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
@@ -40,9 +39,9 @@ class MutateQuizUpdateExactAnswerQuestionTest {
 
         UpdateExactAnswerQuestionInput input = UpdateExactAnswerQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
-                .setHint(new ResourceMarkdownInput("new hint"))
-                .setText(new ResourceMarkdownInput("new question"))
-                .setFeedback(new ResourceMarkdownInput("new feedback"))
+                .setHint("new hint")
+                .setText("new question")
+                .setFeedback("new feedback")
                 .setCaseSensitive(false)
                 .setCorrectAnswers(List.of("newA", "newB"))
                 .build();
@@ -62,18 +61,18 @@ class MutateQuizUpdateExactAnswerQuestionTest {
                 .variable("input", input)
                 .execute()
                 .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].number").entity(Integer.class).isEqualTo(1)
-                .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].text.text").entity(String.class).isEqualTo("new question")
-                .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].hint.text").entity(String.class).isEqualTo("new hint")
-                .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].feedback.text").entity(String.class).isEqualTo("new feedback")
+                .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].text").entity(String.class).isEqualTo("new question")
+                .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].hint").entity(String.class).isEqualTo("new hint")
+                .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].feedback").entity(String.class).isEqualTo("new feedback")
                 .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].caseSensitive").entity(Boolean.class).isEqualTo(false)
                 .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].correctAnswers").entityList(String.class).contains("newA", "newB");
 
         QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
         ExactAnswerQuestionEntity updatedQuestion = (ExactAnswerQuestionEntity) updatedQuiz.getQuestionPool().get(0);
-        assertThat(updatedQuestion.getText().getText(), is("new question"));
-        assertThat(updatedQuestion.getHint().getText(), is("new hint"));
-        assertThat(updatedQuestion.getFeedback().getText(), is("new feedback"));
+        assertThat(updatedQuestion.getText(), is("new question"));
+        assertThat(updatedQuestion.getHint(), is("new hint"));
+        assertThat(updatedQuestion.getFeedback(), is("new feedback"));
         assertThat(updatedQuestion.isCaseSensitive(), is(false));
         assertThat(updatedQuestion.getCorrectAnswers(), containsInAnyOrder("newA", "newB"));
     }

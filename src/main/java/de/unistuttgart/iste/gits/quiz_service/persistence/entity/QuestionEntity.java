@@ -1,6 +1,5 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
 import de.unistuttgart.iste.gits.generated.dto.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,8 +26,8 @@ public class QuestionEntity {
     @Enumerated(EnumType.ORDINAL)
     private QuestionType type;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    private ResourceMarkdownEntity hint;
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String hint;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id")

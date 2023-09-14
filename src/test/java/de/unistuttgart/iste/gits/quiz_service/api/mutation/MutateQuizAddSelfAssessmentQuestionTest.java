@@ -3,7 +3,6 @@ package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.generated.dto.CreateSelfAssessmentQuestionInput;
-import de.unistuttgart.iste.gits.generated.dto.ResourceMarkdownInput;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
@@ -52,9 +51,9 @@ class MutateQuizAddSelfAssessmentQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateSelfAssessmentQuestionInput input = CreateSelfAssessmentQuestionInput.builder()
-                .setHint(new ResourceMarkdownInput("hint"))
-                .setText(new ResourceMarkdownInput("question"))
-                .setSolutionSuggestion(new ResourceMarkdownInput("solution suggestion"))
+                .setHint("hint")
+                .setText("question")
+                .setSolutionSuggestion("solution suggestion")
                 .build();
 
 
@@ -65,13 +64,13 @@ class MutateQuizAddSelfAssessmentQuestionTest {
                 .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].number")
                 .entity(Integer.class).isEqualTo(1)
 
-                .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].hint.text")
+                .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].hint")
                 .entity(String.class).isEqualTo("hint")
 
-                .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].text.text")
+                .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].text")
                 .entity(String.class).isEqualTo("question")
 
-                .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].solutionSuggestion.text")
+                .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].solutionSuggestion")
                 .entity(String.class).isEqualTo("solution suggestion");
 
         QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
@@ -82,9 +81,9 @@ class MutateQuizAddSelfAssessmentQuestionTest {
         assertThat(questionEntity, instanceOf(SelfAssessmentQuestionEntity.class));
         SelfAssessmentQuestionEntity selfAssessmentQuestionEntity = (SelfAssessmentQuestionEntity) questionEntity;
 
-        assertThat(selfAssessmentQuestionEntity.getHint().getText(), is("hint"));
-        assertThat(selfAssessmentQuestionEntity.getText().getText(), is("question"));
-        assertThat(selfAssessmentQuestionEntity.getSolutionSuggestion().getText(), is("solution suggestion"));
+        assertThat(selfAssessmentQuestionEntity.getHint(), is("hint"));
+        assertThat(selfAssessmentQuestionEntity.getText(), is("question"));
+        assertThat(selfAssessmentQuestionEntity.getSolutionSuggestion(), is("solution suggestion"));
 
     }
 }

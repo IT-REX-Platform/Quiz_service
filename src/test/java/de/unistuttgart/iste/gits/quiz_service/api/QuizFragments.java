@@ -14,13 +14,13 @@ public class QuizFragments {
                 id
                 number
                 type
-                hint { text referencedMediaRecordIds }
+                hint
                 ... on MultipleChoiceQuestion {
-                    text { text referencedMediaRecordIds }
+                    text
                     answers {
-                        answerText { text referencedMediaRecordIds }
+                        answerText
                         correct
-                        feedback { text referencedMediaRecordIds }
+                        feedback
                     }
                     numberOfCorrectAnswers
                 }
@@ -29,40 +29,40 @@ public class QuizFragments {
                     clozeElements {
                         ... on ClozeBlankElement {
                             correctAnswer
-                            feedback { text referencedMediaRecordIds }
+                            feedback
                         }
                         ... on ClozeTextElement {
-                            text { text referencedMediaRecordIds }
+                            text
                         }
                     }
                     additionalWrongAnswers
                     allBlanks
                 }
                 ... on AssociationQuestion {
-                    text { text referencedMediaRecordIds }
+                    text
                     correctAssociations {
                         left
                         right
-                        feedback { text referencedMediaRecordIds }
+                        feedback
                     }
                     leftSide
                     rightSide
                 }
                 ... on ExactAnswerQuestion {
-                    text { text referencedMediaRecordIds }
+                    text
                     correctAnswers
                     caseSensitive
-                    feedback { text referencedMediaRecordIds }
+                    feedback
                 }
                 ... on NumericQuestion {
-                    text { text referencedMediaRecordIds }
+                    text
                     correctAnswer
                     tolerance
-                    feedback { text referencedMediaRecordIds }
+                    feedback
                 }
                 ... on SelfAssessmentQuestion {
-                    text { text referencedMediaRecordIds }
-                    solutionSuggestion { text referencedMediaRecordIds }
+                    text
+                    solutionSuggestion
                 }
             }
                         

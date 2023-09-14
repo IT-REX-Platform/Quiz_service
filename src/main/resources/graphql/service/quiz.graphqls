@@ -74,9 +74,9 @@ interface Question {
     type: QuestionType!
 
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdown
+    hint: JSON
 }
 
 """
@@ -84,9 +84,9 @@ Multiple choice question, i.e., a question with multiple answers of which the us
 """
 type MultipleChoiceQuestion implements Question {
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdown!
+    text: JSON!
     """
     List of answers.
     """
@@ -114,24 +114,24 @@ type MultipleChoiceQuestion implements Question {
     type: QuestionType!
 
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdown
+    hint: JSON
 }
 
 type MultipleChoiceAnswer {
     """
-    Text of the answer, can be markdown.
+    Text of the answer, in SlateJS JSON format.
     """
-    answerText: ResourceMarkdown!
+    answerText: JSON!
     """
     Whether the answer is correct or not.
     """
     correct: Boolean!
     """
-    Feedback for when the user selects this answer, can be markdown.
+    Feedback for when the user selects this answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdown
+    feedback: JSON
 }
 
 type ClozeQuestion implements Question {
@@ -167,18 +167,18 @@ type ClozeQuestion implements Question {
     """
     type: QuestionType!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdown
+    hint: JSON
 }
 
 union ClozeElement = ClozeTextElement | ClozeBlankElement
 
 type ClozeTextElement {
     """
-    Text of the element, can be markdown.
+    Text of the element, in SlateJS JSON format.
     """
-    text: ResourceMarkdown!
+    text: JSON!
 }
 
 type ClozeBlankElement {
@@ -187,9 +187,9 @@ type ClozeBlankElement {
     """
     correctAnswer: String!
     """
-    Feedback for the blank when the user selects a wrong answer, can be markdown.
+    Feedback for the blank when the user selects a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdown
+    feedback: JSON
 }
 
 enum ClozeElementType {
@@ -202,9 +202,9 @@ Association question, i.e., a question where the user has to assign the correct 
 """
 type AssociationQuestion implements Question {
     """
-    Text to display above the association question, can be markdown.
+    Text to display above the association question, in SlateJS JSON format.
     """
-    text: ResourceMarkdown!
+    text: JSON!
     """
     List of correct associations.
     """
@@ -233,9 +233,9 @@ type AssociationQuestion implements Question {
     """
     type: QuestionType!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdown
+    hint: JSON
 }
 
 type SingleAssociation {
@@ -249,9 +249,9 @@ type SingleAssociation {
     right: String!
 
     """
-    Feedback for the association when the user assigns a wrong answer, can be markdown.
+    Feedback for the association when the user assigns a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdown
+    feedback: JSON
 }
 
 """
@@ -261,9 +261,9 @@ the answer is checked automatically.
 """
 type ExactAnswerQuestion implements Question {
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdown!
+    text: JSON!
     """
     A list of possible correct answers. The user has to enter one of these answers.
     """
@@ -273,9 +273,9 @@ type ExactAnswerQuestion implements Question {
     """
     caseSensitive: Boolean!
     """
-    Feedback for the question when the user enters a wrong answer, can be markdown.
+    Feedback for the question when the user enters a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdown
+    feedback: JSON
 
     # inherited from Question
     """
@@ -292,16 +292,16 @@ type ExactAnswerQuestion implements Question {
     """
     type: QuestionType!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdown
+    hint: JSON
 }
 
 type NumericQuestion implements Question {
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdown!
+    text: JSON!
     """
     The correct answer to the question.
     """
@@ -312,9 +312,9 @@ type NumericQuestion implements Question {
     tolerance: Float!
 
     """
-    Feedback for the question when the user enters a wrong answer, can be markdown.
+    Feedback for the question when the user enters a wrong answer, in SlateJS JSON format.
     """
-    feedback: ResourceMarkdown
+    feedback: JSON
 
     # inherited from Question
     """
@@ -331,9 +331,9 @@ type NumericQuestion implements Question {
     """
     type: QuestionType!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdown
+    hint: JSON
 }
 
 """
@@ -343,13 +343,13 @@ This is useful for questions where the answer is not clear-cut, e.g. when the us
 """
 type SelfAssessmentQuestion implements Question {
     """
-    Text of the question, can be markdown.
+    Text of the question, in SlateJS JSON format.
     """
-    text: ResourceMarkdown!
+    text: JSON!
     """
     A possible correct answer to the question.
     """
-    solutionSuggestion: ResourceMarkdown!
+    solutionSuggestion: JSON!
 
     # inherited from Question
     """
@@ -366,9 +366,9 @@ type SelfAssessmentQuestion implements Question {
     """
     type: QuestionType!
     """
-    Optional hint for the question, can be markdown.
+    Optional hint for the question, in SlateJS JSON format.
     """
-    hint: ResourceMarkdown
+    hint: JSON
 }
 
 """

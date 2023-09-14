@@ -1,8 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.persistence.entity;
 
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEmbeddable;
-import de.unistuttgart.iste.gits.common.resource_markdown.ResourceMarkdownEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -16,9 +15,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class NumericQuestionEntity extends QuestionEntity {
 
-    @Embedded
-    @Builder.Default
-    private ResourceMarkdownEmbeddable text = new ResourceMarkdownEmbeddable("");
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String text;
 
     @Column(nullable = false)
     private double correctAnswer;
@@ -26,6 +24,6 @@ public class NumericQuestionEntity extends QuestionEntity {
     @Column(nullable = false)
     private double tolerance;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    private ResourceMarkdownEntity feedback;
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String feedback;
 }

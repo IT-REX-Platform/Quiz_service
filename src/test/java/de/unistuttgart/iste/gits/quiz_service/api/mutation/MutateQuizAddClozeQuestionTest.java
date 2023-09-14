@@ -51,18 +51,18 @@ class MutateQuizAddClozeQuestionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
-                .setHint(new ResourceMarkdownInput("hint"))
+                .setHint("hint")
                 .setAdditionalWrongAnswers(List.of("wrong1", "wrong2"))
                 .setShowBlanksList(false)
                 .setClozeElements(List.of(
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.TEXT)
-                                .setText(new ResourceMarkdownInput("what is the capital of France?"))
+                                .setText("what is the capital of France?")
                                 .build(),
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.BLANK)
                                 .setCorrectAnswer("Paris")
-                                .setFeedback(new ResourceMarkdownInput("feedback"))
+                                .setFeedback("feedback")
                                 .build()
                 ))
                 .build();
@@ -85,16 +85,16 @@ class MutateQuizAddClozeQuestionTest {
                 .isEqualTo(List.of("wrong1", "wrong2"))
 
                 .path("mutateQuiz.addClozeQuestion.questionPool[0].clozeElements[0].text")
-                .entity(ResourceMarkdown.class)
-                .isEqualTo(new ResourceMarkdown("what is the capital of France?", List.of()))
+                .entity(String.class)
+                .isEqualTo("what is the capital of France?")
 
                 .path("mutateQuiz.addClozeQuestion.questionPool[0].clozeElements[1].correctAnswer")
                 .entity(String.class)
                 .isEqualTo("Paris")
 
                 .path("mutateQuiz.addClozeQuestion.questionPool[0].clozeElements[1].feedback")
-                .entity(ResourceMarkdown.class)
-                .isEqualTo(new ResourceMarkdown("feedback", List.of()));
+                .entity(String.class)
+                .isEqualTo("feedback");
 
         QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
                 .orElseThrow()
@@ -106,12 +106,14 @@ class MutateQuizAddClozeQuestionTest {
         assertThat(clozeQuestionEntity.getAdditionalWrongAnswers(), contains("wrong1", "wrong2"));
         assertThat(clozeQuestionEntity.getClozeElements(), hasSize(2));
         assertThat(clozeQuestionEntity.getClozeElements().get(0).getType(), is(ClozeElementType.TEXT));
-        assertThat(clozeQuestionEntity.getClozeElements().get(0).getText().getText(), is("what is the capital of France?"));
+        assertThat(clozeQuestionEntity.getClozeElements().get(0).getText(), is("what is the capital of France?"));
+        assertThat(clozeQuestionEntity.getClozeElements().get(0).getPosition(), is(1));
         assertThat(clozeQuestionEntity.getClozeElements().get(1).getType(), is(ClozeElementType.BLANK));
         assertThat(clozeQuestionEntity.getClozeElements().get(1).getCorrectAnswer(), is("Paris"));
-        assertThat(clozeQuestionEntity.getClozeElements().get(1).getFeedback().getText(), is("feedback"));
+        assertThat(clozeQuestionEntity.getClozeElements().get(1).getFeedback(), is("feedback"));
+        assertThat(clozeQuestionEntity.getClozeElements().get(1).getPosition(), is(2));
 
-        assertThat(clozeQuestionEntity.getHint().getText(), is("hint"));
+        assertThat(clozeQuestionEntity.getHint(), is("hint"));
     }
 
     /**
@@ -132,11 +134,11 @@ class MutateQuizAddClozeQuestionTest {
                 .setClozeElements(List.of(
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.TEXT)
-                                .setText(new ResourceMarkdownInput("Some text"))
+                                .setText("Some text")
                                 .build(),
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.TEXT)
-                                .setText(new ResourceMarkdownInput("text"))
+                                .setText("text")
                                 .build()))
                 .build();
 
@@ -166,8 +168,8 @@ class MutateQuizAddClozeQuestionTest {
                 .setClozeElements(List.of(
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.TEXT)
-                                .setText(new ResourceMarkdownInput("Some text"))
-                                .setFeedback(new ResourceMarkdownInput("feedback"))
+                                .setText("Some text")
+                                .setFeedback("feedback")
                                 .build(),
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.BLANK)
@@ -297,7 +299,7 @@ class MutateQuizAddClozeQuestionTest {
                 .setClozeElements(List.of(
                         ClozeElementInput.builder()
                                 .setType(ClozeElementType.BLANK)
-                                .setText(new ResourceMarkdownInput("text"))
+                                .setText("text")
                                 .setCorrectAnswer("correct")
                                 .build()))
                 .build();

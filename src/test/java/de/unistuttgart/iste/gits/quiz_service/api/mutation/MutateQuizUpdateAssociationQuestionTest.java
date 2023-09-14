@@ -40,11 +40,11 @@ class MutateQuizUpdateAssociationQuestionTest {
 
         UpdateAssociationQuestionInput input = UpdateAssociationQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
-                .setHint(new ResourceMarkdownInput("new hint"))
-                .setText(new ResourceMarkdownInput("new question"))
+                .setHint("new hint")
+                .setText("new question")
                 .setCorrectAssociations(List.of(
-                        new AssociationInput("newA", "newC", new ResourceMarkdownInput("new feedback1")),
-                        new AssociationInput("newB", "newD", new ResourceMarkdownInput("new feedback2"))))
+                        new AssociationInput("newA", "newC", "new feedback1"),
+                        new AssociationInput("newB", "newD", "new feedback2")))
                 .build();
 
         String query = QuizFragments.FRAGMENT_DEFINITION + """
@@ -62,18 +62,18 @@ class MutateQuizUpdateAssociationQuestionTest {
                 .variable("input", input)
                 .execute()
                 .path("mutateQuiz.updateAssociationQuestion.questionPool[0].number").entity(Integer.class).isEqualTo(1)
-                .path("mutateQuiz.updateAssociationQuestion.questionPool[0].text.text").entity(String.class).isEqualTo("new question")
-                .path("mutateQuiz.updateAssociationQuestion.questionPool[0].hint.text").entity(String.class).isEqualTo("new hint")
+                .path("mutateQuiz.updateAssociationQuestion.questionPool[0].text").entity(String.class).isEqualTo("new question")
+                .path("mutateQuiz.updateAssociationQuestion.questionPool[0].hint").entity(String.class).isEqualTo("new hint")
                 .path("mutateQuiz.updateAssociationQuestion.questionPool[0].correctAssociations").entityList(SingleAssociation.class)
                 .contains(
-                        new SingleAssociation("newA", "newC", new ResourceMarkdown("new feedback1", List.of())),
-                        new SingleAssociation("newB", "newD", new ResourceMarkdown("new feedback2", List.of())));
+                        new SingleAssociation("newA", "newC", "new feedback1"),
+                        new SingleAssociation("newB", "newD", "new feedback2"));
 
         QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
         AssociationQuestionEntity updatedQuestion = (AssociationQuestionEntity) updatedQuiz.getQuestionPool().get(0);
-        assertThat(updatedQuestion.getText().getText(), is("new question"));
-        assertThat(updatedQuestion.getHint().getText(), is("new hint"));
+        assertThat(updatedQuestion.getText(), is("new question"));
+        assertThat(updatedQuestion.getHint(), is("new hint"));
         assertThat(updatedQuestion.getCorrectAssociations(), hasSize(2));
         assertThat(updatedQuestion.getCorrectAssociations(), containsInAnyOrder(
                 association("newA", "newC", "new feedback1"),

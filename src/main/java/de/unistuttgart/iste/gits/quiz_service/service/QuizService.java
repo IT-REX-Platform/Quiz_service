@@ -1,6 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
 import de.unistuttgart.iste.gits.common.event.*;
+import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
@@ -399,14 +400,10 @@ public class QuizService {
      *
      * @param dto event object containing changes to content
      */
-    public void deleteQuizzesWhenQuizContentIsDeleted(ContentChangeEvent dto) {
+    public void deleteQuizzesWhenQuizContentIsDeleted(ContentChangeEvent dto) throws IncompleteEventMessageException {
         // validate event message
-        try {
-            checkCompletenessOfDto(dto);
-        } catch (NullPointerException e) {
-            log.error(e.getMessage());
-            return;
-        }
+        checkCompletenessOfDto(dto);
+
         // only consider DELETE Operations
         if (!dto.getOperation().equals(CrudOperation.DELETE) || dto.getContentIds().isEmpty()) {
             return;
@@ -423,9 +420,9 @@ public class QuizService {
      * @param dto event message under evaluation
      * @throws NullPointerException if any of the fields are null
      */
-    private void checkCompletenessOfDto(ContentChangeEvent dto) throws NullPointerException {
+    private void checkCompletenessOfDto(ContentChangeEvent dto) throws IncompleteEventMessageException {
         if (dto.getOperation() == null || dto.getContentIds() == null) {
-            throw new NullPointerException("incomplete message received: all fields of a message must be non-null");
+            throw new IncompleteEventMessageException(IncompleteEventMessageException.ERROR_INCOMPLETE_MESSAGE);
         }
     }
 

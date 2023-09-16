@@ -1,6 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
 import de.unistuttgart.iste.gits.common.event.*;
+import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
@@ -15,6 +16,8 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 
@@ -49,7 +52,11 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(List.of(quizEntity));
 
         // invoke method under test
-        quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
+        try {
+            quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
+        } catch (IncompleteEventMessageException e) {
+            throw new RuntimeException(e);
+        }
 
         verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
@@ -68,7 +75,11 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(new ArrayList<QuizEntity>());
 
         // invoke method under test
-        quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
+        try {
+            quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
+        } catch (IncompleteEventMessageException e) {
+            throw new RuntimeException(e);
+        }
 
         verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
@@ -103,11 +114,19 @@ class QuizServiceTest {
                 .operation(CrudOperation.UPDATE)
                 .build();
 
-        List<ContentChangeEvent> events = List.of(emptyListDto, nullListDto, nullOperationDto, creationEvent, updateEvent);
+        List<ContentChangeEvent> events = List.of(emptyListDto, creationEvent, updateEvent);
+        List<ContentChangeEvent> errorEvents = List.of(nullListDto, nullOperationDto);
 
         for (ContentChangeEvent event : events) {
             //invoke method under test
-            quizService.deleteQuizzesWhenQuizContentIsDeleted(event);
+            assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(event));
+            verify(quizRepository, never()).findAllById(any());
+            verify(quizRepository, never()).deleteAllInBatch(any());
+        }
+
+        for (ContentChangeEvent errorEvent : errorEvents) {
+            //invoke method under test
+            assertThrows(IncompleteEventMessageException.class, () -> quizService.deleteQuizzesWhenQuizContentIsDeleted(errorEvent));
             verify(quizRepository, never()).findAllById(any());
             verify(quizRepository, never()).deleteAllInBatch(any());
         }

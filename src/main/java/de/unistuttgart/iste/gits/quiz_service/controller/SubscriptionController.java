@@ -1,6 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.controller;
 
 import de.unistuttgart.iste.gits.common.event.ContentChangeEvent;
+import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.quiz_service.service.QuizService;
 import io.dapr.Topic;
 import io.dapr.client.domain.CloudEvent;
@@ -23,9 +24,15 @@ public class SubscriptionController {
 
     @Topic(name = "content-changes", pubsubName = "gits")
     @PostMapping(path = "/quiz-service/content-changes-pubsub")
-    public Mono<Void> updateAssociation(@RequestBody CloudEvent<ContentChangeEvent> cloudEvent, @RequestHeader Map<String, String> headers) {
+    public Mono<Void> updateAssociation(@RequestBody CloudEvent<ContentChangeEvent> cloudEvent) {
 
-        return Mono.fromRunnable(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(cloudEvent.getData()));
+        return Mono.fromRunnable(() -> {
+            try {
+                quizService.deleteQuizzesWhenQuizContentIsDeleted(cloudEvent.getData());
+            } catch (IncompleteEventMessageException e) {
+                log.error("Error while processing content-changes event. {}", e.getMessage());
+            }
+        });
     }
 
 }

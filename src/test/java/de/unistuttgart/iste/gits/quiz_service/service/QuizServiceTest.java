@@ -52,11 +52,7 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(List.of(quizEntity));
 
         // invoke method under test
-        try {
-            quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
-        } catch (IncompleteEventMessageException e) {
-            throw new RuntimeException(e);
-        }
+        assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));
 
         verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
@@ -75,11 +71,8 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(new ArrayList<QuizEntity>());
 
         // invoke method under test
-        try {
-            quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
-        } catch (IncompleteEventMessageException e) {
-            throw new RuntimeException(e);
-        }
+        assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));
+
 
         verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }

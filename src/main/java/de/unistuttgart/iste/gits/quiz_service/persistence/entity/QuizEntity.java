@@ -9,7 +9,7 @@ import java.util.*;
 @Entity(name = "Quiz")
 @Table(indexes = {
         @Index(name = "idx_quiz_course_id", columnList = "course_id")
-}
+})
 @Data
 @Builder
 @AllArgsConstructor

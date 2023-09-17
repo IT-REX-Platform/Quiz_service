@@ -2,7 +2,7 @@ type Mutation {
     """
     Create a quiz.
     """
-    createQuiz(assessmentId: UUID!, input: CreateQuizInput!): Quiz!
+    createQuiz(assessmentId: UUID!, input: CreateQuizInput!, courseId: UUID!): Quiz!
 
     """
     Modify a quiz.

@@ -29,7 +29,7 @@ public class SubscriptionController {
         return Mono.fromRunnable(() -> {
             try {
                 quizService.deleteQuizzesWhenQuizContentIsDeleted(cloudEvent.getData());
-            } catch (IncompleteEventMessageException e) {
+            } catch (Exception e) {
                 log.error("Error while processing content-changes event. {}", e.getMessage());
             }
         });

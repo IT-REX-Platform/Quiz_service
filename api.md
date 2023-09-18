@@ -17,7 +17,6 @@
     * [PaginationInfo](#paginationinfo)
     * [Quiz](#quiz)
     * [QuizMutation](#quizmutation)
-    * [ResourceMarkdown](#resourcemarkdown)
     * [SelfAssessmentQuestion](#selfassessmentquestion)
     * [SingleAssociation](#singleassociation)
 * [Inputs](#inputs)
@@ -36,7 +35,6 @@
     * [Pagination](#pagination)
     * [QuestionCompletedInput](#questioncompletedinput)
     * [QuizCompletedInput](#quizcompletedinput)
-    * [ResourceMarkdownInput](#resourcemarkdowninput)
     * [StringFilter](#stringfilter)
     * [UpdateAssociationQuestionInput](#updateassociationquestioninput)
     * [UpdateClozeQuestionInput](#updateclozequestioninput)
@@ -69,7 +67,6 @@
 </details>
 
 ## Query
-
 <table>
 <thead>
 <tr>
@@ -100,7 +97,6 @@ If any of the assessment IDs are not found, the corresponding quiz will be null.
 </table>
 
 ## Mutation
-
 <table>
 <thead>
 <tr>
@@ -120,6 +116,11 @@ If any of the assessment IDs are not found, the corresponding quiz will be null.
 Create a quiz.
 
 </td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">courseId</td>
+<td valign="top"><a href="#uuid">UUID</a>!</td>
+<td></td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">assessmentId</td>
@@ -157,7 +158,8 @@ Delete a quiz.
 <p>⚠️ <strong>DEPRECATED</strong></p>
 <blockquote>
 
-Only for development, will be removed in production. Use deleteAssessment in contents service instead.
+Only use if you specifically only want to delete the quiz and not the whole assessment. Otherwise, use deleteAssessment
+in contents service instead.
 
 </blockquote>
 </td>
@@ -1211,41 +1213,6 @@ Will only be considered if questionPoolingMode is RANDOM.
 </tbody>
 </table>
 
-### ResourceMarkdown
-
-<table>
-<thead>
-<tr>
-<th align="left">Field</th>
-<th align="right">Argument</th>
-<th align="left">Type</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td colspan="2" valign="top"><strong>text</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
-<td>
-
-
-The raw ResourceMarkdown text.
-
-</td>
-</tr>
-<tr>
-<td colspan="2" valign="top"><strong>referencedMediaRecordIds</strong></td>
-<td valign="top">[<a href="#uuid">UUID</a>!]!</td>
-<td>
-
-
-Ids of MediaRecords referenced in the ResourceMarkdown text in order.
-
-</td>
-</tr>
-</tbody>
-</table>
-
 ### SelfAssessmentQuestion
 
 A single question with a free text answer field, where the answer is not automatically checked.
@@ -2141,30 +2108,6 @@ ID of the quiz.
 
 
 List of questions that were answered in the quiz.
-
-</td>
-</tr>
-</tbody>
-</table>
-
-### ResourceMarkdownInput
-
-<table>
-<thead>
-<tr>
-<th colspan="2" align="left">Field</th>
-<th align="left">Type</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td colspan="2" valign="top"><strong>text</strong></td>
-<td valign="top"><a href="#string">String</a>!</td>
-<td>
-
-
-The raw ResourceMarkdown text.
 
 </td>
 </tr>

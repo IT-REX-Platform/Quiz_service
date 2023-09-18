@@ -36,6 +36,7 @@ class CreateQuizMutationTest {
     @Commit
     void testCreateQuizWithoutQuestions(GraphQlTester graphQlTester) {
         UUID assessmentId = UUID.randomUUID();
+        UUID courseId = UUID.randomUUID();
         CreateQuizInput createQuizInput = CreateQuizInput.builder()
                 .setRequiredCorrectAnswers(1)
                 .setQuestionPoolingMode(QuestionPoolingMode.RANDOM)
@@ -43,8 +44,8 @@ class CreateQuizMutationTest {
                 .build();
 
         String query = QuizFragments.FRAGMENT_DEFINITION + """
-                mutation createQuiz($id: UUID!, $input: CreateQuizInput!) {
-                    createQuiz(assessmentId: $id, input: $input) {
+                mutation createQuiz($courseId: UUID!, $id: UUID!, $input: CreateQuizInput!) {
+                    createQuiz(courseId: $courseId, assessmentId: $id, input: $input) {
                         ...QuizAllFields
                     }
                 }""";
@@ -53,6 +54,7 @@ class CreateQuizMutationTest {
         // so check the fields manually
         List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("input", createQuizInput)
+                .variable("courseId", courseId)
                 .variable("id", assessmentId)
                 .execute()
 
@@ -76,5 +78,6 @@ class CreateQuizMutationTest {
 
         assertThat(quizRepository.count(), is(1L));
         assertThat(quizRepository.findAll().get(0), matchesCreateQuizInput(createQuizInput));
+        assertThat(quizRepository.findAll().get(0).getCourseId(), is(courseId));
     }
 }

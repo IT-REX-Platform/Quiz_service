@@ -24,8 +24,8 @@ public class QuizController {
     }
 
     @MutationMapping
-    public Quiz createQuiz(@Argument UUID assessmentId, @Argument CreateQuizInput input, @Argument UUID courseId) {
-        return quizService.createQuiz(assessmentId, input,courseId);
+    public Quiz createQuiz(@Argument UUID courseId, @Argument UUID assessmentId, @Argument CreateQuizInput input) {
+        return quizService.createQuiz(courseId, assessmentId, input);
     }
 
     @MutationMapping

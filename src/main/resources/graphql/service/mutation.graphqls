@@ -2,7 +2,7 @@ type Mutation {
     """
     Create a quiz.
     """
-    createQuiz(assessmentId: UUID!, input: CreateQuizInput!, courseId: UUID!): Quiz!
+    createQuiz(courseId: UUID!, assessmentId: UUID!, input: CreateQuizInput!): Quiz!
 
     """
     Modify a quiz.
@@ -13,7 +13,7 @@ type Mutation {
     Delete a quiz.
     """
     deleteQuiz(assessmentId: UUID!): UUID!
-    @deprecated(reason: "Only for development, will be removed in production. Use deleteAssessment in contents service instead.")
+    @deprecated(reason: "Only use if you specifically only want to delete the quiz and not the whole assessment. Otherwise, use deleteAssessment in contents service instead.")
 
     """
     Log that a multiple choice quiz is completed.

@@ -7,9 +7,6 @@ import lombok.*;
 import java.util.*;
 
 @Entity(name = "Quiz")
-@Table(indexes = {
-        @Index(name = "idx_quiz_course_id", columnList = "course_id")
-})
 @Data
 @Builder
 @AllArgsConstructor
@@ -19,8 +16,8 @@ public class QuizEntity {
     @Id
     private UUID assessmentId;
 
-    //@Column(name = "course_id") // field for courseID
-    //private UUID courseId;
+    @Column(name = "course_id", nullable = false)
+    private UUID courseId;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("number ASC")

@@ -58,7 +58,6 @@ class MutateQuizAddNumericQuestionTest {
                 .setTolerance(0.5)
                 .build();
 
-
         graphQlTester.document(ADD_NUMERIC_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())

@@ -39,6 +39,7 @@ class QueryByIdTest {
     @Test
     void testQuizByAssessmentId(GraphQlTester graphQlTester) {
         QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(UUID.randomUUID())
                 .assessmentId(UUID.randomUUID())
                 .questionPool(List.of())
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
@@ -48,6 +49,7 @@ class QueryByIdTest {
         quizRepository.save(quizEntity);
 
         QuizEntity quizEntity2 = QuizEntity.builder()
+                .courseId(UUID.randomUUID())
                 .assessmentId(UUID.randomUUID())
                 .questionPool(List.of())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
@@ -88,6 +90,7 @@ class QueryByIdTest {
     @Test
     void queryQuizWithQuestions(GraphQlTester graphQlTester) throws Exception {
         QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(UUID.randomUUID())
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(1)
@@ -222,6 +225,7 @@ class QueryByIdTest {
     @Test
     void testOrderedQuestionPoolingModeOrdered(GraphQlTester graphQlTester) {
         QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(UUID.randomUUID())
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
                 .numberOfRandomlySelectedQuestions(1) // should be ignored
@@ -262,6 +266,7 @@ class QueryByIdTest {
     @Test
     void testOrderedQuestionPoolingModeRandom(GraphQlTester graphQlTester) {
         QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(UUID.randomUUID())
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(1)

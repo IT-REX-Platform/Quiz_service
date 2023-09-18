@@ -31,6 +31,7 @@ class MutateQuizTest {
     @Test
     void testMutateQuiz(GraphQlTester graphQlTester) {
         QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(UUID.randomUUID())
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(1)

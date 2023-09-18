@@ -31,6 +31,7 @@ class DeleteQuizMutationTest {
     void testDeleteQuiz(GraphQlTester graphQlTester) {
         // create quiz in database
         QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(UUID.randomUUID())
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(1)

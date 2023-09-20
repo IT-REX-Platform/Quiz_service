@@ -45,7 +45,7 @@ class CreateQuizMutationTest {
 
         String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation createQuiz($courseId: UUID!, $id: UUID!, $input: CreateQuizInput!) {
-                    createQuiz(courseId: $courseId, assessmentId: $id, input: $input) {
+                    createQuiz: _internal_createQuiz(courseId: $courseId, assessmentId: $id, input: $input) {
                         ...QuizAllFields
                     }
                 }""";

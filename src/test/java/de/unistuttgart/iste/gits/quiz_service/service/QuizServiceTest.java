@@ -3,6 +3,7 @@ package de.unistuttgart.iste.gits.quiz_service.service;
 import de.unistuttgart.iste.gits.common.event.*;
 import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.generated.dto.*;
+import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
@@ -73,7 +74,6 @@ class QuizServiceTest {
         // invoke method under test
         assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));
 
-
         verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
 
@@ -133,7 +133,7 @@ class QuizServiceTest {
 
 
         // create Database entities
-        List<QuestionEntity> questions = createDummyQuestions();
+        List<QuestionEntity> questions = TestData.createDummyQuestions();
 
         QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
                 .questionPool(questions)
@@ -167,14 +167,20 @@ class QuizServiceTest {
                 .timeToComplete(null)
                 .correctness(2.0 / quizEntity.getNumberOfRandomlySelectedQuestions())
                 .build();
-
+        QuizCompletionFeedback expectedQuizCompletionFeedback = QuizCompletionFeedback.builder()
+                .setSuccess(true)
+                .setHintsUsed(0)
+                .setCorrectness(2.0 / quizEntity.getNumberOfRandomlySelectedQuestions())
+                .build();
         //mock repository
         when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
         doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
         when(quizRepository.save(any())).thenReturn(quizEntity);
 
         // invoke method under test
-        quizService.publishProgress(quizCompletedInput, userId);
+        QuizCompletionFeedback actualFeedback = quizService.publishProgress(quizCompletedInput, userId);
+
+        assertThat(actualFeedback, is(expectedQuizCompletionFeedback));
 
         verify(quizRepository, times(1)).getReferenceById(assessmentId);
         verify(quizRepository, times(1)).save(any());
@@ -189,7 +195,7 @@ class QuizServiceTest {
         UUID userId = UUID.randomUUID();
 
         // create Database entities
-        List<QuestionEntity> questions = createDummyQuestions();
+        List<QuestionEntity> questions = TestData.createDummyQuestions();
 
         QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
                 .questionPool(questions)
@@ -223,6 +229,11 @@ class QuizServiceTest {
                 .timeToComplete(null)
                 .correctness(1.0 / quizEntity.getQuestionPool().size())
                 .build();
+        QuizCompletionFeedback expectedQuizCompletionFeedback = QuizCompletionFeedback.builder()
+                .setCorrectness(1.0 / quizEntity.getQuestionPool().size())
+                .setHintsUsed(1)
+                .setSuccess(false)
+                .build();
 
         //mock repository
         when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
@@ -230,7 +241,9 @@ class QuizServiceTest {
         doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
 
         // invoke method under test
-        quizService.publishProgress(quizCompletedInput, userId);
+        QuizCompletionFeedback actualFeedback = quizService.publishProgress(quizCompletedInput, userId);
+
+        assertThat(actualFeedback, is(expectedQuizCompletionFeedback));
 
         verify(quizRepository, times(1)).getReferenceById(assessmentId);
         verify(quizRepository, times(1)).save(any());
@@ -273,46 +286,6 @@ class QuizServiceTest {
                 = quizService.calcCorrectness(1.0, quizEntityWithRandomlySelectedQuestionsNull);
 
         assertThat(actualWithRandomlySelectedQuestionsNull, is(0.5));
-    }
-
-    /**
-     * creates some dummy multiple choice questions
-     *
-     * @return List of 2 Multiple Choice Question (database) Entities
-     */
-    private List<QuestionEntity> createDummyQuestions() {
-        List<QuestionEntity> questions = new ArrayList<>();
-        MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .answerText("Pick me! Pick Me!")
-                .correct(false)
-                .feedback("Fell for it")
-                .build();
-        MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .answerText("No me!")
-                .correct(true)
-                .feedback("Well done!")
-                .build();
-        MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder()
-                .id(UUID.randomUUID())
-                .number(0)
-                .type(QuestionType.MULTIPLE_CHOICE)
-                .text("This is a question")
-                .answers(List.of(wrongAnswer, correctAnswer))
-                .hint("Wink Wink")
-                .build();
-        MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder()
-                .id(UUID.randomUUID())
-                .number(0)
-                .type(QuestionType.MULTIPLE_CHOICE)
-                .text("This is a question")
-                .answers(List.of(wrongAnswer, correctAnswer))
-                .hint("Wink Wink")
-                .build();
-
-        questions.add(questionEntity);
-        questions.add(questionEntity2);
-
-        return questions;
     }
 
 }

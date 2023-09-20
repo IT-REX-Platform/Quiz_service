@@ -126,4 +126,44 @@ public class TestData {
                 .hint("hint")
                 .build();
     }
+
+    /**
+     * creates some dummy multiple choice questions
+     *
+     * @return List of 2 Multiple Choice Question (database) Entities
+     */
+    public static List<QuestionEntity> createDummyQuestions() {
+        List<QuestionEntity> questions = new ArrayList<>();
+        MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
+                .answerText("Pick me! Pick Me!")
+                .correct(false)
+                .feedback("Fell for it")
+                .build();
+        MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
+                .answerText("No me!")
+                .correct(true)
+                .feedback("Well done!")
+                .build();
+        MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder()
+                .id(UUID.randomUUID())
+                .number(0)
+                .type(QuestionType.MULTIPLE_CHOICE)
+                .text("This is a question")
+                .answers(List.of(wrongAnswer, correctAnswer))
+                .hint("Wink Wink")
+                .build();
+        MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder()
+                .id(UUID.randomUUID())
+                .number(0)
+                .type(QuestionType.MULTIPLE_CHOICE)
+                .text("This is a question")
+                .answers(List.of(wrongAnswer, correctAnswer))
+                .hint("Wink Wink")
+                .build();
+
+        questions.add(questionEntity);
+        questions.add(questionEntity2);
+
+        return questions;
+    }
 }

@@ -16,8 +16,8 @@
     * [NumericQuestion](#numericquestion)
     * [PaginationInfo](#paginationinfo)
     * [Quiz](#quiz)
-    * [QuizCompletionFeedback](#quizcompletionfeedback)
     * [QuizMutation](#quizmutation)
+    * [ResourceMarkdown](#resourcemarkdown)
     * [SelfAssessmentQuestion](#selfassessmentquestion)
     * [SingleAssociation](#singleassociation)
 * [Inputs](#inputs)
@@ -36,6 +36,7 @@
     * [Pagination](#pagination)
     * [QuestionCompletedInput](#questioncompletedinput)
     * [QuizCompletedInput](#quizcompletedinput)
+    * [ResourceMarkdownInput](#resourcemarkdowninput)
     * [StringFilter](#stringfilter)
     * [UpdateAssociationQuestionInput](#updateassociationquestioninput)
     * [UpdateClozeQuestionInput](#updateclozequestioninput)
@@ -68,6 +69,7 @@
 </details>
 
 ## Query
+
 <table>
 <thead>
 <tr>
@@ -98,6 +100,7 @@ If any of the assessment IDs are not found, the corresponding quiz will be null.
 </table>
 
 ## Mutation
+
 <table>
 <thead>
 <tr>
@@ -166,7 +169,7 @@ Only for development, will be removed in production. Use deleteAssessment in con
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>logQuizCompleted</strong></td>
-<td valign="top"><a href="#quizcompletionfeedback">QuizCompletionFeedback</a>!</td>
+<td valign="top"><a href="#quiz">Quiz</a>!</td>
 <td>
 
 
@@ -185,7 +188,6 @@ Log that a multiple choice quiz is completed.
 ## Objects
 
 ### AssociationQuestion
-
 
 Association question, i.e., a question where the user has to assign the correct right side to each left side.
 
@@ -922,53 +924,6 @@ This will be different each time it is queried if questionPoolingMode is RANDOM.
 </tbody>
 </table>
 
-### QuizCompletionFeedback
-
-Feedback data when `logQuizCompletion` is called.
-
-<table>
-<thead>
-<tr>
-<th align="left">Field</th>
-<th align="right">Argument</th>
-<th align="left">Type</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td colspan="2" valign="top"><strong>success</strong></td>
-<td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td>
-
-
-Whether the quiz was passed or not.
-
-</td>
-</tr>
-<tr>
-<td colspan="2" valign="top"><strong>correctness</strong></td>
-<td valign="top"><a href="#float">Float</a>!</td>
-<td>
-
-
-The number of questions that were answered correctly.
-
-</td>
-</tr>
-<tr>
-<td colspan="2" valign="top"><strong>hintsUsed</strong></td>
-<td valign="top"><a href="#int">Int</a>!</td>
-<td>
-
-
-The number of hints that were used.
-
-</td>
-</tr>
-</tbody>
-</table>
-
 ### QuizMutation
 
 <table>
@@ -1252,6 +1207,41 @@ Will only be considered if questionPoolingMode is RANDOM.
 <td colspan="2" align="right" valign="top">numberOfRandomlySelectedQuestions</td>
 <td valign="top"><a href="#int">Int</a>!</td>
 <td></td>
+</tr>
+</tbody>
+</table>
+
+### ResourceMarkdown
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>text</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+
+The raw ResourceMarkdown text.
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>referencedMediaRecordIds</strong></td>
+<td valign="top">[<a href="#uuid">UUID</a>!]!</td>
+<td>
+
+
+Ids of MediaRecords referenced in the ResourceMarkdown text in order.
+
+</td>
 </tr>
 </tbody>
 </table>
@@ -2151,6 +2141,30 @@ ID of the quiz.
 
 
 List of questions that were answered in the quiz.
+
+</td>
+</tr>
+</tbody>
+</table>
+
+### ResourceMarkdownInput
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>text</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+
+The raw ResourceMarkdown text.
 
 </td>
 </tr>

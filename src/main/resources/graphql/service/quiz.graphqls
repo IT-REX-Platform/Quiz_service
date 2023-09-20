@@ -372,24 +372,6 @@ type SelfAssessmentQuestion implements Question {
 }
 
 """
-Feedback data when `logQuizCompletion` is called.
-"""
-type QuizCompletionFeedback {
-    """
-    Whether the quiz was passed or not.
-    """
-    success: Boolean!
-    """
-    The number of questions that were answered correctly.
-    """
-    correctness: Float!
-    """
-    The number of hints that were used.
-    """
-    hintsUsed: Int!
-}
-
-"""
 The type of a question.
 """
 enum QuestionType {

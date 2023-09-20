@@ -125,7 +125,7 @@ public class QuizController {
     }
 
     @MutationMapping
-    public QuizCompletionFeedback logQuizCompleted(@Argument QuizCompletedInput input, @ContextValue LoggedInUser currentUser) {
+    public Quiz logQuizCompleted(@Argument QuizCompletedInput input, @ContextValue LoggedInUser currentUser) {
         return quizService.publishProgress(input, currentUser.getId());
     }
 

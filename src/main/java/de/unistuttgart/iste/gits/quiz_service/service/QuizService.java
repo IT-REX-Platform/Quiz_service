@@ -434,7 +434,7 @@ public class QuizService {
      * @param userId the user that made progress
      * @return quiz that was worked on
      */
-    public QuizCompletionFeedback publishProgress(QuizCompletedInput input, UUID userId) {
+    public Quiz publishProgress(QuizCompletedInput input, UUID userId) {
         QuizEntity quizEntity = quizRepository.getReferenceById(input.getQuizId());
 
         updateQuestionStatistics(input, userId, quizEntity);
@@ -444,13 +444,12 @@ public class QuizService {
 
         boolean success = numbCorrectAnswers >= quizEntity.getRequiredCorrectAnswers();
         double correctness = calcCorrectness(numbCorrectAnswers, quizEntity);
-        int hintsUsed = (int) input.getCompletedQuestions().stream().filter(QuestionCompletedInput::getUsedHint).count();
 
         // create new user progress event message
         UserProgressLogEvent userProgressLogEvent = UserProgressLogEvent.builder()
                 .userId(userId)
                 .contentId(quizEntity.getAssessmentId())
-                .hintsUsed(hintsUsed)
+                .hintsUsed((int) input.getCompletedQuestions().stream().filter(QuestionCompletedInput::getUsedHint).count())
                 .success(success)
                 .timeToComplete(null)
                 .correctness(correctness)
@@ -458,11 +457,7 @@ public class QuizService {
 
         // publish new user progress event message
         topicPublisher.notifyUserWorkedOnContent(userProgressLogEvent);
-        return QuizCompletionFeedback.builder()
-                .setSuccess(success)
-                .setCorrectness(correctness)
-                .setHintsUsed(hintsUsed)
-                .build();
+        return quizMapper.entityToDto(quizEntity);
     }
 
     /**

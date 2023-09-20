@@ -28,6 +28,27 @@ The Exact Answer Question presents users with questions that require precise, sp
 
 In a Numeric Question, users must respond with numerical values. This quiz type is used for questions that demand numeric answers, such as mathematical calculations or numerical data input.
 
+## Environment variables
+The following table lists the important properties, which are highlighted in *italic*:
+
+| Name                                      | Description                               | Value in Dev Environment                           | Value in Prod Environment                                              |
+|-------------------------------------------|-------------------------------------------|----------------------------------------------------|------------------------------------------------------------------------|
+| spring.graphql.graphiql.enabled           | Enable GraphiQL web interface for GraphQL | true                                               | true                                                                   |
+| spring.graphql.graphiql.path              | Path for GraphiQL when enabled            | /graphiql                                          | /graphiql                                                              |
+| spring.profiles.active                    | Active Spring profile                     | dev                                                | prod                                                                   |
+| spring.jpa.properties.hibernate.dialect   | Hibernate dialect for PostgreSQL          | org.hibernate.dialect.PostgreSQLDialect**          | org.hibernate.dialect.PostgreSQLDialect                                |
+| *spring.datasource.url*                   | *PostgreSQL database URL*                 | *jdbc:postgresql://localhost:9032/quiz_service* | *jdbc:postgresql://quiz-service-db-postgresql:5432/quiz-service* |
+| *spring.datasource.username*              | *Database username*                       | *root*                                             | *gits*                                                                 |
+| *spring.datasource.password*              | *Database password*                       | *root*                                             | *secret*                                                               |
+| spring.datasource.driver-class-name       | JDBC driver class                         | org.postgresql.Driver                              | org.postgresql.Driver                                                  |
+| spring.sql.init.mode                      | SQL initialization mode                   | always                                             | always                                                                 |
+| spring.jpa.show-sql                       | Show SQL queries in logs                  | true                                               | true                                                                   |
+| spring.sql.init.continue-on-error         | Continue on SQL init error                | true                                               | true                                                                   |
+| spring.jpa.hibernate.ddl-auto             | Hibernate DDL auto strategy               | create                                             | update                                                                 |
+| logging.level.root                      | Logging level for root logger             | DEBUG                                                | -                                                                      |
+| DAPR_GRPC_PORT                            | Dapr gRPC Port                            | -                                                  | 50001                                                                  |
+| *DAPR_HTTP_PORT*                          | *Dapr HTTP Port*                          | *9000*                                             | *3500*                                                                 |
+| *server.port*                             | *Port on which the application runs*      | *9001*                                             | *9001*                                                                 |
 ## API description
 
 The GraphQL API is described in the [api.md file](api.md).

@@ -58,8 +58,6 @@ class MutationLogQuizCompletionTest {
                 .numberOfRandomlySelectedQuestions(2).build();
         quizEntity = quizRepository.save(quizEntity);
 
-        System.out.println(quizRepository.findAll());
-
         // create Inputs
         QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
                 .setQuestionId(quizEntity.getQuestionPool().get(0).getId())

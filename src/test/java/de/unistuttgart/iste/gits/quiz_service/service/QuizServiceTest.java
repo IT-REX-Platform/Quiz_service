@@ -173,7 +173,7 @@ class QuizServiceTest {
                 .setCorrectness(2.0 / quizEntity.getNumberOfRandomlySelectedQuestions())
                 .build();
         //mock repository
-        when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
+        when(quizRepository.findById(assessmentId)).thenReturn(Optional.of(quizEntity));
         doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
         when(quizRepository.save(any())).thenReturn(quizEntity);
 
@@ -182,10 +182,9 @@ class QuizServiceTest {
 
         assertThat(actualFeedback, is(expectedQuizCompletionFeedback));
 
-        verify(quizRepository, times(1)).getReferenceById(assessmentId);
+        verify(quizRepository, times(1)).findById(assessmentId);
         verify(quizRepository, times(1)).save(any());
         verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
-
     }
 
     @Test
@@ -236,7 +235,7 @@ class QuizServiceTest {
                 .build();
 
         //mock repository
-        when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
+        when(quizRepository.findById(assessmentId)).thenReturn(Optional.of(quizEntity));
         when(quizRepository.save(any())).thenReturn(quizEntity);
         doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
 
@@ -245,7 +244,7 @@ class QuizServiceTest {
 
         assertThat(actualFeedback, is(expectedQuizCompletionFeedback));
 
-        verify(quizRepository, times(1)).getReferenceById(assessmentId);
+        verify(quizRepository, times(1)).findById(assessmentId);
         verify(quizRepository, times(1)).save(any());
         verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
 

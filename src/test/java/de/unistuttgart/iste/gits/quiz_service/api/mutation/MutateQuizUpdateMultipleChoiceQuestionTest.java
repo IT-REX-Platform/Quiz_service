@@ -31,14 +31,14 @@ class MutateQuizUpdateMultipleChoiceQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testUpdateMultipleChoiceQuestion(GraphQlTester graphQlTester) {
+    void testUpdateMultipleChoiceQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        UpdateMultipleChoiceQuestionInput input = UpdateMultipleChoiceQuestionInput.builder()
+        final UpdateMultipleChoiceQuestionInput input = UpdateMultipleChoiceQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
                 .setText("what is the capital of France?")
                 .setAnswers(List.of(
@@ -52,7 +52,7 @@ class MutateQuizUpdateMultipleChoiceQuestionTest {
                                 .build()))
                 .build();
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!, $input: UpdateMultipleChoiceQuestionInput!) {
                     mutateQuiz(assessmentId: $id) {
                         updateMultipleChoiceQuestion(input: $input) {
@@ -62,7 +62,7 @@ class MutateQuizUpdateMultipleChoiceQuestionTest {
                 }
                 """;
 
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
@@ -74,7 +74,7 @@ class MutateQuizUpdateMultipleChoiceQuestionTest {
         System.out.println(questions.get(0));
         assertThat(questions.get(0), matchesInput(input));
 
-        QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
         assertThat(updatedQuiz.getQuestionPool().get(0), matchesUpdateQuizInput(input));
 

@@ -14,16 +14,16 @@ public class MultipleChoiceAnswerDtoToInputMatcher extends TypeSafeDiagnosingMat
 
     private final MultipleChoiceAnswerInput expected;
 
-    public MultipleChoiceAnswerDtoToInputMatcher(MultipleChoiceAnswerInput expected) {
+    public MultipleChoiceAnswerDtoToInputMatcher(final MultipleChoiceAnswerInput expected) {
         this.expected = expected;
     }
 
-    public static MultipleChoiceAnswerDtoToInputMatcher matchesInput(MultipleChoiceAnswerInput expected) {
+    public static MultipleChoiceAnswerDtoToInputMatcher matchesInput(final MultipleChoiceAnswerInput expected) {
         return new MultipleChoiceAnswerDtoToInputMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(MultipleChoiceAnswer item, Description mismatchDescription) {
+    protected boolean matchesSafely(final MultipleChoiceAnswer item, final Description mismatchDescription) {
         if (!item.getAnswerText().equals(expected.getAnswerText())) {
             mismatchDescription.appendText("answer text was ").appendValue(item.getAnswerText());
             return false;
@@ -41,7 +41,7 @@ public class MultipleChoiceAnswerDtoToInputMatcher extends TypeSafeDiagnosingMat
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches MultipleChoiceAnswerInput");
         description.appendValue(expected);
     }

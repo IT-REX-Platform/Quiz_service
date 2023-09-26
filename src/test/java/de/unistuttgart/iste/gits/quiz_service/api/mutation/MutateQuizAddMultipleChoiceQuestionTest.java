@@ -43,14 +43,14 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      * Then the new question is added to the quiz
      */
     @Test
-    void testAddMultipleChoiceQuestion(GraphQlTester graphQlTester) {
+    void testAddMultipleChoiceQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
+        final CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
                 .setText("what is the capital of France?")
                 .setNumber(2)
                 .setAnswers(List.of(
@@ -64,7 +64,7 @@ class MutateQuizAddMultipleChoiceQuestionTest {
                                 .build()))
                 .build();
 
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
@@ -83,14 +83,14 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      * Then the new question is added to the quiz with the next number
      */
     @Test
-    void testAddMultipleChoiceQuestionNextNumber(GraphQlTester graphQlTester) {
+    void testAddMultipleChoiceQuestionNextNumber(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
+        final CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
                 .setText("what is the capital of France?")
                 .setNumber(null) // number should be assigned automatically
                 .setAnswers(List.of(
@@ -104,7 +104,7 @@ class MutateQuizAddMultipleChoiceQuestionTest {
                                 .build()))
                 .build();
 
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(UPDATE_MULTIPLE_CHOICE_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
@@ -125,14 +125,14 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      * Then an error is returned
      */
     @Test
-    void testAddMultipleChoiceQuestionDuplicateNumber(GraphQlTester graphQlTester) {
+    void testAddMultipleChoiceQuestionDuplicateNumber(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
+        final CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
                 .setText("what is the capital of France?")
                 .setNumber(1) // already existing number
                 .setAnswers(List.of(
@@ -165,14 +165,14 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      * Then an error is returned
      */
     @Test
-    void testAddMultipleChoiceQuestionNoCorrectAnswer(GraphQlTester graphQlTester) {
+    void testAddMultipleChoiceQuestionNoCorrectAnswer(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
+        final CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
                 .setText("what is the capital of France?")
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()
@@ -204,14 +204,14 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      * Then an error is returned
      */
     @Test
-    void testAddMultipleChoiceQuestionTooFewAnswers(GraphQlTester graphQlTester) {
+    void testAddMultipleChoiceQuestionTooFewAnswers(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
+        final CreateMultipleChoiceQuestionInput input = CreateMultipleChoiceQuestionInput.builder()
                 .setText("what is the capital of France?")
                 .setAnswers(List.of(
                         MultipleChoiceAnswerInput.builder()

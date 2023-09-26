@@ -13,16 +13,16 @@ public class MultipleChoiceQuestionDtoToUpdateInputMatcher extends TypeSafeDiagn
 
     private final UpdateMultipleChoiceQuestionInput expected;
 
-    public MultipleChoiceQuestionDtoToUpdateInputMatcher(UpdateMultipleChoiceQuestionInput expected) {
+    public MultipleChoiceQuestionDtoToUpdateInputMatcher(final UpdateMultipleChoiceQuestionInput expected) {
         this.expected = expected;
     }
 
-    public static MultipleChoiceQuestionDtoToUpdateInputMatcher matchesInput(UpdateMultipleChoiceQuestionInput expected) {
+    public static MultipleChoiceQuestionDtoToUpdateInputMatcher matchesInput(final UpdateMultipleChoiceQuestionInput expected) {
         return new MultipleChoiceQuestionDtoToUpdateInputMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(MultipleChoiceQuestion item, Description mismatchDescription) {
+    protected boolean matchesSafely(final MultipleChoiceQuestion item, final Description mismatchDescription) {
         if (!Objects.equals(item.getId(), expected.getId())) {
             mismatchDescription.appendText("id was ").appendValue(item.getId());
             return false;
@@ -54,7 +54,7 @@ public class MultipleChoiceQuestionDtoToUpdateInputMatcher extends TypeSafeDiagn
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches UpdateMultipleChoiceQuestionInput");
         description.appendValue(expected);
     }

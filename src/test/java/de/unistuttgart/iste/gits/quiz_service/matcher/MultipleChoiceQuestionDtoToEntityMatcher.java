@@ -16,17 +16,17 @@ public class MultipleChoiceQuestionDtoToEntityMatcher extends TypeSafeDiagnosing
 
     private final QuestionEntity expected;
 
-    public MultipleChoiceQuestionDtoToEntityMatcher(QuestionEntity expected) {
+    public MultipleChoiceQuestionDtoToEntityMatcher(final QuestionEntity expected) {
         this.expected = expected;
     }
 
-    public static MultipleChoiceQuestionDtoToEntityMatcher matchesEntity(QuestionEntity expected) {
+    public static MultipleChoiceQuestionDtoToEntityMatcher matchesEntity(final QuestionEntity expected) {
         return new MultipleChoiceQuestionDtoToEntityMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(MultipleChoiceQuestion item, Description mismatchDescription) {
-        if (!(expected instanceof MultipleChoiceQuestionEntity multipleChoiceQuestionEntity)) {
+    protected boolean matchesSafely(final MultipleChoiceQuestion item, final Description mismatchDescription) {
+        if (!(expected instanceof final MultipleChoiceQuestionEntity multipleChoiceQuestionEntity)) {
             mismatchDescription.appendText("expected was not a MultipleChoiceQuestionEntity");
             return false;
         }
@@ -65,7 +65,7 @@ public class MultipleChoiceQuestionDtoToEntityMatcher extends TypeSafeDiagnosing
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches QuestionEntity");
         description.appendValue(expected);
     }

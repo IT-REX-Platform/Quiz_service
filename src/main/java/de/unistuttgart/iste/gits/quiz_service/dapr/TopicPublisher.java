@@ -15,7 +15,7 @@ public class TopicPublisher {
 
     private final DaprClient client;
 
-    public TopicPublisher(DaprClient client) {
+    public TopicPublisher(final DaprClient client) {
         this.client = client;
     }
 
@@ -25,7 +25,7 @@ public class TopicPublisher {
      *
      * @param userProgressLogEvent event to publish
      */
-    public void notifyUserWorkedOnContent(UserProgressLogEvent userProgressLogEvent) {
+    public void notifyUserWorkedOnContent(final UserProgressLogEvent userProgressLogEvent) {
         log.info("Publishing user progress log event {} to topic {}", userProgressLogEvent, USER_PROGRESS_LOG_TOPIC);
         client.publishEvent(PUBSUB_NAME, USER_PROGRESS_LOG_TOPIC, userProgressLogEvent).block();
     }

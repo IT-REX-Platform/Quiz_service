@@ -44,13 +44,13 @@ class MutationLogQuizCompletionTest {
     @Test
     @Transactional
     @Commit
-    void testLogQuizCompletion(HttpGraphQlTester graphQlTester) {
+    void testLogQuizCompletion(final HttpGraphQlTester graphQlTester) {
         //init
-        UUID assessmentId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        final UUID assessmentId = UUID.randomUUID();
+        final UUID userId = UUID.randomUUID();
 
         // create Database entities
-        List<QuestionEntity> questions = TestData.createDummyQuestions();
+        final List<QuestionEntity> questions = TestData.createDummyQuestions();
         QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
                 .questionPool(questions)
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
@@ -59,24 +59,24 @@ class MutationLogQuizCompletionTest {
         quizEntity = quizRepository.save(quizEntity);
 
         // create Inputs
-        QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
+        final QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
                 .setQuestionId(quizEntity.getQuestionPool().get(0).getId())
                 .setCorrect(true)
                 .setUsedHint(false)
                 .build();
-        QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
+        final QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
                 .setQuestionId(quizEntity.getQuestionPool().get(1).getId())
                 .setCorrect(false)
                 .setUsedHint(true)
                 .build();
 
-        QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
+        final QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
                 .setQuizId(assessmentId)
                 .setCompletedQuestions(List.of(inputQuestion, inputQuestion2))
                 .build();
 
         // create expected Progress event
-        UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
+        final UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
                 .userId(userId)
                 .contentId(assessmentId)
                 .hintsUsed(1)
@@ -84,13 +84,13 @@ class MutationLogQuizCompletionTest {
                 .timeToComplete(null)
                 .correctness(1.0 / quizEntity.getQuestionPool().size())
                 .build();
-        QuizCompletionFeedback expectedQuizCompletionFeedback = QuizCompletionFeedback.builder()
+        final QuizCompletionFeedback expectedQuizCompletionFeedback = QuizCompletionFeedback.builder()
                 .setCorrectness(1.0 / quizEntity.getQuestionPool().size())
                 .setHintsUsed(1)
                 .setSuccess(false)
                 .build();
 
-        String currentUser = """
+        final String currentUser = """
                 {
                     "id": "%s",
                     "userName": "MyUserName",
@@ -101,7 +101,7 @@ class MutationLogQuizCompletionTest {
                 """.formatted(userId);
 
 
-        String query = """
+        final String query = """
                 mutation($input: QuizCompletedInput!) {
                     logQuizCompleted(input: $input) {
                         correctness
@@ -111,7 +111,7 @@ class MutationLogQuizCompletionTest {
                 }
                 """;
 
-        QuizCompletionFeedback actualFeedback = graphQlTester
+        final QuizCompletionFeedback actualFeedback = graphQlTester
                 .mutate()
                 .header("CurrentUser", currentUser)
                 .build()

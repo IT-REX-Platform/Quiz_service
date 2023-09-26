@@ -31,7 +31,7 @@ class MutateQuizUpdateClozeQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testUpdateClozeQuestion(GraphQlTester graphQlTester) {
+    void testUpdateClozeQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createClozeQuestion(1,
@@ -40,7 +40,7 @@ class MutateQuizUpdateClozeQuestionTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        UpdateClozeQuestionInput input = UpdateClozeQuestionInput.builder()
+        final UpdateClozeQuestionInput input = UpdateClozeQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
                 .setClozeElements(List.of(
                         ClozeElementInput.builder()
@@ -57,7 +57,7 @@ class MutateQuizUpdateClozeQuestionTest {
                 .setAdditionalWrongAnswers(List.of("new wrong answer"))
                 .build();
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!, $input: UpdateClozeQuestionInput!) {
                     mutateQuiz(assessmentId: $id) {
                         updateClozeQuestion(input: $input) {
@@ -100,9 +100,9 @@ class MutateQuizUpdateClozeQuestionTest {
                 .entityList(String.class)
                 .containsExactly("new wrong answer");
 
-        QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
-        ClozeQuestionEntity updatedQuestion = (ClozeQuestionEntity) updatedQuiz.getQuestionPool().get(0);
+        final ClozeQuestionEntity updatedQuestion = (ClozeQuestionEntity) updatedQuiz.getQuestionPool().get(0);
         assertThat(updatedQuestion.getHint(), is("new hint"));
         assertThat(updatedQuestion.isShowBlanksList(), is(false));
         assertThat(updatedQuestion.getAdditionalWrongAnswers(), hasSize(1));

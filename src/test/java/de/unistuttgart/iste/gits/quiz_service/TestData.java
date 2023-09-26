@@ -16,24 +16,24 @@ public class TestData {
     }
 
     public static MultipleChoiceQuestionEntity createMultipleChoiceQuestion(
-            int number,
-            String text,
-            String correctAnswerText,
-            String... wrongAnswerText) {
+            final int number,
+            final String text,
+            final String correctAnswerText,
+            final String... wrongAnswerText) {
 
-        var builder = MultipleChoiceQuestionEntity.builder()
+        final var builder = MultipleChoiceQuestionEntity.builder()
                 .type(QuestionType.MULTIPLE_CHOICE)
                 .hint("hint")
                 .number(number)
                 .text(text);
 
-        var correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
+        final var correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
                 .answerText(correctAnswerText)
                 .feedback("feedback")
                 .correct(true)
                 .build();
 
-        var wrongAnswers = Arrays.stream(wrongAnswerText)
+        final var wrongAnswers = Arrays.stream(wrongAnswerText)
                 .map(answer -> MultipleChoiceAnswerEmbeddable.builder()
                         .answerText(answer)
                         .feedback("feedback")
@@ -45,7 +45,7 @@ public class TestData {
         return builder.build();
     }
 
-    public static ClozeQuestionEntity createClozeQuestion(int number, ClozeElementEmbeddable... clozeElements) {
+    public static ClozeQuestionEntity createClozeQuestion(final int number, final ClozeElementEmbeddable... clozeElements) {
         return ClozeQuestionEntity.builder()
                 .type(QuestionType.CLOZE)
                 .number(number)
@@ -56,14 +56,14 @@ public class TestData {
                 .build();
     }
 
-    public static ClozeElementEmbeddable clozeText(String text) {
+    public static ClozeElementEmbeddable clozeText(final String text) {
         return ClozeElementEmbeddable.builder()
                 .type(ClozeElementType.TEXT)
                 .text(text)
                 .build();
     }
 
-    public static ClozeElementEmbeddable clozeBlank(String correctAnswer) {
+    public static ClozeElementEmbeddable clozeBlank(final String correctAnswer) {
         return ClozeElementEmbeddable.builder()
                 .type(ClozeElementType.BLANK)
                 .correctAnswer(correctAnswer)
@@ -71,7 +71,7 @@ public class TestData {
                 .build();
     }
 
-    public static AssociationQuestionEntity createAssociationQuestion(int number, AssociationEmbeddable... associations) {
+    public static AssociationQuestionEntity createAssociationQuestion(final int number, final AssociationEmbeddable... associations) {
         return AssociationQuestionEntity.builder()
                 .type(QuestionType.ASSOCIATION)
                 .number(number)
@@ -81,11 +81,11 @@ public class TestData {
                 .build();
     }
 
-    public static AssociationEmbeddable association(String left, String right) {
+    public static AssociationEmbeddable association(final String left, final String right) {
         return association(left, right, "feedback");
     }
 
-    public static AssociationEmbeddable association(String left, String right, String feedback) {
+    public static AssociationEmbeddable association(final String left, final String right, final String feedback) {
         return AssociationEmbeddable.builder()
                 .left(left)
                 .right(right)
@@ -93,7 +93,7 @@ public class TestData {
                 .build();
     }
 
-    public static ExactAnswerQuestionEntity createExactAnswerQuestion(int number, String question, String answer) {
+    public static ExactAnswerQuestionEntity createExactAnswerQuestion(final int number, final String question, final String answer) {
         return ExactAnswerQuestionEntity.builder()
                 .type(QuestionType.EXACT_ANSWER)
                 .number(number)
@@ -105,7 +105,7 @@ public class TestData {
                 .build();
     }
 
-    public static NumericQuestionEntity createNumericQuestion(int number, String question, double answer) {
+    public static NumericQuestionEntity createNumericQuestion(final int number, final String question, final double answer) {
         return NumericQuestionEntity.builder()
                 .type(QuestionType.NUMERIC)
                 .number(number)
@@ -117,7 +117,7 @@ public class TestData {
                 .build();
     }
 
-    public static SelfAssessmentQuestionEntity createSelfAssessmentQuestion(int number, String question, String answer) {
+    public static SelfAssessmentQuestionEntity createSelfAssessmentQuestion(final int number, final String question, final String answer) {
         return SelfAssessmentQuestionEntity.builder()
                 .type(QuestionType.SELF_ASSESSMENT)
                 .number(number)
@@ -133,18 +133,18 @@ public class TestData {
      * @return List of 2 Multiple Choice Question (database) Entities
      */
     public static List<QuestionEntity> createDummyQuestions() {
-        List<QuestionEntity> questions = new ArrayList<>();
-        MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
+        final List<QuestionEntity> questions = new ArrayList<>();
+        final MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
                 .answerText("Pick me! Pick Me!")
                 .correct(false)
                 .feedback("Fell for it")
                 .build();
-        MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
+        final MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
                 .answerText("No me!")
                 .correct(true)
                 .feedback("Well done!")
                 .build();
-        MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder()
+        final MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder()
                 .id(UUID.randomUUID())
                 .number(0)
                 .type(QuestionType.MULTIPLE_CHOICE)
@@ -152,7 +152,7 @@ public class TestData {
                 .answers(List.of(wrongAnswer, correctAnswer))
                 .hint("Wink Wink")
                 .build();
-        MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder()
+        final MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder()
                 .id(UUID.randomUUID())
                 .number(0)
                 .type(QuestionType.MULTIPLE_CHOICE)

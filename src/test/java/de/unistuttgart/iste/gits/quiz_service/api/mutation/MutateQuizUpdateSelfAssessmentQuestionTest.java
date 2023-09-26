@@ -31,21 +31,21 @@ class MutateQuizUpdateSelfAssessmentQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testUpdateSelfAssessmentQuestion(GraphQlTester graphQlTester) {
+    void testUpdateSelfAssessmentQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createSelfAssessmentQuestion(1, "question", "answer")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        UpdateSelfAssessmentQuestionInput input = UpdateSelfAssessmentQuestionInput.builder()
+        final UpdateSelfAssessmentQuestionInput input = UpdateSelfAssessmentQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
                 .setHint("new hint")
                 .setText("new question")
                 .setSolutionSuggestion("new solution suggestion")
                 .build();
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!, $input: UpdateSelfAssessmentQuestionInput!) {
                     mutateQuiz(assessmentId: $id) {
                         updateSelfAssessmentQuestion(input: $input) {
@@ -64,9 +64,9 @@ class MutateQuizUpdateSelfAssessmentQuestionTest {
                 .path("mutateQuiz.updateSelfAssessmentQuestion.questionPool[0].hint").entity(String.class).isEqualTo("new hint")
                 .path("mutateQuiz.updateSelfAssessmentQuestion.questionPool[0].solutionSuggestion").entity(String.class).isEqualTo("new solution suggestion");
 
-        QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
-        SelfAssessmentQuestionEntity updatedQuestion = (SelfAssessmentQuestionEntity) updatedQuiz.getQuestionPool().get(0);
+        final SelfAssessmentQuestionEntity updatedQuestion = (SelfAssessmentQuestionEntity) updatedQuiz.getQuestionPool().get(0);
         assertThat(updatedQuestion.getText(), is("new question"));
         assertThat(updatedQuestion.getHint(), is("new hint"));
         assertThat(updatedQuestion.getSolutionSuggestion(), is("new solution suggestion"));

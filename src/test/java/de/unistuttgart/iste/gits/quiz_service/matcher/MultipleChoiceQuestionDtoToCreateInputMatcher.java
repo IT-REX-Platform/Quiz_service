@@ -13,16 +13,16 @@ public class MultipleChoiceQuestionDtoToCreateInputMatcher extends TypeSafeDiagn
 
     private final CreateMultipleChoiceQuestionInput expected;
 
-    public MultipleChoiceQuestionDtoToCreateInputMatcher(CreateMultipleChoiceQuestionInput expected) {
+    public MultipleChoiceQuestionDtoToCreateInputMatcher(final CreateMultipleChoiceQuestionInput expected) {
         this.expected = expected;
     }
 
-    public static MultipleChoiceQuestionDtoToCreateInputMatcher matchesInput(CreateMultipleChoiceQuestionInput expected) {
+    public static MultipleChoiceQuestionDtoToCreateInputMatcher matchesInput(final CreateMultipleChoiceQuestionInput expected) {
         return new MultipleChoiceQuestionDtoToCreateInputMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(MultipleChoiceQuestion item, Description mismatchDescription) {
+    protected boolean matchesSafely(final MultipleChoiceQuestion item, final Description mismatchDescription) {
         if (!Objects.equals(item.getNumber(), expected.getNumber())) {
             mismatchDescription.appendText("number was ").appendValue(item.getNumber());
             return false;
@@ -54,7 +54,7 @@ public class MultipleChoiceQuestionDtoToCreateInputMatcher extends TypeSafeDiagn
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches CreateMultipleChoiceQuestionInput");
         description.appendValue(expected);
     }

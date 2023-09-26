@@ -14,16 +14,16 @@ public class MultipleChoiceAnswerEntityToInputMatcher extends TypeSafeDiagnosing
 
     private final MultipleChoiceAnswerInput expected;
 
-    public MultipleChoiceAnswerEntityToInputMatcher(MultipleChoiceAnswerInput expected) {
+    public MultipleChoiceAnswerEntityToInputMatcher(final MultipleChoiceAnswerInput expected) {
         this.expected = expected;
     }
 
-    public static MultipleChoiceAnswerEntityToInputMatcher matchesInput(MultipleChoiceAnswerInput expected) {
+    public static MultipleChoiceAnswerEntityToInputMatcher matchesInput(final MultipleChoiceAnswerInput expected) {
         return new MultipleChoiceAnswerEntityToInputMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(MultipleChoiceAnswerEmbeddable item, Description mismatchDescription) {
+    protected boolean matchesSafely(final MultipleChoiceAnswerEmbeddable item, final Description mismatchDescription) {
         if (!Objects.equals(item.getAnswerText(), expected.getAnswerText())) {
             mismatchDescription.appendText("answer text was ").appendValue(item.getAnswerText());
             return false;
@@ -41,7 +41,7 @@ public class MultipleChoiceAnswerEntityToInputMatcher extends TypeSafeDiagnosing
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches MultipleChoiceAnswerInput");
         description.appendValue(expected);
     }

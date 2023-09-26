@@ -36,10 +36,10 @@ class MutateQuizSwitchQuestionsTest {
     @Test
     @Transactional
     @Commit
-    void testSwitchQuestion(GraphQlTester graphQlTester) {
+    void testSwitchQuestion(final GraphQlTester graphQlTester) {
         // store questions in separate variable because spring apparently caches the quiz entity instance
         // so the following quiz entity instance is updated during the mutation
-        List<QuestionEntity> questionEntities = List.of(
+        final List<QuestionEntity> questionEntities = List.of(
                 createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris"),
                 createMultipleChoiceQuestion(2, "what is the capital of France?", "Paris", "Madrid"),
                 createMultipleChoiceQuestion(3, "what is the capital of Spain?", "Madrid", "Berlin"));
@@ -49,7 +49,7 @@ class MutateQuizSwitchQuestionsTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!) {
                     mutateQuiz(assessmentId: $id) {
                         switchQuestions(firstNumber: 2, secondNumber: 3) {
@@ -58,7 +58,7 @@ class MutateQuizSwitchQuestionsTest {
                     }
                 }
                 """;
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
                 .path("mutateQuiz.switchQuestions.questionPool")
@@ -67,21 +67,21 @@ class MutateQuizSwitchQuestionsTest {
 
         assertThat(questions, hasSize(3));
 
-        QuestionEntity expectedFirstEntity = questionEntities.get(0);
+        final QuestionEntity expectedFirstEntity = questionEntities.get(0);
         expectedFirstEntity.setId(quizEntity.getQuestionPool().get(0).getId());
         assertThat(questions.get(0), matchesEntity(expectedFirstEntity));
 
-        QuestionEntity expectedSecondEntity = questionEntities.get(2);
+        final QuestionEntity expectedSecondEntity = questionEntities.get(2);
         expectedSecondEntity.setNumber(2);
         expectedSecondEntity.setId(quizEntity.getQuestionPool().get(1).getId());
         assertThat(questions.get(1), matchesEntity(expectedSecondEntity));
 
-        QuestionEntity expectedThirdEntity = questionEntities.get(1);
+        final QuestionEntity expectedThirdEntity = questionEntities.get(1);
         expectedThirdEntity.setNumber(3);
         expectedThirdEntity.setId(quizEntity.getQuestionPool().get(2).getId());
         assertThat(questions.get(2), matchesEntity(expectedThirdEntity));
 
-        QuizEntity newQuizEntity = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity newQuizEntity = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(newQuizEntity.getQuestionPool(), hasSize(3));
 
         assertThat(newQuizEntity.getQuestionPool().get(0), is(expectedFirstEntity));
@@ -95,7 +95,7 @@ class MutateQuizSwitchQuestionsTest {
      * Then an error is returned
      */
     @Test
-    void testSwotchQuestionNonExisting(GraphQlTester graphQlTester) {
+    void testSwotchQuestionNonExisting(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris"),
@@ -103,7 +103,7 @@ class MutateQuizSwitchQuestionsTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        String query = """
+        final String query = """
                 mutation($id: UUID!) {
                     mutateQuiz(assessmentId: $id) {
                         switchQuestions(firstNumber: 1, secondNumber: 3) {

@@ -44,13 +44,13 @@ class MutateQuizAddNumericQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testAddNumericQuestion(GraphQlTester graphQlTester) {
+    void testAddNumericQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateNumericQuestionInput input = CreateNumericQuestionInput.builder()
+        final CreateNumericQuestionInput input = CreateNumericQuestionInput.builder()
                 .setHint("hint")
                 .setText("question")
                 .setFeedback("feedback")
@@ -81,13 +81,13 @@ class MutateQuizAddNumericQuestionTest {
                 .path("mutateQuiz.addNumericQuestion.questionPool[0].tolerance")
                 .entity(Double.class).isEqualTo(0.5);
 
-        QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
+        final QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
                 .orElseThrow()
                 .getQuestionPool()
                 .get(0);
 
         assertThat(questionEntity, instanceOf(NumericQuestionEntity.class));
-        NumericQuestionEntity numericQuestionEntity = (NumericQuestionEntity) questionEntity;
+        final NumericQuestionEntity numericQuestionEntity = (NumericQuestionEntity) questionEntity;
 
         assertThat(numericQuestionEntity.getHint(), is("hint"));
         assertThat(numericQuestionEntity.getText(), is("question"));

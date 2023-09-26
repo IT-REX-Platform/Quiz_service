@@ -29,7 +29,7 @@ class MutateQuizTest {
      * Then the quiz is updated accordingly
      */
     @Test
-    void testMutateQuiz(GraphQlTester graphQlTester) {
+    void testMutateQuiz(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = QuizEntity.builder()
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
@@ -40,7 +40,7 @@ class MutateQuizTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        String query = """
+        final String query = """
                 mutation($id: UUID!) {
                     mutateQuiz(assessmentId: $id) {
                         setQuestionPoolingMode(questionPoolingMode: ORDERED) { assessmentId }
@@ -69,7 +69,7 @@ class MutateQuizTest {
                 .path("mutateQuiz.result.numberOfRandomlySelectedQuestions").entity(Integer.class)
                 .isEqualTo(2);
 
-        QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getRequiredCorrectAnswers(), is(2));
         assertThat(updatedQuiz.getQuestionPoolingMode(), is(QuestionPoolingMode.ORDERED));
         assertThat(updatedQuiz.getNumberOfRandomlySelectedQuestions(), is(2));

@@ -44,13 +44,13 @@ class MutateQuizAddClozeQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testAddClozeQuestion(GraphQlTester graphQlTester) {
+    void testAddClozeQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
+        final CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
                 .setHint("hint")
                 .setAdditionalWrongAnswers(List.of("wrong1", "wrong2"))
                 .setShowBlanksList(false)
@@ -96,13 +96,13 @@ class MutateQuizAddClozeQuestionTest {
                 .entity(String.class)
                 .isEqualTo("feedback");
 
-        QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
+        final QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
                 .orElseThrow()
                 .getQuestionPool()
                 .get(0);
 
         assertThat(questionEntity, instanceOf(ClozeQuestionEntity.class));
-        ClozeQuestionEntity clozeQuestionEntity = (ClozeQuestionEntity) questionEntity;
+        final ClozeQuestionEntity clozeQuestionEntity = (ClozeQuestionEntity) questionEntity;
         assertThat(clozeQuestionEntity.getAdditionalWrongAnswers(), contains("wrong1", "wrong2"));
         assertThat(clozeQuestionEntity.getClozeElements(), hasSize(2));
         assertThat(clozeQuestionEntity.getClozeElements().get(0).getType(), is(ClozeElementType.TEXT));
@@ -122,13 +122,13 @@ class MutateQuizAddClozeQuestionTest {
      * Then an error is returned
      */
     @Test
-    void testAddClozeWithoutBlank(GraphQlTester graphQlTester) {
+    void testAddClozeWithoutBlank(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
+        final CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
                 .setNumber(1)
                 .setShowBlanksList(true)
                 .setClozeElements(List.of(
@@ -156,13 +156,13 @@ class MutateQuizAddClozeQuestionTest {
     }
 
     @Test
-    void addClozeTextElementWithFeedback(GraphQlTester graphQlTester) {
+    void addClozeTextElementWithFeedback(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
+        final CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
                 .setNumber(1)
                 .setShowBlanksList(true)
                 .setClozeElements(List.of(
@@ -191,13 +191,13 @@ class MutateQuizAddClozeQuestionTest {
     }
 
     @Test
-    void addClozeElementWithCorrectAnswer(GraphQlTester graphQlTester) {
+    void addClozeElementWithCorrectAnswer(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
+        final CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
                 .setNumber(1)
                 .setShowBlanksList(true)
                 .setClozeElements(List.of(
@@ -225,13 +225,13 @@ class MutateQuizAddClozeQuestionTest {
     }
 
     @Test
-    void addClozeTextElementWithoutText(GraphQlTester graphQlTester) {
+    void addClozeTextElementWithoutText(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
+        final CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
                 .setNumber(1)
                 .setShowBlanksList(true)
                 .setClozeElements(List.of(
@@ -258,13 +258,13 @@ class MutateQuizAddClozeQuestionTest {
     }
 
     @Test
-    void testAddBlankWithoutCorrectAnswer(GraphQlTester tester) {
+    void testAddBlankWithoutCorrectAnswer(final GraphQlTester tester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
+        final CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
                 .setNumber(1)
                 .setShowBlanksList(true)
                 .setClozeElements(List.of(
@@ -287,13 +287,13 @@ class MutateQuizAddClozeQuestionTest {
     }
 
     @Test
-    void testAddBlankWithText(GraphQlTester graphQlTester) {
+    void testAddBlankWithText(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
+        final CreateClozeQuestionInput input = CreateClozeQuestionInput.builder()
                 .setNumber(1)
                 .setShowBlanksList(true)
                 .setClozeElements(List.of(

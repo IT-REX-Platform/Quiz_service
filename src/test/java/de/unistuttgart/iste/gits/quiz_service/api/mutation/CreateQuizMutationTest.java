@@ -34,15 +34,15 @@ class CreateQuizMutationTest {
     @Test
     @Transactional
     @Commit
-    void testCreateQuizWithoutQuestions(GraphQlTester graphQlTester) {
-        UUID assessmentId = UUID.randomUUID();
-        CreateQuizInput createQuizInput = CreateQuizInput.builder()
+    void testCreateQuizWithoutQuestions(final GraphQlTester graphQlTester) {
+        final UUID assessmentId = UUID.randomUUID();
+        final CreateQuizInput createQuizInput = CreateQuizInput.builder()
                 .setRequiredCorrectAnswers(1)
                 .setQuestionPoolingMode(QuestionPoolingMode.RANDOM)
                 .setNumberOfRandomlySelectedQuestions(2)
                 .build();
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation createQuiz($id: UUID!, $input: CreateQuizInput!) {
                     createQuiz(assessmentId: $id, input: $input) {
                         ...QuizAllFields
@@ -51,7 +51,7 @@ class CreateQuizMutationTest {
 
         // note that deserialization of the result into Quiz dto is not possible because "Question" is an interface
         // so check the fields manually
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("input", createQuizInput)
                 .variable("id", assessmentId)
                 .execute()

@@ -48,10 +48,12 @@ class MutationLogQuizCompletionTest {
         //init
         final UUID assessmentId = UUID.randomUUID();
         final UUID userId = UUID.randomUUID();
+        final UUID courseId = UUID.randomUUID();
 
         // create Database entities
         final List<QuestionEntity> questions = TestData.createDummyQuestions();
         QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
+                .courseId(courseId)
                 .questionPool(questions)
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
                 .requiredCorrectAnswers(2)

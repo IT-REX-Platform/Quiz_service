@@ -16,6 +16,7 @@
     * [NumericQuestion](#numericquestion)
     * [PaginationInfo](#paginationinfo)
     * [Quiz](#quiz)
+    * [QuizCompletionFeedback](#quizcompletionfeedback)
     * [QuizMutation](#quizmutation)
     * [SelfAssessmentQuestion](#selfassessmentquestion)
     * [SingleAssociation](#singleassociation)
@@ -171,7 +172,7 @@ in contents service instead.
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>logQuizCompleted</strong></td>
-<td valign="top"><a href="#quiz">Quiz</a>!</td>
+<td valign="top"><a href="#quizcompletionfeedback">QuizCompletionFeedback</a>!</td>
 <td>
 
 
@@ -190,6 +191,7 @@ Log that a multiple choice quiz is completed.
 ## Objects
 
 ### AssociationQuestion
+
 
 Association question, i.e., a question where the user has to assign the correct right side to each left side.
 
@@ -920,6 +922,53 @@ Question pooling mode of the quiz.
 The selected questions of the question pool.
 This is identical to the list of questions if questionPoolingMode is ORDERED.
 This will be different each time it is queried if questionPoolingMode is RANDOM.
+
+</td>
+</tr>
+</tbody>
+</table>
+
+### QuizCompletionFeedback
+
+Feedback data when `logQuizCompletion` is called.
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>success</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td>
+
+
+Whether the quiz was passed or not.
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>correctness</strong></td>
+<td valign="top"><a href="#float">Float</a>!</td>
+<td>
+
+
+The number of questions that were answered correctly.
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>hintsUsed</strong></td>
+<td valign="top"><a href="#int">Int</a>!</td>
+<td>
+
+
+The number of hints that were used.
 
 </td>
 </tr>

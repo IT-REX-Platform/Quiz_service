@@ -16,16 +16,16 @@ public class MultipleChoiceQuestionEntityToUpdateInputMatcher extends TypeSafeDi
 
     private final UpdateMultipleChoiceQuestionInput expected;
 
-    public MultipleChoiceQuestionEntityToUpdateInputMatcher(UpdateMultipleChoiceQuestionInput expected) {
+    public MultipleChoiceQuestionEntityToUpdateInputMatcher(final UpdateMultipleChoiceQuestionInput expected) {
         this.expected = expected;
     }
 
-    public static MultipleChoiceQuestionEntityToUpdateInputMatcher matchesUpdateQuizInput(UpdateMultipleChoiceQuestionInput expected) {
+    public static MultipleChoiceQuestionEntityToUpdateInputMatcher matchesUpdateQuizInput(final UpdateMultipleChoiceQuestionInput expected) {
         return new MultipleChoiceQuestionEntityToUpdateInputMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(QuestionEntity item, Description mismatchDescription) {
+    protected boolean matchesSafely(final QuestionEntity item, final Description mismatchDescription) {
         if (!Objects.equals(item.getId(), expected.getId())) {
             mismatchDescription.appendText("id was ").appendValue(item.getId());
             return false;
@@ -39,7 +39,7 @@ public class MultipleChoiceQuestionEntityToUpdateInputMatcher extends TypeSafeDi
             return false;
         }
 
-        if (!(item instanceof MultipleChoiceQuestionEntity multipleChoiceQuestionEntity)) {
+        if (!(item instanceof final MultipleChoiceQuestionEntity multipleChoiceQuestionEntity)) {
             mismatchDescription.appendText("question was not a MultipleChoiceQuestionEntity");
             return false;
         }
@@ -63,7 +63,7 @@ public class MultipleChoiceQuestionEntityToUpdateInputMatcher extends TypeSafeDi
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches UpdateMultipleChoiceQuestionInput");
         description.appendValue(expected);
     }

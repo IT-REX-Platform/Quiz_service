@@ -18,7 +18,7 @@ type Mutation {
     """
     Log that a multiple choice quiz is completed.
     """
-    logQuizCompleted(input: QuizCompletedInput!): Quiz!
+    logQuizCompleted(input: QuizCompletedInput!): QuizCompletionFeedback!
 }
 
 type QuizMutation {

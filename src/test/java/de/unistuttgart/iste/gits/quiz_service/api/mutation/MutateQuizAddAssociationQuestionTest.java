@@ -43,13 +43,13 @@ class MutateQuizAddAssociationQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testAddAssociationQuestion(GraphQlTester graphQlTester) {
+    void testAddAssociationQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateAssociationQuestionInput input = CreateAssociationQuestionInput.builder()
+        final CreateAssociationQuestionInput input = CreateAssociationQuestionInput.builder()
                 .setHint("hint")
                 .setText("question")
                 .setCorrectAssociations(List.of(
@@ -88,13 +88,13 @@ class MutateQuizAddAssociationQuestionTest {
                 .entityList(String.class)
                 .contains("b", "d");
 
-        QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
+        final QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
                 .orElseThrow()
                 .getQuestionPool()
                 .get(0);
 
         assertThat(questionEntity, instanceOf(AssociationQuestionEntity.class));
-        AssociationQuestionEntity associationQuestionEntity = (AssociationQuestionEntity) questionEntity;
+        final AssociationQuestionEntity associationQuestionEntity = (AssociationQuestionEntity) questionEntity;
 
         assertThat(associationQuestionEntity.getHint(), is("hint"));
         assertThat(associationQuestionEntity.getText(), is("question"));
@@ -112,13 +112,13 @@ class MutateQuizAddAssociationQuestionTest {
      */
     @Test
     @Transactional
-    void testAddAssociationQuestionNotUniqueAnswer(GraphQlTester graphQlTester) {
+    void testAddAssociationQuestionNotUniqueAnswer(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateAssociationQuestionInput input = CreateAssociationQuestionInput.builder()
+        final CreateAssociationQuestionInput input = CreateAssociationQuestionInput.builder()
                 .setNumber(2)
                 .setHint("hint")
                 .setText("question")

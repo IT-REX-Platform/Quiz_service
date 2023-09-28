@@ -44,13 +44,13 @@ class MutateQuizAddSelfAssessmentQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testAddSelfAssessmentQuestion(GraphQlTester graphQlTester) {
+    void testAddSelfAssessmentQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateSelfAssessmentQuestionInput input = CreateSelfAssessmentQuestionInput.builder()
+        final CreateSelfAssessmentQuestionInput input = CreateSelfAssessmentQuestionInput.builder()
                 .setHint("hint")
                 .setText("question")
                 .setSolutionSuggestion("solution suggestion")
@@ -73,13 +73,13 @@ class MutateQuizAddSelfAssessmentQuestionTest {
                 .path("mutateQuiz.addSelfAssessmentQuestion.questionPool[0].solutionSuggestion")
                 .entity(String.class).isEqualTo("solution suggestion");
 
-        QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
+        final QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
                 .orElseThrow()
                 .getQuestionPool()
                 .get(0);
 
         assertThat(questionEntity, instanceOf(SelfAssessmentQuestionEntity.class));
-        SelfAssessmentQuestionEntity selfAssessmentQuestionEntity = (SelfAssessmentQuestionEntity) questionEntity;
+        final SelfAssessmentQuestionEntity selfAssessmentQuestionEntity = (SelfAssessmentQuestionEntity) questionEntity;
 
         assertThat(selfAssessmentQuestionEntity.getHint(), is("hint"));
         assertThat(selfAssessmentQuestionEntity.getText(), is("question"));

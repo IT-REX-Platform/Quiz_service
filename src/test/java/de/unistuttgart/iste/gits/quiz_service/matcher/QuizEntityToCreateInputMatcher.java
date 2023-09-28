@@ -14,16 +14,16 @@ public class QuizEntityToCreateInputMatcher extends TypeSafeDiagnosingMatcher<Qu
 
     private final CreateQuizInput expected;
 
-    public QuizEntityToCreateInputMatcher(CreateQuizInput expected) {
+    public QuizEntityToCreateInputMatcher(final CreateQuizInput expected) {
         this.expected = expected;
     }
 
-    public static QuizEntityToCreateInputMatcher matchesCreateQuizInput(CreateQuizInput expected) {
+    public static QuizEntityToCreateInputMatcher matchesCreateQuizInput(final CreateQuizInput expected) {
         return new QuizEntityToCreateInputMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(QuizEntity item, Description mismatchDescription) {
+    protected boolean matchesSafely(final QuizEntity item, final Description mismatchDescription) {
         if (item.getRequiredCorrectAnswers() != expected.getRequiredCorrectAnswers()) {
             mismatchDescription.appendText("requiredCorrectAnswers was ").appendValue(item.getRequiredCorrectAnswers());
             return false;
@@ -41,7 +41,7 @@ public class QuizEntityToCreateInputMatcher extends TypeSafeDiagnosingMatcher<Qu
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches CreateQuizInput");
         description.appendValue(expected);
     }

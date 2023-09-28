@@ -30,14 +30,14 @@ class MutateQuizUpdateExactAnswerQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testUpdateExactAnswerQuestion(GraphQlTester graphQlTester) {
+    void testUpdateExactAnswerQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createExactAnswerQuestion(1, "question", "answer")))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        UpdateExactAnswerQuestionInput input = UpdateExactAnswerQuestionInput.builder()
+        final UpdateExactAnswerQuestionInput input = UpdateExactAnswerQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
                 .setHint("new hint")
                 .setText("new question")
@@ -46,7 +46,7 @@ class MutateQuizUpdateExactAnswerQuestionTest {
                 .setCorrectAnswers(List.of("newA", "newB"))
                 .build();
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!, $input: UpdateExactAnswerQuestionInput!) {
                     mutateQuiz(assessmentId: $id) {
                         updateExactAnswerQuestion(input: $input) {
@@ -67,9 +67,9 @@ class MutateQuizUpdateExactAnswerQuestionTest {
                 .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].caseSensitive").entity(Boolean.class).isEqualTo(false)
                 .path("mutateQuiz.updateExactAnswerQuestion.questionPool[0].correctAnswers").entityList(String.class).contains("newA", "newB");
 
-        QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
-        ExactAnswerQuestionEntity updatedQuestion = (ExactAnswerQuestionEntity) updatedQuiz.getQuestionPool().get(0);
+        final ExactAnswerQuestionEntity updatedQuestion = (ExactAnswerQuestionEntity) updatedQuiz.getQuestionPool().get(0);
         assertThat(updatedQuestion.getText(), is("new question"));
         assertThat(updatedQuestion.getHint(), is("new hint"));
         assertThat(updatedQuestion.getFeedback(), is("new feedback"));

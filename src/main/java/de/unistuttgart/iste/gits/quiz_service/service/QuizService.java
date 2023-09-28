@@ -1,6 +1,7 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
 import de.unistuttgart.iste.gits.common.event.*;
+import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
@@ -18,6 +19,9 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static de.unistuttgart.iste.gits.common.util.GitsCollectionUtils.count;
+import static de.unistuttgart.iste.gits.common.util.GitsCollectionUtils.countAsInt;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +41,11 @@ public class QuizService {
      * @param assessmentIds the assessment ids
      * @return the (nullable) quizzes
      */
-    public List<Quiz> findQuizzesByAssessmentIds(List<UUID> assessmentIds) {
+    public List<Quiz> findQuizzesByAssessmentIds(final List<UUID> assessmentIds) {
         return assessmentIds.stream()
                 .map(quizRepository::findById)
-                .map(optionalQuiz -> optionalQuiz.map(quizMapper::entityToDto))
-                .map(optionalQuiz -> optionalQuiz.orElse(null))
+                // map to dto or null if the quiz does not exist
+                .map(optionalQuiz -> optionalQuiz.map(quizMapper::entityToDto).orElse(null))
                 .toList();
     }
 
@@ -56,14 +60,14 @@ public class QuizService {
      * @throws ValidationException if the quiz is invalid according to
      *                             {@link QuizValidator#validateCreateQuizInput(CreateQuizInput)}.
      */
-    public Quiz createQuiz(UUID courseId, UUID assessmentId, CreateQuizInput input) {
+    public Quiz createQuiz(final UUID courseId, final UUID assessmentId, final CreateQuizInput input) {
         quizValidator.validateCreateQuizInput(input);
 
-        QuizEntity entity = quizMapper.createQuizInputToEntity(input);
+        final QuizEntity entity = quizMapper.createQuizInputToEntity(input);
         entity.setAssessmentId(assessmentId);
         entity.setCourseId(courseId);
 
-        QuizEntity savedEntity = quizRepository.save(entity);
+        final QuizEntity savedEntity = quizRepository.save(entity);
         return quizMapper.entityToDto(savedEntity);
     }
 
@@ -74,7 +78,7 @@ public class QuizService {
      * @return the id of the deleted quiz if the deletion was successful
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    public UUID deleteQuiz(UUID id) {
+    public UUID deleteQuiz(final UUID id) {
         requireQuizExists(id);
 
         quizRepository.deleteById(id);
@@ -92,7 +96,7 @@ public class QuizService {
      * @throws ValidationException     if input is invalid according to
      *                                 {@link QuizValidator#validateCreateMultipleChoiceQuestionInput(CreateMultipleChoiceQuestionInput)}
      */
-    public Quiz addMultipleChoiceQuestion(UUID quizId, CreateMultipleChoiceQuestionInput input) {
+    public Quiz addMultipleChoiceQuestion(final UUID quizId, final CreateMultipleChoiceQuestionInput input) {
         quizValidator.validateCreateMultipleChoiceQuestionInput(input);
 
         return addQuestion(quizId, input, input.getNumber(), quizMapper::multipleChoiceQuestionInputToEntity);
@@ -107,7 +111,7 @@ public class QuizService {
      * @throws EntityNotFoundException if the quiz or the question does not exist
      * @throws ValidationException     if there is no correct answer
      */
-    public Quiz updateMultipleChoiceQuestion(UUID quizId, UpdateMultipleChoiceQuestionInput input) {
+    public Quiz updateMultipleChoiceQuestion(final UUID quizId, final UpdateMultipleChoiceQuestionInput input) {
         quizValidator.validateUpdateMultipleChoiceQuestionInput(input);
 
         return updateQuestion(quizId, input, input.getId(), quizMapper::multipleChoiceQuestionInputToEntity);
@@ -123,7 +127,7 @@ public class QuizService {
      * @throws ValidationException     if input is invalid, see
      *                                 {@link QuizValidator#validateCreateClozeQuestionInput(CreateClozeQuestionInput)}
      */
-    public Quiz addClozeQuestion(UUID quizId, CreateClozeQuestionInput input) {
+    public Quiz addClozeQuestion(final UUID quizId, final CreateClozeQuestionInput input) {
         quizValidator.validateCreateClozeQuestionInput(input);
 
         return addQuestion(quizId, input, input.getNumber(), quizMapper::clozeQuestionInputToEntity);
@@ -139,7 +143,7 @@ public class QuizService {
      * @throws ValidationException     if input is invalid,
      *                                 see {@link QuizValidator#validateUpdateClozeQuestionInput(UpdateClozeQuestionInput)}
      */
-    public Quiz updateClozeQuestion(UUID quizId, UpdateClozeQuestionInput input) {
+    public Quiz updateClozeQuestion(final UUID quizId, final UpdateClozeQuestionInput input) {
         quizValidator.validateUpdateClozeQuestionInput(input);
 
         return updateQuestion(quizId, input, input.getId(), quizMapper::clozeQuestionInputToEntity);
@@ -154,7 +158,7 @@ public class QuizService {
      * @throws EntityNotFoundException if the quiz does not exist
      * @throws ValidationException     if invalid
      */
-    public Quiz addAssociationQuestion(UUID assessmentId, CreateAssociationQuestionInput input) {
+    public Quiz addAssociationQuestion(final UUID assessmentId, final CreateAssociationQuestionInput input) {
         quizValidator.validateCreateAssociationQuestionInput(input);
 
         return addQuestion(assessmentId, input, input.getNumber(), quizMapper::associationQuestionInputToEntity);
@@ -169,7 +173,7 @@ public class QuizService {
      * @throws EntityNotFoundException if the quiz or the question does not exist
      * @throws ValidationException     if invalid
      */
-    public Quiz updateAssociationQuestion(UUID assessmentId, UpdateAssociationQuestionInput input) {
+    public Quiz updateAssociationQuestion(final UUID assessmentId, final UpdateAssociationQuestionInput input) {
         quizValidator.validateUpdateAssociationQuestionInput(input);
 
         return updateQuestion(assessmentId, input, input.getId(), quizMapper::associationQuestionInputToEntity);
@@ -183,7 +187,7 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    public Quiz addExactAnswerQuestion(UUID quizId, CreateExactAnswerQuestionInput input) {
+    public Quiz addExactAnswerQuestion(final UUID quizId, final CreateExactAnswerQuestionInput input) {
         return addQuestion(quizId, input, input.getNumber(), quizMapper::exactAnswerQuestionInputToEntity);
     }
 
@@ -195,7 +199,7 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz or the question does not exist
      */
-    public Quiz updateExactAnswerQuestion(UUID quizId, UpdateExactAnswerQuestionInput input) {
+    public Quiz updateExactAnswerQuestion(final UUID quizId, final UpdateExactAnswerQuestionInput input) {
         return updateQuestion(quizId, input, input.getId(), quizMapper::exactAnswerQuestionInputToEntity);
     }
 
@@ -207,7 +211,7 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    public Quiz addNumericQuestion(UUID quizId, CreateNumericQuestionInput input) {
+    public Quiz addNumericQuestion(final UUID quizId, final CreateNumericQuestionInput input) {
         return addQuestion(quizId, input, input.getNumber(), quizMapper::numericQuestionInputToEntity);
     }
 
@@ -219,7 +223,7 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz or the question does not exist
      */
-    public Quiz updateNumericQuestion(UUID quizId, UpdateNumericQuestionInput input) {
+    public Quiz updateNumericQuestion(final UUID quizId, final UpdateNumericQuestionInput input) {
         return updateQuestion(quizId, input, input.getId(), quizMapper::numericQuestionInputToEntity);
     }
 
@@ -231,7 +235,7 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    public Quiz addSelfAssessmentQuestion(UUID quizId, CreateSelfAssessmentQuestionInput input) {
+    public Quiz addSelfAssessmentQuestion(final UUID quizId, final CreateSelfAssessmentQuestionInput input) {
         return addQuestion(quizId, input, input.getNumber(), quizMapper::selfAssessmentQuestionInputToEntity);
     }
 
@@ -243,19 +247,30 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz or the question does not exist
      */
-    public Quiz updateSelfAssessmentQuestion(UUID quizId, UpdateSelfAssessmentQuestionInput input) {
+    public Quiz updateSelfAssessmentQuestion(final UUID quizId, final UpdateSelfAssessmentQuestionInput input) {
         return updateQuestion(quizId, input, input.getId(), quizMapper::selfAssessmentQuestionInputToEntity);
     }
 
-    private <I, E extends QuestionEntity> Quiz updateQuestion(UUID quizId,
-                                                              I input,
-                                                              UUID questionId,
-                                                              Function<I, E> mapping) {
+    /**
+     * Updates a question in a quiz.
+     *
+     * @param quizId     the id of the quiz
+     * @param input      the updated question
+     * @param questionId the id of the question to update
+     * @param mapping    the mapping function that maps the input to a question entity
+     * @param <I>        the type of the question input, e.g. {@link UpdateMultipleChoiceQuestionInput}
+     * @return the modified quiz
+     */
+    private <I> Quiz updateQuestion(final UUID quizId,
+                                    final I input,
+                                    final UUID questionId,
+                                    final Function<I, ? extends QuestionEntity> mapping) {
         return modifyQuiz(quizId, entity -> {
-            QuestionEntity questionEntity = getQuestionInQuizById(entity, questionId);
+            final QuestionEntity questionEntity = getQuestionInQuizById(entity, questionId);
 
-            int indexOfQuestion = entity.getQuestionPool().indexOf(questionEntity);
-            QuestionEntity newQuestionEntity = mapping.apply(input);
+            final int indexOfQuestion = entity.getQuestionPool().indexOf(questionEntity);
+
+            final QuestionEntity newQuestionEntity = mapping.apply(input);
             newQuestionEntity.setNumber(questionEntity.getNumber());
             entity.getQuestionPool().set(indexOfQuestion, newQuestionEntity);
         });
@@ -269,18 +284,23 @@ public class QuizService {
      * @param questionNumber the number of the question to add. If null, the number is assigned automatically.
      * @param mapping        the mapping function that maps the input to a question entity.
      * @param <I>            the type of the question input, e.g. {@link CreateMultipleChoiceQuestionInput}
-     * @param <E>            the type of the question entity, e.g. {@link MultipleChoiceQuestionEntity}
+     *
+     * @implNote The second parameter questionNumber is necessary because the input types do not share a common interface,
+     * and we cannot change the input types, as they are generated from the schema.
      * @return the modified quiz
      */
-    private <I, E extends QuestionEntity> Quiz addQuestion(UUID quizId,
-                                                           I input,
-                                                           Integer questionNumber,
-                                                           Function<I, E> mapping) {
+    private <I> Quiz addQuestion(final UUID quizId,
+                                 final I input,
+                                 final Integer questionNumber,
+                                 final Function<I, QuestionEntity> mapping) {
         return modifyQuiz(quizId, entity -> {
-            int number = questionNumber == null ? assignNumber(entity) : questionNumber;
+            // use the given number or assign a new one
+            final int number = Optional.ofNullable(questionNumber)
+                    .orElseGet(() -> assignNumber(entity));
+
             quizValidator.checkNumberIsUnique(entity, number);
 
-            E questionEntity = mapping.apply(input);
+            final QuestionEntity questionEntity = mapping.apply(input);
             questionEntity.setNumber(number);
             entity.getQuestionPool().add(questionEntity);
         });
@@ -294,9 +314,9 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    public Quiz removeQuestion(UUID quizId, int number) {
+    public Quiz removeQuestion(final UUID quizId, final int number) {
         return modifyQuiz(quizId, entity -> {
-            QuestionEntity questionEntity = getQuestionInQuizByNumber(entity, number);
+            final QuestionEntity questionEntity = getQuestionInQuizByNumber(entity, number);
             entity.getQuestionPool().remove(questionEntity);
 
             // decrease the number of all questions with a higher number
@@ -315,29 +335,29 @@ public class QuizService {
      * @return the modified quiz
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    public Quiz switchQuestions(UUID quizId, int firstNumber, int secondNumber) {
+    public Quiz switchQuestions(final UUID quizId, final int firstNumber, final int secondNumber) {
         return modifyQuiz(quizId, entity -> {
-            QuestionEntity firstQuestionEntity = getQuestionInQuizByNumber(entity, firstNumber);
-            QuestionEntity secondQuestionEntity = getQuestionInQuizByNumber(entity, secondNumber);
+            final QuestionEntity firstQuestionEntity = getQuestionInQuizByNumber(entity, firstNumber);
+            final QuestionEntity secondQuestionEntity = getQuestionInQuizByNumber(entity, secondNumber);
 
             firstQuestionEntity.setNumber(secondNumber);
             secondQuestionEntity.setNumber(firstNumber);
 
-            int indexOfFirstQuestion = entity.getQuestionPool().indexOf(firstQuestionEntity);
-            int indexOfSecondQuestion = entity.getQuestionPool().indexOf(secondQuestionEntity);
+            final int indexOfFirstQuestion = entity.getQuestionPool().indexOf(firstQuestionEntity);
+            final int indexOfSecondQuestion = entity.getQuestionPool().indexOf(secondQuestionEntity);
             Collections.swap(entity.getQuestionPool(), indexOfFirstQuestion, indexOfSecondQuestion);
         });
     }
 
-    public Quiz setRequiredCorrectAnswers(UUID quizId, int requiredCorrectAnswers) {
+    public Quiz setRequiredCorrectAnswers(final UUID quizId, final int requiredCorrectAnswers) {
         return modifyQuiz(quizId, entity -> entity.setRequiredCorrectAnswers(requiredCorrectAnswers));
     }
 
-    public Quiz setQuestionPoolingMode(UUID quizId, QuestionPoolingMode questionPoolingMode) {
+    public Quiz setQuestionPoolingMode(final UUID quizId, final QuestionPoolingMode questionPoolingMode) {
         return modifyQuiz(quizId, entity -> entity.setQuestionPoolingMode(questionPoolingMode));
     }
 
-    public Quiz setNumberOfRandomlySelectedQuestions(UUID quizId, int numberOfRandomlySelectedQuestions) {
+    public Quiz setNumberOfRandomlySelectedQuestions(final UUID quizId, final int numberOfRandomlySelectedQuestions) {
         return modifyQuiz(quizId, entity -> entity.setNumberOfRandomlySelectedQuestions(numberOfRandomlySelectedQuestions));
     }
 
@@ -348,7 +368,7 @@ public class QuizService {
      * @return the quiz entity
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    public QuizEntity requireQuizExists(UUID id) {
+    public QuizEntity requireQuizExists(final UUID id) {
         return quizRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Quiz with id " + id + " not found"));
     }
@@ -362,23 +382,24 @@ public class QuizService {
      * @return the modified quiz as DTO
      * @throws EntityNotFoundException if the quiz does not exist
      */
-    private Quiz modifyQuiz(UUID quiz, Consumer<QuizEntity> modifier) {
-        QuizEntity entity = requireQuizExists(quiz);
+    private Quiz modifyQuiz(final UUID quiz, final Consumer<QuizEntity> modifier) {
+        final QuizEntity entity = requireQuizExists(quiz);
 
         modifier.accept(entity);
 
-        QuizEntity savedEntity = quizRepository.save(entity);
+        final QuizEntity savedEntity = quizRepository.save(entity);
         return quizMapper.entityToDto(savedEntity);
     }
 
-    private int assignNumber(QuizEntity entity) {
+    private int assignNumber(final QuizEntity entity) {
         if (entity.getQuestionPool().isEmpty()) {
             return 1;
         }
+        // the question pool is sorted by number, so we can just take the last number and add 1
         return entity.getQuestionPool().get(entity.getQuestionPool().size() - 1).getNumber() + 1;
     }
 
-    private QuestionEntity getQuestionInQuizById(QuizEntity quizEntity, UUID questionId) {
+    private QuestionEntity getQuestionInQuizById(final QuizEntity quizEntity, final UUID questionId) {
         return quizEntity.getQuestionPool().stream()
                 .filter(q -> q.getId().equals(questionId))
                 .findFirst()
@@ -388,7 +409,7 @@ public class QuizService {
                                 questionId, quizEntity.getAssessmentId())));
     }
 
-    private QuestionEntity getQuestionInQuizByNumber(QuizEntity quizEntity, int number) {
+    private QuestionEntity getQuestionInQuizByNumber(final QuizEntity quizEntity, final int number) {
         return quizEntity.getQuestionPool().stream()
                 .filter(q -> q.getNumber() == number)
                 .findFirst()
@@ -403,14 +424,10 @@ public class QuizService {
      *
      * @param dto event object containing changes to content
      */
-    public void deleteQuizzesWhenQuizContentIsDeleted(ContentChangeEvent dto) {
+    public void deleteQuizzesWhenQuizContentIsDeleted(final ContentChangeEvent dto) throws IncompleteEventMessageException {
         // validate event message
-        try {
-            checkCompletenessOfDto(dto);
-        } catch (NullPointerException e) {
-            log.error(e.getMessage());
-            return;
-        }
+        checkCompletenessOfDto(dto);
+
         // only consider DELETE Operations
         if (!dto.getOperation().equals(CrudOperation.DELETE) || dto.getContentIds().isEmpty()) {
             return;
@@ -418,7 +435,6 @@ public class QuizService {
 
         // delete all found quizzes
         quizRepository.deleteAllByIdInBatch(dto.getContentIds());
-
     }
 
     /**
@@ -427,9 +443,9 @@ public class QuizService {
      * @param dto event message under evaluation
      * @throws NullPointerException if any of the fields are null
      */
-    private void checkCompletenessOfDto(ContentChangeEvent dto) throws NullPointerException {
+    private void checkCompletenessOfDto(final ContentChangeEvent dto) throws IncompleteEventMessageException {
         if (dto.getOperation() == null || dto.getContentIds() == null) {
-            throw new NullPointerException("incomplete message received: all fields of a message must be non-null");
+            throw new IncompleteEventMessageException(IncompleteEventMessageException.ERROR_INCOMPLETE_MESSAGE);
         }
     }
 
@@ -441,22 +457,23 @@ public class QuizService {
      * @param userId the user that made progress
      * @return quiz that was worked on
      */
-    public Quiz publishProgress(QuizCompletedInput input, UUID userId) {
-        QuizEntity quizEntity = quizRepository.getReferenceById(input.getQuizId());
+    public QuizCompletionFeedback publishProgress(final QuizCompletedInput input, final UUID userId) {
+        final QuizEntity quizEntity = requireQuizExists(input.getQuizId());
 
         updateQuestionStatistics(input, userId, quizEntity);
 
         // count the number of questions that were answered correctly
-        long numbCorrectAnswers = input.getCompletedQuestions().stream().filter(QuestionCompletedInput::getCorrect).count();
+        final long numbCorrectAnswers = count(input.getCompletedQuestions(), QuestionCompletedInput::getCorrect);
 
-        boolean success = numbCorrectAnswers >= quizEntity.getRequiredCorrectAnswers();
-        double correctness = calcCorrectness(numbCorrectAnswers, quizEntity);
+        final boolean success = numbCorrectAnswers >= quizEntity.getRequiredCorrectAnswers();
+        final double correctness = calculateCorrectness(numbCorrectAnswers, quizEntity);
+        final int hintsUsed = countAsInt(input.getCompletedQuestions(), QuestionCompletedInput::getUsedHint);
 
         // create new user progress event message
-        UserProgressLogEvent userProgressLogEvent = UserProgressLogEvent.builder()
+        final UserProgressLogEvent userProgressLogEvent = UserProgressLogEvent.builder()
                 .userId(userId)
                 .contentId(quizEntity.getAssessmentId())
-                .hintsUsed((int) input.getCompletedQuestions().stream().filter(QuestionCompletedInput::getUsedHint).count())
+                .hintsUsed(hintsUsed)
                 .success(success)
                 .timeToComplete(null)
                 .correctness(correctness)
@@ -464,7 +481,11 @@ public class QuizService {
 
         // publish new user progress event message
         topicPublisher.notifyUserWorkedOnContent(userProgressLogEvent);
-        return quizMapper.entityToDto(quizEntity);
+        return QuizCompletionFeedback.builder()
+                .setSuccess(success)
+                .setCorrectness(correctness)
+                .setHintsUsed(hintsUsed)
+                .build();
     }
 
     /**
@@ -474,16 +495,16 @@ public class QuizService {
      * @param userId     ID of user completing the quiz
      * @param quizEntity quiz, questions are a part of
      */
-    private void updateQuestionStatistics(QuizCompletedInput input, UUID userId, QuizEntity quizEntity) {
+    private void updateQuestionStatistics(final QuizCompletedInput input, final UUID userId, final QuizEntity quizEntity) {
 
-        for (QuestionCompletedInput completedQuestion : input.getCompletedQuestions()) {
+        for (final QuestionCompletedInput completedQuestion : input.getCompletedQuestions()) {
 
             // find question in quiz. throws an exception if question can not be found
-            QuestionEntity questionEntity = getQuestionInQuizById(quizEntity, completedQuestion.getQuestionId());
-            int index = quizEntity.getQuestionPool().indexOf(questionEntity);
+            final QuestionEntity questionEntity = getQuestionInQuizById(quizEntity, completedQuestion.getQuestionId());
+            final int index = quizEntity.getQuestionPool().indexOf(questionEntity);
 
             // create new Question Statistic
-            QuestionStatisticEntity newQuestionStatistic = QuestionStatisticEntity.builder()
+            final QuestionStatisticEntity newQuestionStatistic = QuestionStatisticEntity.builder()
                     .questionId(questionEntity.getId())
                     .userId(userId)
                     .answeredCorrectly(completedQuestion.getCorrect())
@@ -507,17 +528,22 @@ public class QuizService {
      * @param quizEntity     quizEntity source
      * @return calculated correctness value
      */
-    protected double calcCorrectness(double correctAnswers, QuizEntity quizEntity) {
+    protected double calculateCorrectness(final double correctAnswers, final QuizEntity quizEntity) {
         if (correctAnswers == 0.0) {
+            // prevent division by zero
             return correctAnswers;
         }
 
+        // in RANDOM mode, the number of questions is not the size of the question pool
+        // but the number of randomly selected questions
         if (quizEntity.getQuestionPoolingMode().equals(QuestionPoolingMode.RANDOM)
             && quizEntity.getNumberOfRandomlySelectedQuestions() != null) {
 
             if (quizEntity.getNumberOfRandomlySelectedQuestions() == 0) {
+                // prevent division by zero
                 return 1.0;
             }
+
             return correctAnswers / quizEntity.getNumberOfRandomlySelectedQuestions();
 
         } else if (quizEntity.getQuestionPool().isEmpty()) {
@@ -527,5 +553,4 @@ public class QuizService {
         }
 
     }
-
 }

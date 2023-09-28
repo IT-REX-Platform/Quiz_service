@@ -14,16 +14,16 @@ public class MultipleChoiceAnswerDtoToEntityMatcher extends TypeSafeDiagnosingMa
 
     private final MultipleChoiceAnswerEmbeddable expected;
 
-    public MultipleChoiceAnswerDtoToEntityMatcher(MultipleChoiceAnswerEmbeddable expected) {
+    public MultipleChoiceAnswerDtoToEntityMatcher(final MultipleChoiceAnswerEmbeddable expected) {
         this.expected = expected;
     }
 
-    public static MultipleChoiceAnswerDtoToEntityMatcher matchesEntity(MultipleChoiceAnswerEmbeddable expected) {
+    public static MultipleChoiceAnswerDtoToEntityMatcher matchesEntity(final MultipleChoiceAnswerEmbeddable expected) {
         return new MultipleChoiceAnswerDtoToEntityMatcher(expected);
     }
 
     @Override
-    protected boolean matchesSafely(MultipleChoiceAnswer item, Description mismatchDescription) {
+    protected boolean matchesSafely(final MultipleChoiceAnswer item, final Description mismatchDescription) {
         if (!Objects.equals(item.getAnswerText(), expected.getAnswerText())) {
             mismatchDescription.appendText("answer text was ").appendValue(item.getAnswerText());
         }
@@ -40,7 +40,7 @@ public class MultipleChoiceAnswerDtoToEntityMatcher extends TypeSafeDiagnosingMa
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("matches MultipleChoiceAnswerEmbeddable");
         description.appendValue(expected);
     }

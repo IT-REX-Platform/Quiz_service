@@ -43,13 +43,13 @@ class MutateQuizAddExactAnswerQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testAddExactAnswerQuestion(GraphQlTester graphQlTester) {
+    void testAddExactAnswerQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        CreateExactAnswerQuestionInput input = CreateExactAnswerQuestionInput.builder()
+        final CreateExactAnswerQuestionInput input = CreateExactAnswerQuestionInput.builder()
                 .setHint("hint")
                 .setText("question")
                 .setFeedback("feedback")
@@ -80,13 +80,13 @@ class MutateQuizAddExactAnswerQuestionTest {
                 .path("mutateQuiz.addExactAnswerQuestion.questionPool[0].correctAnswers")
                 .entityList(String.class).contains("a", "b");
 
-        QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
+        final QuestionEntity questionEntity = quizRepository.findById(quizEntity.getAssessmentId())
                 .orElseThrow()
                 .getQuestionPool()
                 .get(0);
 
         assertThat(questionEntity, instanceOf(ExactAnswerQuestionEntity.class));
-        ExactAnswerQuestionEntity exactAnswerQuestionEntity = (ExactAnswerQuestionEntity) questionEntity;
+        final ExactAnswerQuestionEntity exactAnswerQuestionEntity = (ExactAnswerQuestionEntity) questionEntity;
 
         assertThat(exactAnswerQuestionEntity.getHint(), is("hint"));
         assertThat(exactAnswerQuestionEntity.getText(), is("question"));

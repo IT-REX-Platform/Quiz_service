@@ -1,7 +1,9 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
 import de.unistuttgart.iste.gits.common.event.*;
+import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.generated.dto.*;
+import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
@@ -15,6 +17,8 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 
@@ -30,9 +34,9 @@ class QuizServiceTest {
     @Test
     void removeContentIdsTest() {
         //init
-        UUID assessmentId = UUID.randomUUID();
+        final UUID assessmentId = UUID.randomUUID();
 
-        QuizEntity quizEntity = QuizEntity.builder()
+        final QuizEntity quizEntity = QuizEntity.builder()
                 .assessmentId(assessmentId)
                 .questionPool(new ArrayList<>())
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
@@ -40,7 +44,7 @@ class QuizServiceTest {
                 .numberOfRandomlySelectedQuestions(0)
                 .build();
 
-        ContentChangeEvent contentChangeEvent = ContentChangeEvent.builder()
+        final ContentChangeEvent contentChangeEvent = ContentChangeEvent.builder()
                 .contentIds(List.of(assessmentId))
                 .operation(CrudOperation.DELETE)
                 .build();
@@ -49,7 +53,7 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(List.of(quizEntity));
 
         // invoke method under test
-        quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
+        assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));
 
         verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
@@ -57,9 +61,9 @@ class QuizServiceTest {
     @Test
     void removeContentIdsWithNoIdsToBeRemovedTest() {
         //init
-        UUID assessmentId = UUID.randomUUID();
+        final UUID assessmentId = UUID.randomUUID();
 
-        ContentChangeEvent contentChangeEvent = ContentChangeEvent.builder()
+        final ContentChangeEvent contentChangeEvent = ContentChangeEvent.builder()
                 .contentIds(List.of(assessmentId))
                 .operation(CrudOperation.DELETE)
                 .build();
@@ -68,7 +72,7 @@ class QuizServiceTest {
         when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(new ArrayList<QuizEntity>());
 
         // invoke method under test
-        quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent);
+        assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));
 
         verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
     }
@@ -76,38 +80,46 @@ class QuizServiceTest {
     @Test
     void removeContentIdsInvalidInputTest() {
         //init
-        UUID assessmentId = UUID.randomUUID();
+        final UUID assessmentId = UUID.randomUUID();
 
-        ContentChangeEvent emptyListDto = ContentChangeEvent.builder()
+        final ContentChangeEvent emptyListDto = ContentChangeEvent.builder()
                 .contentIds(List.of())
                 .operation(CrudOperation.DELETE)
                 .build();
 
-        ContentChangeEvent nullListDto = ContentChangeEvent.builder()
+        final ContentChangeEvent nullListDto = ContentChangeEvent.builder()
                 .contentIds(null)
                 .operation(CrudOperation.DELETE)
                 .build();
 
-        ContentChangeEvent nullOperationDto = ContentChangeEvent.builder()
+        final ContentChangeEvent nullOperationDto = ContentChangeEvent.builder()
                 .contentIds(List.of(assessmentId))
                 .operation(null)
                 .build();
 
-        ContentChangeEvent creationEvent = ContentChangeEvent.builder()
+        final ContentChangeEvent creationEvent = ContentChangeEvent.builder()
                 .contentIds(List.of(assessmentId))
                 .operation(CrudOperation.CREATE)
                 .build();
 
-        ContentChangeEvent updateEvent = ContentChangeEvent.builder()
+        final ContentChangeEvent updateEvent = ContentChangeEvent.builder()
                 .contentIds(List.of(assessmentId))
                 .operation(CrudOperation.UPDATE)
                 .build();
 
-        List<ContentChangeEvent> events = List.of(emptyListDto, nullListDto, nullOperationDto, creationEvent, updateEvent);
+        final List<ContentChangeEvent> events = List.of(emptyListDto, creationEvent, updateEvent);
+        final List<ContentChangeEvent> errorEvents = List.of(nullListDto, nullOperationDto);
 
-        for (ContentChangeEvent event : events) {
+        for (final ContentChangeEvent event : events) {
             //invoke method under test
-            quizService.deleteQuizzesWhenQuizContentIsDeleted(event);
+            assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(event));
+            verify(quizRepository, never()).findAllById(any());
+            verify(quizRepository, never()).deleteAllInBatch(any());
+        }
+
+        for (final ContentChangeEvent errorEvent : errorEvents) {
+            //invoke method under test
+            assertThrows(IncompleteEventMessageException.class, () -> quizService.deleteQuizzesWhenQuizContentIsDeleted(errorEvent));
             verify(quizRepository, never()).findAllById(any());
             verify(quizRepository, never()).deleteAllInBatch(any());
         }
@@ -116,38 +128,38 @@ class QuizServiceTest {
 
     @Test
     void publishProgressRandomModeTest() {
-        UUID assessmentId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        final UUID assessmentId = UUID.randomUUID();
+        final UUID userId = UUID.randomUUID();
 
 
         // create Database entities
-        List<QuestionEntity> questions = createDummyQuestions();
+        final List<QuestionEntity> questions = TestData.createDummyQuestions();
 
-        QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
+        final QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
                 .questionPool(questions)
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .requiredCorrectAnswers(1)
                 .numberOfRandomlySelectedQuestions(2).build();
 
         // create Inputs
-        QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
+        final QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
                 .setQuestionId(questions.get(0).getId())
                 .setCorrect(true)
                 .setUsedHint(false)
                 .build();
-        QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
+        final QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
                 .setQuestionId(questions.get(1).getId())
                 .setCorrect(true)
                 .setUsedHint(false)
                 .build();
 
-        QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
+        final QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
                 .setQuizId(assessmentId)
                 .setCompletedQuestions(List.of(inputQuestion, inputQuestion2))
                 .build();
 
         // create expected Progress event
-        UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
+        final UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
                 .userId(userId)
                 .contentId(assessmentId)
                 .hintsUsed(0)
@@ -155,55 +167,60 @@ class QuizServiceTest {
                 .timeToComplete(null)
                 .correctness(2.0 / quizEntity.getNumberOfRandomlySelectedQuestions())
                 .build();
-
+        final QuizCompletionFeedback expectedQuizCompletionFeedback = QuizCompletionFeedback.builder()
+                .setSuccess(true)
+                .setHintsUsed(0)
+                .setCorrectness(2.0 / quizEntity.getNumberOfRandomlySelectedQuestions())
+                .build();
         //mock repository
-        when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
+        when(quizRepository.findById(assessmentId)).thenReturn(Optional.of(quizEntity));
         doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
         when(quizRepository.save(any())).thenReturn(quizEntity);
 
         // invoke method under test
-        quizService.publishProgress(quizCompletedInput, userId);
+        final QuizCompletionFeedback actualFeedback = quizService.publishProgress(quizCompletedInput, userId);
 
-        verify(quizRepository, times(1)).getReferenceById(assessmentId);
+        assertThat(actualFeedback, is(expectedQuizCompletionFeedback));
+
+        verify(quizRepository, times(1)).findById(assessmentId);
         verify(quizRepository, times(1)).save(any());
         verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
-
     }
 
     @Test
     void publishProgressOrderedModeTest() {
         //init
-        UUID assessmentId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        final UUID assessmentId = UUID.randomUUID();
+        final UUID userId = UUID.randomUUID();
 
         // create Database entities
-        List<QuestionEntity> questions = createDummyQuestions();
+        final List<QuestionEntity> questions = TestData.createDummyQuestions();
 
-        QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
+        final QuizEntity quizEntity = QuizEntity.builder().assessmentId(assessmentId)
                 .questionPool(questions)
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
                 .requiredCorrectAnswers(2)
                 .numberOfRandomlySelectedQuestions(2).build();
 
         // create Inputs
-        QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
+        final QuestionCompletedInput inputQuestion = QuestionCompletedInput.builder()
                 .setQuestionId(questions.get(0).getId())
                 .setCorrect(true)
                 .setUsedHint(false)
                 .build();
-        QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
+        final QuestionCompletedInput inputQuestion2 = QuestionCompletedInput.builder()
                 .setQuestionId(questions.get(1).getId())
                 .setCorrect(false)
                 .setUsedHint(true)
                 .build();
 
-        QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
+        final QuizCompletedInput quizCompletedInput = QuizCompletedInput.builder()
                 .setQuizId(assessmentId)
                 .setCompletedQuestions(List.of(inputQuestion, inputQuestion2))
                 .build();
 
         // create expected Progress event
-        UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
+        final UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
                 .userId(userId)
                 .contentId(assessmentId)
                 .hintsUsed(1)
@@ -211,16 +228,23 @@ class QuizServiceTest {
                 .timeToComplete(null)
                 .correctness(1.0 / quizEntity.getQuestionPool().size())
                 .build();
+        final QuizCompletionFeedback expectedQuizCompletionFeedback = QuizCompletionFeedback.builder()
+                .setCorrectness(1.0 / quizEntity.getQuestionPool().size())
+                .setHintsUsed(1)
+                .setSuccess(false)
+                .build();
 
         //mock repository
-        when(quizRepository.getReferenceById(assessmentId)).thenReturn(quizEntity);
+        when(quizRepository.findById(assessmentId)).thenReturn(Optional.of(quizEntity));
         when(quizRepository.save(any())).thenReturn(quizEntity);
         doNothing().when(topicPublisher).notifyUserWorkedOnContent(any());
 
         // invoke method under test
-        quizService.publishProgress(quizCompletedInput, userId);
+        final QuizCompletionFeedback actualFeedback = quizService.publishProgress(quizCompletedInput, userId);
 
-        verify(quizRepository, times(1)).getReferenceById(assessmentId);
+        assertThat(actualFeedback, is(expectedQuizCompletionFeedback));
+
+        verify(quizRepository, times(1)).findById(assessmentId);
         verify(quizRepository, times(1)).save(any());
         verify(topicPublisher, times(1)).notifyUserWorkedOnContent(expectedUserProgressLogEvent);
 
@@ -229,78 +253,38 @@ class QuizServiceTest {
     @Test
     void testCalculateCorrectnessEdgeCases() {
 
-        var actualWithZeroCorrectAnswers = quizService.calcCorrectness(0.0, QuizEntity.builder().build());
+        final var actualWithZeroCorrectAnswers = quizService.calculateCorrectness(0.0, QuizEntity.builder().build());
         assertThat(actualWithZeroCorrectAnswers, is(0.0));
 
-        var quizEntityWithZeroQuestions = QuizEntity.builder()
+        final var quizEntityWithZeroQuestions = QuizEntity.builder()
                 .questionPool(new ArrayList<>())
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
                 .build();
 
-        var actualWithZeroQuestions = quizService.calcCorrectness(1.0, quizEntityWithZeroQuestions);
+        final var actualWithZeroQuestions = quizService.calculateCorrectness(1.0, quizEntityWithZeroQuestions);
         assertThat(actualWithZeroQuestions, is(1.0));
 
-        var quizEntityWithRandomlySelectedQuestionsZero = QuizEntity.builder()
+        final var quizEntityWithRandomlySelectedQuestionsZero = QuizEntity.builder()
                 .questionPool(List.of(MultipleChoiceQuestionEntity.builder().build()))
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(0)
                 .build();
-        var actualWithRandomlySelectedQuestionsZero
-                = quizService.calcCorrectness(1.0, quizEntityWithRandomlySelectedQuestionsZero);
+        final var actualWithRandomlySelectedQuestionsZero
+                = quizService.calculateCorrectness(1.0, quizEntityWithRandomlySelectedQuestionsZero);
 
         assertThat(actualWithRandomlySelectedQuestionsZero, is(1.0));
 
-        var quizEntityWithRandomlySelectedQuestionsNull = QuizEntity.builder()
+        final var quizEntityWithRandomlySelectedQuestionsNull = QuizEntity.builder()
                 .questionPool(List.of(MultipleChoiceQuestionEntity.builder().build(),
                         MultipleChoiceQuestionEntity.builder().build()))
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(null)
                 .build();
 
-        var actualWithRandomlySelectedQuestionsNull
-                = quizService.calcCorrectness(1.0, quizEntityWithRandomlySelectedQuestionsNull);
+        final var actualWithRandomlySelectedQuestionsNull
+                = quizService.calculateCorrectness(1.0, quizEntityWithRandomlySelectedQuestionsNull);
 
         assertThat(actualWithRandomlySelectedQuestionsNull, is(0.5));
-    }
-
-    /**
-     * creates some dummy multiple choice questions
-     *
-     * @return List of 2 Multiple Choice Question (database) Entities
-     */
-    private List<QuestionEntity> createDummyQuestions() {
-        List<QuestionEntity> questions = new ArrayList<>();
-        MultipleChoiceAnswerEmbeddable wrongAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .answerText("Pick me! Pick Me!")
-                .correct(false)
-                .feedback("Fell for it")
-                .build();
-        MultipleChoiceAnswerEmbeddable correctAnswer = MultipleChoiceAnswerEmbeddable.builder()
-                .answerText("No me!")
-                .correct(true)
-                .feedback("Well done!")
-                .build();
-        MultipleChoiceQuestionEntity questionEntity = MultipleChoiceQuestionEntity.builder()
-                .id(UUID.randomUUID())
-                .number(0)
-                .type(QuestionType.MULTIPLE_CHOICE)
-                .text("This is a question")
-                .answers(List.of(wrongAnswer, correctAnswer))
-                .hint("Wink Wink")
-                .build();
-        MultipleChoiceQuestionEntity questionEntity2 = MultipleChoiceQuestionEntity.builder()
-                .id(UUID.randomUUID())
-                .number(0)
-                .type(QuestionType.MULTIPLE_CHOICE)
-                .text("This is a question")
-                .answers(List.of(wrongAnswer, correctAnswer))
-                .hint("Wink Wink")
-                .build();
-
-        questions.add(questionEntity);
-        questions.add(questionEntity2);
-
-        return questions;
     }
 
 }

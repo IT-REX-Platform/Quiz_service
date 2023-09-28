@@ -31,14 +31,14 @@ class MutateQuizUpdateAssociationQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testUpdateAssociationQuestion(GraphQlTester graphQlTester) {
+    void testUpdateAssociationQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createAssociationQuestion(1, association("a", "b"), association("c", "d"))))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        UpdateAssociationQuestionInput input = UpdateAssociationQuestionInput.builder()
+        final UpdateAssociationQuestionInput input = UpdateAssociationQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
                 .setHint("new hint")
                 .setText("new question")
@@ -47,7 +47,7 @@ class MutateQuizUpdateAssociationQuestionTest {
                         new AssociationInput("newB", "newD", "new feedback2")))
                 .build();
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!, $input: UpdateAssociationQuestionInput!) {
                     mutateQuiz(assessmentId: $id) {
                         updateAssociationQuestion(input: $input) {
@@ -69,9 +69,9 @@ class MutateQuizUpdateAssociationQuestionTest {
                         new SingleAssociation("newA", "newC", "new feedback1"),
                         new SingleAssociation("newB", "newD", "new feedback2"));
 
-        QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
-        AssociationQuestionEntity updatedQuestion = (AssociationQuestionEntity) updatedQuiz.getQuestionPool().get(0);
+        final AssociationQuestionEntity updatedQuestion = (AssociationQuestionEntity) updatedQuiz.getQuestionPool().get(0);
         assertThat(updatedQuestion.getText(), is("new question"));
         assertThat(updatedQuestion.getHint(), is("new hint"));
         assertThat(updatedQuestion.getCorrectAssociations(), hasSize(2));

@@ -3,9 +3,7 @@ package de.unistuttgart.iste.gits.quiz_service.config;
 import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
 import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 
 /**
  * This is a dev-config for the TopicPublisher. It is intended to be used for development only.
@@ -33,7 +31,7 @@ public class DevTopicPublisherConfiguration {
         }
 
         @Override
-        public void notifyUserWorkedOnContent(UserProgressLogEvent userProgressLogEvent) {
+        public void notifyUserWorkedOnContent(final UserProgressLogEvent userProgressLogEvent) {
             log.info("notifyUserWorkedOnContent called with {}", userProgressLogEvent);
         }
     }

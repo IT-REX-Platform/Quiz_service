@@ -34,11 +34,13 @@ public class QuestionEntity {
     @Builder.Default
     private List<QuestionStatisticEntity> questionStatistics = new ArrayList<>();
 
+    // Generated with IntelliJ
+    // necessary because lomboks equal did not work (for some reason)
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        QuestionEntity that = (QuestionEntity) o;
+        final QuestionEntity that = (QuestionEntity) o;
         if (getNumber() != that.getNumber()) return false;
         if (!Objects.equals(getId(), that.getId())) return false;
         if (getType() != that.getType()) return false;

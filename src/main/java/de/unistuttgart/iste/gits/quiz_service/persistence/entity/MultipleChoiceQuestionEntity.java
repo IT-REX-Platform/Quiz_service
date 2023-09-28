@@ -35,9 +35,9 @@ public class MultipleChoiceQuestionEntity extends QuestionEntity {
     // custom equals method because the answers list is not compared correctly
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof MultipleChoiceQuestionEntity that)) return false;
+        if (!(o instanceof final MultipleChoiceQuestionEntity that)) return false;
         if (!super.equals(o)) return false;
         if (!Objects.equals(text, that.text)) return false;
 

@@ -31,14 +31,14 @@ class MutateQuizUpdateNumericQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testUpdateNumericQuestion(GraphQlTester graphQlTester) {
+    void testUpdateNumericQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createNumericQuestion(1, "question", 2.0)))
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        UpdateNumericQuestionInput input = UpdateNumericQuestionInput.builder()
+        final UpdateNumericQuestionInput input = UpdateNumericQuestionInput.builder()
                 .setId(quizEntity.getQuestionPool().get(0).getId())
                 .setHint("new hint")
                 .setText("new question")
@@ -47,7 +47,7 @@ class MutateQuizUpdateNumericQuestionTest {
                 .setFeedback("new feedback")
                 .build();
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!, $input: UpdateNumericQuestionInput!) {
                     mutateQuiz(assessmentId: $id) {
                         updateNumericQuestion(input: $input) {
@@ -67,9 +67,9 @@ class MutateQuizUpdateNumericQuestionTest {
                 .path("mutateQuiz.updateNumericQuestion.questionPool[0].correctAnswer").entity(Double.class).isEqualTo(3.0)
                 .path("mutateQuiz.updateNumericQuestion.questionPool[0].tolerance").entity(Double.class).isEqualTo(0.1);
 
-        QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity updatedQuiz = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(updatedQuiz.getQuestionPool(), hasSize(1));
-        NumericQuestionEntity updatedQuestion = (NumericQuestionEntity) updatedQuiz.getQuestionPool().get(0);
+        final NumericQuestionEntity updatedQuestion = (NumericQuestionEntity) updatedQuiz.getQuestionPool().get(0);
         assertThat(updatedQuestion.getText(), is("new question"));
         assertThat(updatedQuestion.getHint(), is("new hint"));
         assertThat(updatedQuestion.getCorrectAnswer(), is(3.0));

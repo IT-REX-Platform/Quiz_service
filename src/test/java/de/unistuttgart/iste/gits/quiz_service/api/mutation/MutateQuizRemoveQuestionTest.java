@@ -36,7 +36,7 @@ class MutateQuizRemoveQuestionTest {
     @Test
     @Transactional
     @Commit
-    void testRemoveQuestion(GraphQlTester graphQlTester) {
+    void testRemoveQuestion(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris"),
@@ -45,7 +45,7 @@ class MutateQuizRemoveQuestionTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 mutation($id: UUID!) {
                     mutateQuiz(assessmentId: $id) {
                         removeQuestion(number: 2) {
@@ -55,7 +55,7 @@ class MutateQuizRemoveQuestionTest {
                 }
                 """;
 
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
                 .path("mutateQuiz.removeQuestion.questionPool")
@@ -66,11 +66,11 @@ class MutateQuizRemoveQuestionTest {
         assertThat(questions.get(0), matchesEntity(quizEntity.getQuestionPool().get(0)));
 
         // test that the number is updated in the following question
-        MultipleChoiceQuestionEntity updatedQuestion = (MultipleChoiceQuestionEntity) quizEntity.getQuestionPool().get(1);
+        final MultipleChoiceQuestionEntity updatedQuestion = (MultipleChoiceQuestionEntity) quizEntity.getQuestionPool().get(1);
         updatedQuestion.setNumber(2);
         assertThat(questions.get(1), matchesEntity(updatedQuestion));
 
-        QuizEntity newQuizEntity = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
+        final QuizEntity newQuizEntity = quizRepository.findById(quizEntity.getAssessmentId()).orElseThrow();
         assertThat(newQuizEntity.getQuestionPool(), hasSize(2));
         assertThat(newQuizEntity.getQuestionPool(),
                 containsInAnyOrder(quizEntity.getQuestionPool().get(0), updatedQuestion));
@@ -82,7 +82,7 @@ class MutateQuizRemoveQuestionTest {
      * Then an error is returned
      */
     @Test
-    void testRemoveQuestionNonExisting(GraphQlTester graphQlTester) {
+    void testRemoveQuestionNonExisting(final GraphQlTester graphQlTester) {
         QuizEntity quizEntity = TestData.exampleQuizBuilder()
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris"),
@@ -90,7 +90,7 @@ class MutateQuizRemoveQuestionTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        String query = """
+        final String query = """
                 mutation($id: UUID!) {
                     mutateQuiz(assessmentId: $id) {
                         removeQuestion(number: 3) {

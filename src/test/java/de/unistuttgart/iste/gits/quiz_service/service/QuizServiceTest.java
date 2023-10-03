@@ -1,10 +1,10 @@
 package de.unistuttgart.iste.gits.quiz_service.service;
 
+import de.unistuttgart.iste.gits.common.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.common.event.*;
 import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
-import de.unistuttgart.iste.gits.quiz_service.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.mapper.QuizMapper;
 import de.unistuttgart.iste.gits.quiz_service.persistence.repository.QuizRepository;
@@ -69,7 +69,7 @@ class QuizServiceTest {
                 .build();
 
         //mock repository
-        when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(new ArrayList<QuizEntity>());
+        when(quizRepository.findAllById(contentChangeEvent.getContentIds())).thenReturn(new ArrayList<>());
 
         // invoke method under test
         assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));

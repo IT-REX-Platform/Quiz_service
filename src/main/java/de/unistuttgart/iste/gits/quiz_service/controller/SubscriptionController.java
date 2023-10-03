@@ -19,8 +19,8 @@ public class SubscriptionController {
 
     private final QuizService quizService;
 
-    @Topic(name = "content-changes", pubsubName = "gits")
-    @PostMapping(path = "/quiz-service/content-changes-pubsub")
+    @Topic(name = "content-changed", pubsubName = "gits")
+    @PostMapping(path = "/quiz-service/content-changed-pubsub")
     public Mono<Void> updateAssociation(@RequestBody final CloudEvent<ContentChangeEvent> cloudEvent) {
 
         return Mono.fromRunnable(() -> {

@@ -1,7 +1,9 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
+import de.unistuttgart.iste.gits.common.testutil.InjectCurrentUserHeader;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
+import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
 import de.unistuttgart.iste.gits.generated.dto.MultipleChoiceQuestion;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
@@ -15,7 +17,9 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.test.annotation.Commit;
 
 import java.util.List;
+import java.util.UUID;
 
+import static de.unistuttgart.iste.gits.common.testutil.TestUsers.userWithMembershipInCourseWithId;
 import static de.unistuttgart.iste.gits.quiz_service.TestData.createMultipleChoiceQuestion;
 import static de.unistuttgart.iste.gits.quiz_service.matcher.MultipleChoiceQuestionDtoToEntityMatcher.matchesEntity;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,6 +31,10 @@ class MutateQuizRemoveQuestionTest {
 
     @Autowired
     private QuizRepository quizRepository;
+    private final UUID courseId = UUID.randomUUID();
+
+    @InjectCurrentUserHeader
+    private final LoggedInUser loggedInUser = userWithMembershipInCourseWithId(courseId, LoggedInUser.UserRoleInCourse.ADMINISTRATOR);
 
     /**
      * Given a quiz with 3 questions
@@ -37,7 +45,7 @@ class MutateQuizRemoveQuestionTest {
     @Transactional
     @Commit
     void testRemoveQuestion(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris"),
                         createMultipleChoiceQuestion(2, "what is the capital of France?", "Paris", "Madrid"),
@@ -83,7 +91,7 @@ class MutateQuizRemoveQuestionTest {
      */
     @Test
     void testRemoveQuestionNonExisting(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris"),
                         createMultipleChoiceQuestion(2, "what is the capital of France?", "Paris", "Madrid")))

@@ -2,7 +2,9 @@ package de.unistuttgart.iste.gits.quiz_service.api.query;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
+import de.unistuttgart.iste.gits.common.testutil.InjectCurrentUserHeader;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
+import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuizEntity;
@@ -14,6 +16,7 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import java.util.List;
 import java.util.UUID;
 
+import static de.unistuttgart.iste.gits.common.testutil.TestUsers.userWithMembershipInCourseWithId;
 import static de.unistuttgart.iste.gits.quiz_service.TestData.*;
 import static de.unistuttgart.iste.gits.quiz_service.matcher.MultipleChoiceQuestionDtoToEntityMatcher.matchesEntity;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,6 +33,10 @@ class QueryByIdTest {
 
     @Autowired
     private QuizRepository quizRepository;
+    private final UUID courseId = UUID.randomUUID();
+
+    @InjectCurrentUserHeader
+    private final LoggedInUser loggedInUser = userWithMembershipInCourseWithId(courseId, LoggedInUser.UserRoleInCourse.ADMINISTRATOR);
 
     /**
      * Given an uuid of an existing quiz
@@ -37,9 +44,9 @@ class QueryByIdTest {
      * Then the correct quiz is returned
      */
     @Test
-    void testQuizByAssessmentId(GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = QuizEntity.builder()
-                .courseId(UUID.randomUUID())
+    void testQuizByAssessmentId(final GraphQlTester graphQlTester) {
+        final QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(courseId)
                 .assessmentId(UUID.randomUUID())
                 .questionPool(List.of())
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
@@ -48,8 +55,8 @@ class QueryByIdTest {
                 .build();
         quizRepository.save(quizEntity);
 
-        QuizEntity quizEntity2 = QuizEntity.builder()
-                .courseId(UUID.randomUUID())
+        final QuizEntity quizEntity2 = QuizEntity.builder()
+                .courseId(courseId)
                 .assessmentId(UUID.randomUUID())
                 .questionPool(List.of())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
@@ -58,7 +65,7 @@ class QueryByIdTest {
                 .build();
         quizRepository.save(quizEntity2);
 
-        String query = """
+        final String query = """
                 query($id: UUID!) {
                     findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         assessmentId
@@ -88,9 +95,9 @@ class QueryByIdTest {
      * Then the correct quiz with the correct data is returned
      */
     @Test
-    void queryQuizWithQuestions(GraphQlTester graphQlTester) throws Exception {
+    void queryQuizWithQuestions(final GraphQlTester graphQlTester) throws Exception {
         QuizEntity quizEntity = QuizEntity.builder()
-                .courseId(UUID.randomUUID())
+                .courseId(courseId)
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(1)
@@ -106,7 +113,7 @@ class QueryByIdTest {
                 .build();
         quizEntity = quizRepository.save(quizEntity);
 
-        Question[] expectedQuestions = new Question[]{
+        final Question[] expectedQuestions = new Question[]{
                 MultipleChoiceQuestion.builder()
                         .setNumber(1)
                         .setText("What is the answer to life, the universe and everything?")
@@ -186,9 +193,9 @@ class QueryByIdTest {
                         .build()
         };
 
-        String expectedJson = new ObjectMapper().writeValueAsString(expectedQuestions);
+        final String expectedJson = new ObjectMapper().writeValueAsString(expectedQuestions);
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 query($id: UUID!) {
                     findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         ...QuizAllFields
@@ -223,9 +230,9 @@ class QueryByIdTest {
      * Then the selected questions are the equal to the question pool in the correct order
      */
     @Test
-    void testOrderedQuestionPoolingModeOrdered(GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = QuizEntity.builder()
-                .courseId(UUID.randomUUID())
+    void testOrderedQuestionPoolingModeOrdered(final GraphQlTester graphQlTester) {
+        final QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(courseId)
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.ORDERED)
                 .numberOfRandomlySelectedQuestions(1) // should be ignored
@@ -237,7 +244,7 @@ class QueryByIdTest {
                 .build();
         quizRepository.save(quizEntity);
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 query($id: UUID!) {
                     findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         ...QuizAllFields
@@ -245,7 +252,7 @@ class QueryByIdTest {
                 }
                 """;
 
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
                 .path("findQuizzesByAssessmentIds[0].selectedQuestions")
@@ -264,9 +271,9 @@ class QueryByIdTest {
      * Then the selected questions are the equal to the question pool in a random order
      */
     @Test
-    void testOrderedQuestionPoolingModeRandom(GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = QuizEntity.builder()
-                .courseId(UUID.randomUUID())
+    void testOrderedQuestionPoolingModeRandom(final GraphQlTester graphQlTester) {
+        final QuizEntity quizEntity = QuizEntity.builder()
+                .courseId(courseId)
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(1)
@@ -278,7 +285,7 @@ class QueryByIdTest {
                 .build();
         quizRepository.save(quizEntity);
 
-        String query = QuizFragments.FRAGMENT_DEFINITION + """
+        final String query = QuizFragments.FRAGMENT_DEFINITION + """
                 query($id: UUID!) {
                     findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         ...QuizAllFields
@@ -286,7 +293,7 @@ class QueryByIdTest {
                 }
                 """;
 
-        List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
+        final List<MultipleChoiceQuestion> questions = graphQlTester.document(query)
                 .variable("id", quizEntity.getAssessmentId())
                 .execute()
                 .path("findQuizzesByAssessmentIds[0].selectedQuestions")
@@ -307,8 +314,8 @@ class QueryByIdTest {
      * Then null is returned
      */
     @Test
-    void testFindByAssessmentIdNotExisting(GraphQlTester graphQlTester) {
-        String query = """
+    void testFindByAssessmentIdNotExisting(final GraphQlTester graphQlTester) {
+        final String query = """
                 query($id: UUID!) {
                     findQuizzesByAssessmentIds(assessmentIds: [$id]) {
                         assessmentId
@@ -316,7 +323,7 @@ class QueryByIdTest {
                 }
                 """;
 
-        var quizzes = graphQlTester.document(query)
+        final var quizzes = graphQlTester.document(query)
                 .variable("id", UUID.randomUUID())
                 .execute()
                 .path("findQuizzesByAssessmentIds").entityList(QuizEntity.class)

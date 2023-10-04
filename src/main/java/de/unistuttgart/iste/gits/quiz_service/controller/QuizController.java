@@ -28,12 +28,15 @@ public class QuizController {
                                                  @ContextValue final LoggedInUser currentUser) {
         return quizService.findQuizzesByAssessmentIds(assessmentIds).stream()
                 .map(quiz -> {
+                    if (quiz == null) {
+                        return null;
+                    }
                     try {
                         UserCourseAccessValidator.validateUserHasAccessToCourse(currentUser,
                                 LoggedInUser.UserRoleInCourse.STUDENT,
                                 quiz.getCourseId());
                         return quiz;
-                    } catch (NoAccessToCourseException ex) {
+                    } catch (final NoAccessToCourseException ex) {
                         return null;
                     }
                 })
@@ -41,7 +44,7 @@ public class QuizController {
     }
 
     @MutationMapping(name = "_internal_noauth_createQuiz")
-    public Quiz createQuiz(@Argument UUID courseId, @Argument final UUID assessmentId, @Argument final CreateQuizInput input) {
+    public Quiz createQuiz(@Argument final UUID courseId, @Argument final UUID assessmentId, @Argument final CreateQuizInput input) {
         return quizService.createQuiz(courseId, assessmentId, input);
     }
 

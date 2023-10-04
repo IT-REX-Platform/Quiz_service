@@ -3,8 +3,10 @@ package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 import de.unistuttgart.iste.gits.common.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
+import de.unistuttgart.iste.gits.common.testutil.InjectCurrentUserHeader;
 import de.unistuttgart.iste.gits.common.testutil.MockTestPublisherConfiguration;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
+import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuestionEntity;
@@ -20,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.List;
 import java.util.UUID;
 
+import static de.unistuttgart.iste.gits.common.testutil.TestUsers.userWithMembershipInCourseWithId;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.times;
@@ -35,6 +38,10 @@ class MutationLogQuizCompletionTest {
 
     @Autowired
     private QuizRepository quizRepository;
+    private final UUID courseId = UUID.randomUUID();
+
+    @InjectCurrentUserHeader
+    private final LoggedInUser loggedInUser = userWithMembershipInCourseWithId(courseId, LoggedInUser.UserRoleInCourse.ADMINISTRATOR);
 
     /**
      * Given a quiz
@@ -47,8 +54,6 @@ class MutationLogQuizCompletionTest {
     void testLogQuizCompletion(final HttpGraphQlTester graphQlTester) {
         //init
         final UUID assessmentId = UUID.randomUUID();
-        final UUID userId = UUID.randomUUID();
-        final UUID courseId = UUID.randomUUID();
 
         // create Database entities
         final List<QuestionEntity> questions = TestData.createDummyQuestions();
@@ -79,7 +84,7 @@ class MutationLogQuizCompletionTest {
 
         // create expected Progress event
         final UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
-                .userId(userId)
+                .userId(loggedInUser.getId())
                 .contentId(assessmentId)
                 .hintsUsed(1)
                 .success(false)
@@ -91,16 +96,6 @@ class MutationLogQuizCompletionTest {
                 .setHintsUsed(1)
                 .setSuccess(false)
                 .build();
-
-        final String currentUser = """
-                {
-                    "id": "%s",
-                    "userName": "MyUserName",
-                    "firstName": "John",
-                    "lastName": "Doe",
-                    "courseMemberships": []
-                }
-                """.formatted(userId);
 
 
         final String query = """
@@ -114,9 +109,6 @@ class MutationLogQuizCompletionTest {
                 """;
 
         final QuizCompletionFeedback actualFeedback = graphQlTester
-                .mutate()
-                .header("CurrentUser", currentUser)
-                .build()
                 .document(query)
                 .variable("input", quizCompletedInput)
                 .execute()
@@ -127,7 +119,6 @@ class MutationLogQuizCompletionTest {
 
         verify(mockTopicPublisher, times(1))
                 .notifyUserWorkedOnContent(expectedUserProgressLogEvent);
-
 
     }
 

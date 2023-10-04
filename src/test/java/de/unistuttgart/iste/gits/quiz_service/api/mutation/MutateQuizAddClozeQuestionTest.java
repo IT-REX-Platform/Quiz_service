@@ -1,7 +1,9 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
+import de.unistuttgart.iste.gits.common.testutil.InjectCurrentUserHeader;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
+import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
@@ -15,9 +17,12 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.test.annotation.Commit;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static de.unistuttgart.iste.gits.common.testutil.TestUsers.userWithMembershipInCourseWithId;
+
 
 @GraphQlApiTest
 @TablesToDelete({"cloze_question_additional_wrong_answers", "cloze_question_cloze_elements", "cloze_question", "quiz_question_pool", "question", "quiz"})
@@ -33,8 +38,13 @@ class MutateQuizAddClozeQuestionTest {
             }
             """;
 
+
     @Autowired
     private QuizRepository quizRepository;
+    private final UUID courseId = UUID.randomUUID();
+
+    @InjectCurrentUserHeader
+    private final LoggedInUser loggedInUser = userWithMembershipInCourseWithId(courseId, LoggedInUser.UserRoleInCourse.ADMINISTRATOR);
 
     /**
      * Given a quiz
@@ -45,7 +55,7 @@ class MutateQuizAddClozeQuestionTest {
     @Transactional
     @Commit
     void testAddClozeQuestion(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
@@ -123,7 +133,7 @@ class MutateQuizAddClozeQuestionTest {
      */
     @Test
     void testAddClozeWithoutBlank(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
@@ -157,7 +167,7 @@ class MutateQuizAddClozeQuestionTest {
 
     @Test
     void addClozeTextElementWithFeedback(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
@@ -192,7 +202,7 @@ class MutateQuizAddClozeQuestionTest {
 
     @Test
     void addClozeElementWithCorrectAnswer(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
@@ -226,7 +236,7 @@ class MutateQuizAddClozeQuestionTest {
 
     @Test
     void addClozeTextElementWithoutText(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
@@ -259,7 +269,7 @@ class MutateQuizAddClozeQuestionTest {
 
     @Test
     void testAddBlankWithoutCorrectAnswer(final GraphQlTester tester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);
@@ -288,7 +298,7 @@ class MutateQuizAddClozeQuestionTest {
 
     @Test
     void testAddBlankWithText(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of())
                 .build();
         quizEntity = quizRepository.save(quizEntity);

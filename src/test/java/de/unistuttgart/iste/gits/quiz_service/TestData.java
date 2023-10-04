@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 
 public class TestData {
 
-    public static QuizEntity.QuizEntityBuilder exampleQuizBuilder() {
+    public static QuizEntity.QuizEntityBuilder exampleQuizBuilder(final UUID courseId) {
         return QuizEntity.builder()
-                .courseId(UUID.randomUUID())
+                .courseId(courseId)
                 .assessmentId(UUID.randomUUID())
                 .questionPoolingMode(QuestionPoolingMode.RANDOM)
                 .numberOfRandomlySelectedQuestions(1)

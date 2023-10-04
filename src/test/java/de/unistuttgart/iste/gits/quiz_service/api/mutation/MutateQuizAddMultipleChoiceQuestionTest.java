@@ -1,7 +1,9 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
+import de.unistuttgart.iste.gits.common.testutil.InjectCurrentUserHeader;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
+import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.api.QuizFragments;
@@ -13,12 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
 import java.util.List;
+import java.util.UUID;
 
 import static de.unistuttgart.iste.gits.quiz_service.TestData.createMultipleChoiceQuestion;
 import static de.unistuttgart.iste.gits.quiz_service.matcher.MultipleChoiceQuestionDtoToCreateInputMatcher.matchesInput;
 import static de.unistuttgart.iste.gits.quiz_service.matcher.MultipleChoiceQuestionDtoToEntityMatcher.matchesEntity;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static de.unistuttgart.iste.gits.common.testutil.TestUsers.userWithMembershipInCourseWithId;
 
 @GraphQlApiTest
 @TablesToDelete({"multiple_choice_question_answers", "multiple_choice_question", "quiz_question_pool", "question", "quiz"})
@@ -36,6 +40,10 @@ class MutateQuizAddMultipleChoiceQuestionTest {
 
     @Autowired
     private QuizRepository quizRepository;
+    private final UUID courseId = UUID.randomUUID();
+
+    @InjectCurrentUserHeader
+    private final LoggedInUser loggedInUser = userWithMembershipInCourseWithId(courseId, LoggedInUser.UserRoleInCourse.ADMINISTRATOR);
 
     /**
      * Given a quiz
@@ -44,7 +52,7 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      */
     @Test
     void testAddMultipleChoiceQuestion(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
@@ -84,7 +92,7 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      */
     @Test
     void testAddMultipleChoiceQuestionNextNumber(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
@@ -126,7 +134,7 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      */
     @Test
     void testAddMultipleChoiceQuestionDuplicateNumber(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
@@ -166,7 +174,7 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      */
     @Test
     void testAddMultipleChoiceQuestionNoCorrectAnswer(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();
@@ -205,7 +213,7 @@ class MutateQuizAddMultipleChoiceQuestionTest {
      */
     @Test
     void testAddMultipleChoiceQuestionTooFewAnswers(final GraphQlTester graphQlTester) {
-        QuizEntity quizEntity = TestData.exampleQuizBuilder()
+        QuizEntity quizEntity = TestData.exampleQuizBuilder(courseId)
                 .questionPool(List.of(
                         createMultipleChoiceQuestion(1, "what is the capital of Germany?", "Berlin", "Paris")))
                 .build();

@@ -47,7 +47,7 @@ In a Numeric Question, users must respond with numerical values. This quiz type 
 | spring.jpa.properties.hibernate.dialect | Hibernate dialect for PostgreSQL          | org.hibernate.dialect.PostgreSQLDialect | org.hibernate.dialect.PostgreSQLDialect |
 | spring.datasource.driver-class-name     | JDBC driver class                         | org.postgresql.Driver                   | org.postgresql.Driver                   |
 | spring.sql.init.mode                    | SQL initialization mode                   | always                                  | always                                  |
-| spring.jpa.show-sql                     | Show SQL queries in logs                  | true                                    | true                                    |
+| spring.jpa.show-sql                     | Show SQL queries in logs                  | true                                    | false                                   |
 | spring.sql.init.continue-on-error       | Continue on SQL init error                | true                                    | true                                    |
 | spring.jpa.hibernate.ddl-auto           | Hibernate DDL auto strategy               | create                                  | update                                  |
 | logging.level.root                      | Logging level for root logger             | DEBUG                                   | -                                       |
@@ -59,8 +59,6 @@ The GraphQL API is described in the [api.md file](api.md).
 
 The endpoint for the GraphQL API is `/graphql`. The GraphQL Playground is available at `/graphiql`.
 
-## How to run
-
-How to run services locally is described in
-the [wiki](https://gits-enpro.readthedocs.io/en/latest/dev-manuals/backend/get-started.html).
-
+## Get started
+A guide how to start development can be
+found in the [wiki](https://gits-enpro.readthedocs.io/en/latest/dev-manuals/backend/get-started.html).

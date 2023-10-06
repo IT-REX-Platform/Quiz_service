@@ -1,13 +1,16 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
 import de.unistuttgart.iste.gits.common.dapr.TopicPublisher;
-import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
+import de.unistuttgart.iste.gits.common.event.ContentProgressedEvent;
 import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
 import de.unistuttgart.iste.gits.common.testutil.InjectCurrentUserHeader;
 import de.unistuttgart.iste.gits.common.testutil.MockTestPublisherConfiguration;
 import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
 import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
-import de.unistuttgart.iste.gits.generated.dto.*;
+import de.unistuttgart.iste.gits.generated.dto.QuestionCompletedInput;
+import de.unistuttgart.iste.gits.generated.dto.QuestionPoolingMode;
+import de.unistuttgart.iste.gits.generated.dto.QuizCompletedInput;
+import de.unistuttgart.iste.gits.generated.dto.QuizCompletionFeedback;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuestionEntity;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuizEntity;
@@ -83,7 +86,7 @@ class MutationLogQuizCompletionTest {
                 .build();
 
         // create expected Progress event
-        final UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
+        final ContentProgressedEvent expectedUserProgressLogEvent = ContentProgressedEvent.builder()
                 .userId(loggedInUser.getId())
                 .contentId(assessmentId)
                 .hintsUsed(1)

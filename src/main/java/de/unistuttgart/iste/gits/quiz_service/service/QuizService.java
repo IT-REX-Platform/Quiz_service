@@ -2,8 +2,8 @@ package de.unistuttgart.iste.gits.quiz_service.service;
 
 import de.unistuttgart.iste.gits.common.dapr.TopicPublisher;
 import de.unistuttgart.iste.gits.common.event.ContentChangeEvent;
+import de.unistuttgart.iste.gits.common.event.ContentProgressedEvent;
 import de.unistuttgart.iste.gits.common.event.CrudOperation;
-import de.unistuttgart.iste.gits.common.event.UserProgressLogEvent;
 import de.unistuttgart.iste.gits.common.exception.IncompleteEventMessageException;
 import de.unistuttgart.iste.gits.generated.dto.*;
 import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuestionEntity;
@@ -477,7 +477,7 @@ public class QuizService {
         final int hintsUsed = countAsInt(input.getCompletedQuestions(), QuestionCompletedInput::getUsedHint);
 
         // create new user progress event message
-        final UserProgressLogEvent userProgressLogEvent = UserProgressLogEvent.builder()
+        final ContentProgressedEvent userProgressLogEvent = ContentProgressedEvent.builder()
                 .userId(userId)
                 .contentId(quizEntity.getAssessmentId())
                 .hintsUsed(hintsUsed)

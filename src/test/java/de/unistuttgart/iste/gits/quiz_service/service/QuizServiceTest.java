@@ -159,7 +159,7 @@ class QuizServiceTest {
                 .build();
 
         // create expected Progress event
-        final UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
+        final ContentProgressedEvent expectedUserProgressLogEvent = ContentProgressedEvent.builder()
                 .userId(userId)
                 .contentId(assessmentId)
                 .hintsUsed(0)
@@ -220,7 +220,7 @@ class QuizServiceTest {
                 .build();
 
         // create expected Progress event
-        final UserProgressLogEvent expectedUserProgressLogEvent = UserProgressLogEvent.builder()
+        final ContentProgressedEvent expectedUserProgressLogEvent = ContentProgressedEvent.builder()
                 .userId(userId)
                 .contentId(assessmentId)
                 .hintsUsed(1)

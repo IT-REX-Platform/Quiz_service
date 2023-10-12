@@ -245,13 +245,13 @@ type AssociationQuestion implements Question {
 
 type SingleAssociation {
     """
-    The left side of the association.
+    The left side of the association, in SlateJS JSON format.
     """
-    left: String!
+    left: JSON!
     """
-    The right side of the association.
+    The right side of the association, in SlateJS JSON format.
     """
-    right: String!
+    right: JSON!
 
     """
     Feedback for the association when the user assigns a wrong answer, in SlateJS JSON format.

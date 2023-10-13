@@ -2,10 +2,10 @@ package de.unistuttgart.iste.gits.quiz_service.controller;
 
 import de.unistuttgart.iste.gits.common.exception.NoAccessToCourseException;
 import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
-import de.unistuttgart.iste.gits.common.user_handling.UserCourseAccessValidator;
+import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser.UserRoleInCourse;
 import de.unistuttgart.iste.gits.generated.dto.*;
+import de.unistuttgart.iste.gits.quiz_service.persistence.entity.QuizEntity;
 import de.unistuttgart.iste.gits.quiz_service.service.QuizService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.*;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.UUID;
+
+import static de.unistuttgart.iste.gits.common.user_handling.UserCourseAccessValidator.validateUserHasAccessToCourse;
 
 @Slf4j
 @Controller
@@ -32,9 +34,7 @@ public class QuizController {
                         return null;
                     }
                     try {
-                        UserCourseAccessValidator.validateUserHasAccessToCourse(currentUser,
-                                LoggedInUser.UserRoleInCourse.STUDENT,
-                                quiz.getCourseId());
+                        validateUserHasAccessToCourse(currentUser, UserRoleInCourse.STUDENT, quiz.getCourseId());
                         return quiz;
                     } catch (final NoAccessToCourseException ex) {
                         return null;
@@ -44,20 +44,18 @@ public class QuizController {
     }
 
     @MutationMapping(name = "_internal_noauth_createQuiz")
-    public Quiz createQuiz(@Argument final UUID courseId, @Argument final UUID assessmentId, @Argument final CreateQuizInput input) {
+    public Quiz internalNoAuthCreateQuiz(@Argument final UUID courseId,
+                                         @Argument final UUID assessmentId,
+                                         @Argument final CreateQuizInput input) {
         return quizService.createQuiz(courseId, assessmentId, input);
     }
 
     @MutationMapping
     public QuizMutation mutateQuiz(@Argument final UUID assessmentId,
                                    @ContextValue final LoggedInUser currentUser) {
-        final Quiz quiz = quizService.findQuizzesByAssessmentIds(List.of(assessmentId)).stream()
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("No quiz found for assessment id " + assessmentId));
+        final QuizEntity quiz = quizService.requireQuizExists(assessmentId);
 
-        UserCourseAccessValidator.validateUserHasAccessToCourse(currentUser,
-                LoggedInUser.UserRoleInCourse.ADMINISTRATOR,
-                quiz.getCourseId());
+        validateUserHasAccessToCourse(currentUser, UserRoleInCourse.ADMINISTRATOR, quiz.getCourseId());
 
         // this is basically an empty object, only serving as a parent for the nested mutations
         return new QuizMutation(assessmentId);
@@ -156,15 +154,9 @@ public class QuizController {
     @MutationMapping
     public QuizCompletionFeedback logQuizCompleted(@Argument final QuizCompletedInput input,
                                                    @ContextValue final LoggedInUser currentUser) {
-        final UUID courseId = quizService.findQuizzesByAssessmentIds(List.of(input.getQuizId())).stream()
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("No quiz found for quiz id " + input.getQuizId()))
-                .getCourseId();
+        final QuizEntity quiz = quizService.requireQuizExists(input.getQuizId());
 
-
-        UserCourseAccessValidator.validateUserHasAccessToCourse(currentUser,
-                LoggedInUser.UserRoleInCourse.STUDENT,
-                courseId);
+        validateUserHasAccessToCourse(currentUser, UserRoleInCourse.STUDENT, quiz.getCourseId());
 
         return quizService.publishProgress(input, currentUser.getId());
     }

@@ -55,7 +55,7 @@ class QuizServiceTest {
         // invoke method under test
         assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));
 
-        verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
+        verify(quizRepository, times(1)).deleteAllById(any());
     }
 
     @Test
@@ -74,7 +74,7 @@ class QuizServiceTest {
         // invoke method under test
         assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(contentChangeEvent));
 
-        verify(quizRepository, times(1)).deleteAllByIdInBatch(any());
+        verify(quizRepository, times(1)).deleteAllById(any());
     }
 
     @Test
@@ -114,14 +114,14 @@ class QuizServiceTest {
             //invoke method under test
             assertDoesNotThrow(() -> quizService.deleteQuizzesWhenQuizContentIsDeleted(event));
             verify(quizRepository, never()).findAllById(any());
-            verify(quizRepository, never()).deleteAllInBatch(any());
+            verify(quizRepository, never()).deleteAll(any());
         }
 
         for (final ContentChangeEvent errorEvent : errorEvents) {
             //invoke method under test
             assertThrows(IncompleteEventMessageException.class, () -> quizService.deleteQuizzesWhenQuizContentIsDeleted(errorEvent));
             verify(quizRepository, never()).findAllById(any());
-            verify(quizRepository, never()).deleteAllInBatch(any());
+            verify(quizRepository, never()).deleteAll(any());
         }
 
     }

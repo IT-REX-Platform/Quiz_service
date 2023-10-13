@@ -1,8 +1,6 @@
 package de.unistuttgart.iste.gits.quiz_service.api.mutation;
 
-import de.unistuttgart.iste.gits.common.testutil.GraphQlApiTest;
-import de.unistuttgart.iste.gits.common.testutil.InjectCurrentUserHeader;
-import de.unistuttgart.iste.gits.common.testutil.TablesToDelete;
+import de.unistuttgart.iste.gits.common.testutil.*;
 import de.unistuttgart.iste.gits.common.user_handling.LoggedInUser;
 import de.unistuttgart.iste.gits.generated.dto.CreateSelfAssessmentQuestionInput;
 import de.unistuttgart.iste.gits.quiz_service.TestData;
@@ -64,7 +62,6 @@ class MutateQuizAddSelfAssessmentQuestionTest {
                 .setSolutionSuggestion("solution suggestion")
                 .build();
 
-
         graphQlTester.document(ADD_SELF_ASSESSMENT_QUESTION_MUTATION)
                 .variable("input", input)
                 .variable("id", quizEntity.getAssessmentId())
@@ -92,6 +89,5 @@ class MutateQuizAddSelfAssessmentQuestionTest {
         assertThat(selfAssessmentQuestionEntity.getHint(), is("hint"));
         assertThat(selfAssessmentQuestionEntity.getText(), is("question"));
         assertThat(selfAssessmentQuestionEntity.getSolutionSuggestion(), is("solution suggestion"));
-
     }
 }
